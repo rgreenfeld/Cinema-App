@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Heebo', system-ui, -apple-system, sans-serif;
+  }
+  body {
+    @apply bg-[#0a0a0f] text-gray-100 antialiased;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(244, 63, 94, 0.08), transparent 45%),
+      radial-gradient(circle at 85% 100%, rgba(234, 179, 8, 0.06), transparent 45%);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .cinema-card {
+    @apply rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm transition-all duration-300;
+  }
+  .cinema-card-hover:hover {
+    @apply border-white/15 bg-white/[0.04];
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-rose-600 to-rose-500 px-6 py-3.5 font-bold text-white shadow-lg shadow-rose-900/30 transition-all duration-300 hover:from-rose-500 hover:to-rose-400 hover:shadow-rose-700/40 disabled:cursor-not-allowed disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 disabled:shadow-none;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 font-medium text-gray-300 transition-all duration-200 hover:border-white/20 hover:bg-white/[0.06] hover:text-white;
+  }
+  .field-label {
+    @apply mb-2 block text-sm font-semibold text-gray-300;
+  }
+  .select-base {
+    @apply w-full rounded-xl border border-white/10 bg-[#12121a] px-4 py-3 text-right text-gray-100 transition-colors duration-200 focus:border-rose-500/60 focus:outline-none focus:ring-2 focus:ring-rose-500/20 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a35;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a45;
+}
+
+/* Smooth expand animation */
+.expand-enter {
+  animation: expandIn 0.25s ease-out;
+}
+@keyframes expandIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade slide for screen transitions */
+.screen-enter {
+  animation: screenIn 0.35s ease-out;
+}
+@keyframes screenIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
