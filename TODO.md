@@ -21,6 +21,9 @@ Replace all remaining hardcoded mock data in the screening details (expanded) ca
 
 ### Step 3b: `src/lib/seatAvailability.ts` (new)
 - [x] `fetchSeatAvailability(bookingUrl, fallback)` — best-effort fetch of the booking page; parses seat/row data from JSON or HTML; falls back to stored DB metrics on CORS/network failure
+- [x] CORS proxy fix: fetch the booking page via `https://corsproxy.io/?<encoded-url>` (bypasses `Access-Control-Allow-Origin` restrictions during dev)
+- [x] 4-second timeout with `AbortController`; on proxy failure/timeout, log cleanly, re-throw so the UI shows a clear "open booking page in new tab" button
+- [x] `ResultsScreen.tsx` error state now includes a prominent "פתח את דף ההזמנה באתר הקולנוע" link (opens `booking_url` in a new tab)
 
 ### Step 4: `supabase/schema.sql`
 - [x] Add optional `available_seats`, `total_seats`, `total_rows` columns

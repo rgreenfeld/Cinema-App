@@ -281,7 +281,18 @@ function ResultCard({ screening, showMovie, movies, cinemas }: { screening: Scre
               </div>
             ) : seatError ? (
               <div className="rounded-xl border border-rose-500/20 bg-rose-500/[0.06] px-4 py-3 text-sm text-rose-300">
-                לא הצלחנו לטעון את נתוני המקומות. נסה להזמין כרטיסים ישירות באתר הקולנוע.
+                <p>לא הצלחנו לטעון את נתוני המקומות.</p>
+                {hasBooking && (
+                  <a
+                    href={screening.bookingUrl!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 font-semibold text-rose-200 transition-colors hover:bg-rose-500/20"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    פתח את דף ההזמנה באתר הקולנוע
+                  </a>
+                )}
               </div>
             ) : hasSeats ? (
               <>
