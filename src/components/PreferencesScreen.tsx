@@ -1,7 +1,8 @@
 import { Check, MapPin, Film, Languages, ArrowLeft, Clapperboard, Globe, Locate } from 'lucide-react';
-import { CHAINS, LANGUAGES } from '@/data';
+import { CHAINS, LANGUAGES } from '@/constants';
 import type { Preferences } from '@/types';
 import { RegionCitySelector } from '@/components/RegionCitySelector';
+import { getCinemaNamesForSelection } from '@/utils/cinemaMapping';
 
 interface Props {
   preferences: Preferences;
@@ -25,7 +26,10 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
   };
 
   const hasLocation =
-    preferences.locationMode === 'current' || preferences.selectedCities.length > 0;
+    preferences.locationMode === 'current' ||
+    preferences.selectedCities.length > 0 ||
+    preferences.selectedRegions.length > 0 ||
+    preferences.selectedBranches.length > 0;
   const hasChain = preferences.selectedChains.length > 0;
   const canContinue = hasLocation && hasChain;
 
@@ -64,7 +68,15 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
               name="locationMode"
               className="sr-only"
               checked={preferences.locationMode === 'current'}
-              onChange={() => onChange({ ...preferences, locationMode: 'current', selectedCities: [] })}
+              onChange={() =>
+                onChange({
+                  ...preferences,
+                  locationMode: 'current',
+                  selectedCities: [],
+                  selectedRegions: [],
+                  selectedBranches: [],
+                })
+              }
             />
             <span
               className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
@@ -108,7 +120,18 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
           <div className="expand-enter mt-4">
             <RegionCitySelector
               selectedCities={preferences.selectedCities}
-              onChange={(cities) => onChange({ ...preferences, selectedCities: cities })}
+              selectedRegions={preferences.selectedRegions}
+              onChange={(cities, regions) => {
+                // Derive the full cinema branch names mapped from the chosen
+                // cities/regions and store them in the active filter state.
+                const branches = getCinemaNamesForSelection(cities, regions);
+                onChange({
+                  ...preferences,
+                  selectedCities: cities,
+                  selectedRegions: regions,
+                  selectedBranches: branches,
+                });
+              }}
             />
           </div>
         )}

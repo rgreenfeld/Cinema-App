@@ -5,6 +5,11 @@ export type Screen = 'preferences' | 'search' | 'results';
 export interface Preferences {
   locationMode: 'current' | 'regions';
   selectedCities: string[];
+  selectedRegions: string[];
+  /** Full cinema branch names mapped from the selected cities/regions.
+   *  e.g. selecting city 'רמת השרון' → 'סינמה סיטי גלילות'.
+   *  Preserves the full display names for filtering and rendering. */
+  selectedBranches: string[];
   selectedChains: ChainId[];
   selectedLanguages: Language[];
 }
@@ -18,11 +23,14 @@ export interface SearchCriteria {
   minTime: string | null;
   maxTime: string | null;
   hallTypes: string[];
+  allDay: boolean;
 }
 
 export const emptyPreferences: Preferences = {
   locationMode: 'current',
   selectedCities: [],
+  selectedRegions: [],
+  selectedBranches: [],
   selectedChains: [],
   selectedLanguages: [],
 };
@@ -34,4 +42,5 @@ export const emptySearchCriteria: SearchCriteria = {
   minTime: null,
   maxTime: null,
   hallTypes: [],
+  allDay: false,
 };

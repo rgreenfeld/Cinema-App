@@ -1,18 +1,18 @@
 import { ChevronDown, Check } from 'lucide-react';
 import { useState } from 'react';
-import { REGIONS } from '@/data';
-import type { Preferences } from '@/types';
+import { REGIONS } from '@/constants';
 
 interface Props {
   selectedCities: string[];
-  onChange: (cities: string[]) => void;
+  selectedRegions: string[];
+  onChange: (cities: string[], regions: string[]) => void;
 }
 
 function isAllCitiesSelected(regionCities: string[], selected: string[]): boolean {
   return regionCities.every((c) => selected.includes(c));
 }
 
-export function RegionCitySelector({ selectedCities, onChange }: Props) {
+export function RegionCitySelector({ selectedCities, selectedRegions, onChange }: Props) {
   const [expandedRegions, setExpandedRegions] = useState<Set<string>>(new Set());
 
   const toggleRegionExpand = (regionName: string) => {
@@ -25,23 +25,25 @@ export function RegionCitySelector({ selectedCities, onChange }: Props) {
   };
 
   const toggleCity = (city: string) => {
-    onChange(
-      selectedCities.includes(city)
-        ? selectedCities.filter((c) => c !== city)
-        : [...selectedCities, city],
-    );
+    const nextCities = selectedCities.includes(city)
+      ? selectedCities.filter((c) => c !== city)
+      : [...selectedCities, city];
+    onChange(nextCities, selectedRegions);
   };
 
-  const toggleRegion = (regionCities: string[]) => {
-    const allSelected = isAllCitiesSelected(regionCities, selectedCities);
-    onChange(
-      allSelected
-        ? selectedCities.filter((c) => !regionCities.includes(c))
-        : Array.from(new Set([...selectedCities, ...regionCities])),
-    );
+  const toggleRegion = (region: { name: string; cities: string[] }) => {
+    const allSelected = isAllCitiesSelected(region.cities, selectedCities);
+    const nextCities = allSelected
+      ? selectedCities.filter((c) => !region.cities.includes(c))
+      : Array.from(new Set([...selectedCities, ...region.cities]));
+    // Selecting a region also stores the region name in selectedRegions
+    const nextRegions = allSelected
+      ? selectedRegions.filter((r) => r !== region.name)
+      : Array.from(new Set([...selectedRegions, region.name]));
+    onChange(nextCities, nextRegions);
   };
 
-  const reset = () => onChange([]);
+  const reset = () => onChange([], []);
 
   return (
     <div className="space-y-2">
@@ -56,7 +58,7 @@ export function RegionCitySelector({ selectedCities, onChange }: Props) {
             <div className="flex items-center gap-3 px-4 py-3">
               <button
                 type="button"
-                onClick={() => toggleRegion(region.cities)}
+                onClick={() => toggleRegion(region)}
                 className="relative flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors"
                 style={{
                   borderColor: allSelected || indeterminate ? '#f43f5e' : 'rgba(255,255,255,0.2)',
@@ -125,3 +127,4 @@ export function RegionCitySelector({ selectedCities, onChange }: Props) {
     </div>
   );
 }
+

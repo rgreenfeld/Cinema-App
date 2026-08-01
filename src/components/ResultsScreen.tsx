@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ChevronDown,
   ChevronLeft,
@@ -6,40 +6,58 @@ import {
   Armchair,
   Layers,
   Volume2,
-  Subtitles,
   ExternalLink,
   Calendar,
   SearchX,
   Loader2,
 } from 'lucide-react';
 import {
-  ALL_SCREENINGS,
-  getMovie,
-  getCinema,
-  getChain,
-  chainOf,
-  getCityOf,
+  HALL_TYPES,
+  CHAINS,
+  getUpcomingDates,
   formatDateLabel,
   formatShortDate,
+} from '@/constants';
+import {
   type Screening,
+  type Movie,
+  type Cinema,
+  type ChainId,
 } from '@/data';
 import type { Preferences, SearchCriteria } from '@/types';
-import { timeToMinutes } from '@/timeUtils';
+import { virtualMinutesOf } from '@/timeUtils';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { fetchSeatAvailability, type SeatAvailability } from '@/lib/seatAvailability';
 
 interface Props {
   criteria: SearchCriteria;
   preferences: Preferences;
   onChange: () => void;
+  screenings?: Screening[];
+  movies?: Movie[];
+  cinemas?: Cinema[];
 }
 
 const PAGE_SIZE = 10;
 
-export function ResultsScreen({ criteria, preferences, onChange }: Props) {
+// Chain display helpers — resolve ChainId → badge styles/label using constants
+function chainDataColor(chainId: ChainId): string {
+  const chain = CHAINS.find((c) => c.id === chainId);
+  return chain?.color ?? 'bg-gray-500/15 text-gray-300 border-gray-500/30';
+}
+
+function chainDataShortName(chainId: ChainId): string {
+  const chain = CHAINS.find((c) => c.id === chainId);
+  return chain?.shortName ?? chainId;
+}
+
+export function ResultsScreen({ criteria, preferences, onChange, screenings: propScreenings, movies: propMovies, cinemas: propCinemas }: Props) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [loading, setLoading] = useState(false);
 
-  const results = useMemo(() => filterScreenings(criteria, preferences), [criteria, preferences]);
+  const screeningSource = propScreenings ?? [];
+
+  const results = useMemo(() => filterScreenings(criteria, preferences, screeningSource, propCinemas), [criteria, preferences, screeningSource, propCinemas]);
 
   const visible = results.slice(0, visibleCount);
   const hasMore = visibleCount < results.length;
@@ -55,7 +73,9 @@ export function ResultsScreen({ criteria, preferences, onChange }: Props) {
 
   const sentinelRef = useInfiniteScroll(loadMore, hasMore, loading);
 
-  const selectedMovie = criteria.movieId ? getMovie(criteria.movieId) : undefined;
+  const selectedMovie = criteria.movieId
+    ? propMovies?.find((m) => m.id === criteria.movieId)
+    : undefined;
   const dateLabel = criteria.date ? formatDateLabel(criteria.date) : '';
 
   return (
@@ -103,11 +123,13 @@ export function ResultsScreen({ criteria, preferences, onChange }: Props) {
         </div>
       ) : (
         <div className="space-y-3">
-          {visible.map((s) => (
+{visible.map((s) => (
             <ResultCard
               key={s.id}
               screening={s}
               showMovie={criteria.mode === 'time'}
+              movies={propMovies}
+              cinemas={propCinemas}
             />
           ))}
         </div>
@@ -128,13 +150,62 @@ export function ResultsScreen({ criteria, preferences, onChange }: Props) {
   );
 }
 
-function ResultCard({ screening, showMovie }: { screening: Screening; showMovie: boolean }) {
+function ResultCard({ screening, showMovie, movies, cinemas }: { screening: Screening; showMovie: boolean; movies?: Movie[]; cinemas?: Cinema[] }) {
   const [expanded, setExpanded] = useState(false);
-  const movie = getMovie(screening.movieId);
-  const cinema = getCinema(screening.cinemaId);
-  const chain = chainOf(screening.cinemaId) ? getChain(chainOf(screening.cinemaId)!) : undefined;
-  const city = getCityOf(screening.cinemaId);
-  const fillRatio = screening.totalSeats > 0 ? screening.availableSeats / screening.totalSeats : 0;
+  // On-demand seat availability state, keyed by screening id so a collapsed
+  // row's resolved data isn't reused after re-mounting.
+  const [seatLoading, setSeatLoading] = useState(false);
+  const [seatData, setSeatData] = useState<SeatAvailability | null>(null);
+  const [seatError, setSeatError] = useState(false);
+
+  const movie = movies?.find((m) => m.id === screening.movieId);
+  const cinema = cinemas?.find((c) => c.id === screening.cinemaId);
+  const chainData = cinema?.chain;
+  const city = cinema?.city ?? '';
+  const hasBooking = Boolean(screening.bookingUrl);
+
+  // ── On-demand fetch: when the row is expanded, fetch live seat / row
+  //    availability using the screening's booking_url; fall back to the
+  //    seat data already stored on the record (from Supabase), then to null.
+  useEffect(() => {
+    if (!expanded) return;
+
+    let cancelled = false;
+    setSeatLoading(true);
+    setSeatError(false);
+    setSeatData(null);
+
+    const DB_FALLBACK: SeatAvailability = {
+      availableSeats: screening.availableSeats,
+      totalSeats: screening.totalSeats,
+      totalRows: screening.totalRows,
+    };
+
+    fetchSeatAvailability(screening.bookingUrl, DB_FALLBACK)
+      .then((result) => {
+        if (cancelled) return;
+        setSeatData(result);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setSeatError(true);
+        setSeatData(DB_FALLBACK);
+      })
+      .finally(() => {
+        if (!cancelled) setSeatLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [expanded, screening.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const hasSeats = seatData?.availableSeats != null || seatData?.totalSeats != null;
+  const canComputeRatio =
+    seatData?.availableSeats != null &&
+    seatData?.totalSeats != null &&
+    seatData.totalSeats > 0;
+  const fillRatio = canComputeRatio ? seatData!.availableSeats! / seatData!.totalSeats! : 0;
   const availColor =
     fillRatio > 0.5 ? 'bg-emerald-500' : fillRatio > 0.2 ? 'bg-amber-500' : 'bg-rose-500';
 
@@ -165,11 +236,18 @@ function ResultCard({ screening, showMovie }: { screening: Screening; showMovie:
             <span className="text-gray-600">·</span>
             <span className="truncate text-gray-500">{cinema?.name}</span>
           </div>
-          {chain && (
+
+          {/* Immediate screen type + language badges (real DB values) */}
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            <DetailBadge icon={<Layers className="h-3 w-3 text-gray-400" />} label={screening.hallType} />
+            <DetailBadge icon={<Volume2 className="h-3 w-3 text-gray-400" />} label={screening.audioLang} />
+          </div>
+
+          {chainData && (
             <span
-              className={`mt-1.5 inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${chain.color}`}
+              className={`mt-1.5 inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${chainDataColor(chainData)}`}
             >
-              {chain.shortName}
+              {chainDataShortName(chainData)}
             </span>
           )}
         </div>
@@ -182,85 +260,130 @@ function ResultCard({ screening, showMovie }: { screening: Screening; showMovie:
       {/* Expanded */}
       {expanded && (
         <div className="expand-enter border-t border-white/[0.06] bg-black/20 p-4">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <InfoTile icon={<Layers className="h-4 w-4" />} label="סוג אולם" value={screening.hallType} />
-            <InfoTile icon={<Volume2 className="h-4 w-4" />} label="שפת סאונד" value={screening.audioLang} />
-            <InfoTile icon={<Subtitles className="h-4 w-4" />} label="כתוביות" value={screening.subtitleLang} />
-            <InfoTile icon={<Layers className="h-4 w-4" />} label="שורות" value={`${screening.totalRows} שורות`} />
-          </div>
-
-          {/* Seat availability */}
-          <div className="mt-4">
-            <div className="mb-1.5 flex items-center justify-between text-sm">
-              <span className="flex items-center gap-1.5 text-gray-300">
-                <Armchair className="h-4 w-4" />
-                מושבים פנויים
-              </span>
-              <span className="font-bold text-white">
-                {screening.availableSeats} מתוך {screening.totalSeats}
-              </span>
-            </div>
-            <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${availColor}`}
-                style={{ width: `${Math.max(fillRatio * 100, 2)}%` }}
+          {/* Screen type & language badges — always visible in the expanded panel too */}
+          <div className="flex flex-wrap gap-2">
+            <DetailBadge icon={<Layers className="h-3.5 w-3.5 text-gray-400" />} label={screening.hallType} />
+            <DetailBadge icon={<Volume2 className="h-3.5 w-3.5 text-gray-400" />} label={screening.audioLang} />
+            {seatData?.totalRows != null && (
+              <DetailBadge
+                icon={<Layers className="h-3.5 w-3.5 text-gray-400" />}
+                label={`${seatData.totalRows} שורות`}
               />
-            </div>
+            )}
           </div>
 
-          {/* Action */}
-          <a
-            href={`https://cinema-finder.example/booking/${screening.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary mt-4 w-full text-sm"
-          >
-            <ExternalLink className="h-4 w-4" />
-            לבחירת מושבים באתר הקולנוע
-          </a>
+          {/* Seat availability — on-demand fetch while expanded */}
+          <div className="mt-4">
+            {seatLoading ? (
+              <div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-sm text-gray-300">
+                <Loader2 className="h-4 w-4 animate-spin text-rose-400" />
+                טוען מפת אולם ומקומות פנויים...
+              </div>
+            ) : seatError ? (
+              <div className="rounded-xl border border-rose-500/20 bg-rose-500/[0.06] px-4 py-3 text-sm text-rose-300">
+                לא הצלחנו לטעון את נתוני המקומות. נסה להזמין כרטיסים ישירות באתר הקולנוע.
+              </div>
+            ) : hasSeats ? (
+              <>
+                <div className="mb-1.5 flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-1.5 text-gray-300">
+                    <Armchair className="h-4 w-4" />
+                    מושבים פנויים
+                  </span>
+                  <span className="font-bold text-white">
+                    {seatData?.availableSeats != null
+                      ? seatData?.totalSeats != null
+                        ? `${seatData.availableSeats} מתוך ${seatData.totalSeats}`
+                        : `${seatData.availableSeats} פנויים`
+                      : `${seatData?.totalSeats} מושבים`}
+                  </span>
+                </div>
+                {canComputeRatio ? (
+                  <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${availColor}`}
+                      style={{ width: `${Math.max(fillRatio * 100, 2)}%` }}
+                    />
+                  </div>
+                ) : (
+                  <p className="mt-1 text-xs text-gray-500">
+                    {seatData?.availableSeats == null
+                      ? 'נתוני מושבים פנויים לא זמינים להקרנה זו'
+                      : 'קיבולת האולם לא זמינה'}
+                  </p>
+                )}
+              </>
+            ) : (
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-sm text-gray-400">
+                נתוני מקומות פנויים לא נמסרו להקרנה זו.
+              </div>
+            )}
+          </div>
+
+          {/* Booking — always linked to the real booking_url */}
+          {hasBooking ? (
+            <a
+              href={screening.bookingUrl!}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary mt-4 w-full text-sm"
+            >
+              <ExternalLink className="h-4 w-4" />
+              הזמן כרטיסים
+            </a>
+          ) : (
+            <div className="mt-4 w-full rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-center text-sm text-gray-500">
+              קישור להזמנת כרטיסים לא זמין להקרנה זו
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-function InfoTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function DetailBadge({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-      <div className="mb-1 flex items-center gap-1.5 text-xs text-gray-500">
-        {icon}
-        {label}
-      </div>
-      <p className="font-bold text-gray-100">{value}</p>
-    </div>
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-semibold text-gray-200">
+      {icon}
+      {label}
+    </span>
   );
 }
 
-function filterScreenings(criteria: SearchCriteria, preferences: Preferences): Screening[] {
-  const minMin = criteria.minTime ? timeToMinutes(criteria.minTime) : 0;
-  const maxMin = criteria.maxTime ? timeToMinutes(criteria.maxTime) : 24 * 60;
+function filterScreenings(criteria: SearchCriteria, preferences: Preferences, screenings: Screening[], cinemas?: Cinema[]): Screening[] {
+  const minMin = criteria.minTime ? virtualMinutesOf(criteria.minTime) : 0;
+  const maxMin = criteria.maxTime ? virtualMinutesOf(criteria.maxTime) : 24 * 60;
 
-  return ALL_SCREENINGS.filter((s) => {
+  return screenings.filter((s) => {
     // Movie filter
     if (criteria.mode === 'movie' && criteria.movieId && s.movieId !== criteria.movieId) return false;
     // Date filter
     if (criteria.date && s.date !== criteria.date) return false;
-    // Time filter
-    const sm = timeToMinutes(s.time);
-    if (criteria.minTime && sm < minMin) return false;
-    if (criteria.maxTime && sm > maxMin) return false;
+    // Time filter — skip when allDay is checked
+    if (!criteria.allDay) {
+      const sm = virtualMinutesOf(s.time);
+      if (criteria.minTime && sm < minMin) return false;
+      if (criteria.maxTime && sm > maxMin) return false;
+    }
     // Hall filter
     if (criteria.hallTypes.length > 0 && !criteria.hallTypes.includes(s.hallType)) return false;
     // Preferences: chains
     if (preferences.selectedChains.length > 0) {
-      const c = chainOf(s.cinemaId);
+      const c = cinemas?.find((x) => x.id === s.cinemaId)?.chain;
       if (!c || !preferences.selectedChains.includes(c)) return false;
     }
-    // Preferences: cities (only in regions mode)
-    if (preferences.locationMode === 'regions' && preferences.selectedCities.length > 0) {
-      const city = getCityOf(s.cinemaId);
-      if (!preferences.selectedCities.includes(city)) return false;
+    // Preferences: locations (only in regions mode).
+    // Filters by the full mapped branch names stored in selectedBranches —
+    // the display names (e.g. "סינמה סיטי גלילות") are preserved verbatim.
+    if (preferences.locationMode === 'regions' && preferences.selectedBranches.length > 0) {
+      const branchName = cinemas?.find((x) => x.id === s.cinemaId)?.name ?? '';
+      if (!preferences.selectedBranches.includes(branchName)) return false;
     }
     return true;
+  }).sort((a, b) => {
+    // Late-night virtual offset: 00:00-03:59 sorts at END of the day
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    return virtualMinutesOf(a.time) - virtualMinutesOf(b.time);
   });
 }

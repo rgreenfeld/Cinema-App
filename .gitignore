@@ -24,3 +24,6 @@ dist-ssr
 
 # Git installer (local download, not part of the app)
 Git-*.exe
+
+# Scraped output dump (large generated file — not committed)
+scrapers/output.json
