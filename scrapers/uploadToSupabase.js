@@ -1,15 +1,16 @@
 /**
- * Uploads scraped Cinema City screenings to Supabase — FULL CLEAN SYNC.
+ * Uploads scraped Cinema City screenings to Supabase — CLEANUP + FRESH SYNC.
  *
  * Reads:  scrapers/output.json (produced by scrapers/cinemaCity.js)
  * Writes: public.screenings table.
  *
- * Every run performs a fresh sync:
- *   1. Deletes ALL existing rows from the screenings table.
+ * Every run performs:
+ *   1. Deletes OUTDATED (past) screenings from the screenings table — any row
+ *      whose `date_time` is older than the current moment is removed.
  *   2. Inserts the fresh records from output.json in batches (500 rows/batch).
  *
- * This guarantees the database never keeps stale/legacy records with missing
- * fields — the table always mirrors the latest scrape exactly.
+ * This removes stale/past screenings while preserving upcoming ones, then
+ * mirrors the latest scrape exactly.
  *
  * The scraper emits date_time values like "2026-08-05T23:30:00" (Israel
  * local wall time, no timezone suffix). This script normalizes those to
@@ -28,7 +29,7 @@
  *   screen_type: item.screen_type || 'רגיל'
  *
  * ─── Permissions ─────────────────────────────────────────────────────────
- * Deleting all rows requires a key with DELETE privileges on the table — a
+ * Deleting outdated rows requires a key with DELETE privileges on the table — a
  * `service_role` key (bypasses RLS) or an anon key with a DELETE policy.
  *
  * Environment variables (see .env / .env.example):
@@ -263,7 +264,7 @@ const cleanRows = rows.map((item) => ({
   screen_type: item.screen_type || 'רגיל',
 }));
 
-// ─── Upload (full clean sync: delete ALL + chunked insert) ────────────────────
+// ─── Upload (cleanup outdated + chunked insert) ───────────────────────────────
 
 const supabase = createClient(url, key);
 
@@ -282,21 +283,22 @@ async function upload() {
   console.log(`🔤 Sample language: ${cleanRows[0].language}`);
   console.log(`🖥 Sample screen_type: ${cleanRows[0].screen_type}`);
 
-  // ─── Step 1: Delete all existing rows ────────────────────────────────────
-  console.log(`🧹 Deleting all existing rows from "${TABLE}"...`);
+  // ─── Step 1: Delete outdated (past) screenings ───────────────────────────
+  const nowISO = new Date().toISOString();
+  console.log(`🧹 Cleaning up screenings older than ${nowISO}...`);
 
   const { error: deleteError } = await supabase
     .from(TABLE)
     .delete()
-    .neq('id', '00000000-0000-0000-0000-000000000000');
+    .lt('date_time', nowISO); // timestamp column in the screenings table
 
   if (deleteError) {
-    console.error('❌ Delete failed:', deleteError.message);
+    console.error('❌ Failed to delete outdated screenings:', deleteError.message);
     console.error('   Delete requires DELETE privileges — use a service_role key or add a DELETE policy.');
     process.exit(1);
   }
 
-  console.log('   ✓ All existing rows removed.');
+  console.log('   ✓ Outdated screenings cleaned successfully.');
 
   // ─── Step 2: Insert fresh records in batches of 500 ──────────────────────
   const batches = chunk(cleanRows, BATCH_SIZE);
@@ -315,7 +317,7 @@ async function upload() {
     console.log(`   ✓ Batch ${i + 1}/${batches.length} inserted (${batch.length} rows)`);
   }
 
-  console.log(`✅ Full clean sync complete — ${inserted} screenings in table "${TABLE}".`);
+  console.log(`✅ Sync complete — ${inserted} screenings in table "${TABLE}".`);
 
   // ─── Summary breakdown ───────────────────────────────────────────────────
   const langCounts = {};
