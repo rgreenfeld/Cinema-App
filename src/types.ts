@@ -27,7 +27,7 @@ export interface SearchCriteria {
 }
 
 export const emptyPreferences: Preferences = {
-  locationMode: 'current',
+  locationMode: 'regions',
   selectedCities: [],
   selectedRegions: [],
   selectedBranches: [],

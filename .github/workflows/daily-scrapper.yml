@@ -1,0 +1,31 @@
+name: Daily Cinema Scraper
+
+on:
+  schedule:
+    # מריץ את הסקרייפר כל יום ב-06:00 בבוקר לפי שעון ישראל (04:00 UTC)
+    - cron: '0 4 * * *'
+  workflow_dispatch: # מאפשר להריץ את הסקרייפר גם ידנית בלחיצת כפתור ב-GitHub
+
+jobs:
+  scrape-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run scraper + upload pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          node scrapers/cinemaCity.js
+          node scrapers/uploadToSupabase.js

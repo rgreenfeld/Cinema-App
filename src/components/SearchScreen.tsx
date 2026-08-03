@@ -4,8 +4,8 @@ import { ChevronDown, Settings2, Search, Clock, Calendar, Film, Clapperboard, Ch
 import { HALL_TYPES, getUpcomingDates, formatDateLabel } from '@/constants';
 import type { Preferences, SearchCriteria } from '@/types';
 import type { Movie, Cinema, Screening } from '@/data';
-import { buildIntervals, timeToMinutes, minutesToTime } from '@/timeUtils';
-import { fetchMoviesByBranchesAndDate } from '@/lib/supabase';
+import { buildIntervals, timeToMinutes, minutesToTime, nowIsraelMinutes } from '@/timeUtils';
+import { fetchMoviesByBranchesAndDate, todayInIsrael } from '@/lib/supabase';
 import { getCinemaNamesForSelection } from '@/utils/cinemaMapping';
 
 interface Props {
@@ -186,7 +186,18 @@ if (submitMoviesLoading) {
     return Math.min(maxMin + 30, MAX_SAFE_MIN);
   }, [criteria.date, criteria.mode, criteria.movieId, preferences.selectedChains, preferences.locationMode, preferences.selectedCities, screeningSource, propCinemas]);
 
-  const minTimes = useMemo(() => buildIntervals(EARLIEST_MIN, LATEST_MIN), []);
+  // When the selected date is today, the minimum start time cannot be earlier
+  // than the current local hour (in Israel). Otherwise the standard 10:00 floor
+  // applies. The floor is rounded UP to the next half-hour boundary.
+  const minTimeFloor = useMemo(() => {
+    if (criteria.date && criteria.date === todayInIsrael()) {
+      const now = nowIsraelMinutes();
+      return Math.min(Math.max(Math.ceil(now / 30) * 30, EARLIEST_MIN), LATEST_MIN);
+    }
+    return EARLIEST_MIN;
+  }, [criteria.date]);
+
+  const minTimes = useMemo(() => buildIntervals(minTimeFloor, LATEST_MIN), [minTimeFloor]);
 
   // Max time options: from minTime+30 up to the dynamically computed latest time
   const maxTimes = useMemo(() => {

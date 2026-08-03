@@ -25,11 +25,11 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
     onChange({ ...preferences, selectedLanguages: selected });
   };
 
+  // "By Regions & Cities" is the only active mode — the GPS/current-location
+  // option is disabled ("בקרוב"). Requiring at least one city ensures the
+  // user picks a concrete area before proceeding.
   const hasLocation =
-    preferences.locationMode === 'current' ||
-    preferences.selectedCities.length > 0 ||
-    preferences.selectedRegions.length > 0 ||
-    preferences.selectedBranches.length > 0;
+    preferences.locationMode === 'regions' && preferences.selectedCities.length > 0;
   const hasChain = preferences.selectedChains.length > 0;
   const canContinue = hasLocation && hasChain;
 
@@ -57,26 +57,20 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
 
         <div className="space-y-2">
           <label
-            className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3.5 transition-all ${
+            className={`flex cursor-not-allowed items-center gap-3 rounded-xl border px-4 py-3.5 opacity-50 transition-all ${
               preferences.locationMode === 'current'
                 ? 'border-rose-500/40 bg-rose-500/[0.07]'
-                : 'border-white/[0.06] bg-white/[0.02] hover:border-white/15'
+                : 'border-white/[0.06] bg-white/[0.02]'
             }`}
+            title="זמין בקרוב"
           >
             <input
               type="radio"
               name="locationMode"
               className="sr-only"
+              disabled
               checked={preferences.locationMode === 'current'}
-              onChange={() =>
-                onChange({
-                  ...preferences,
-                  locationMode: 'current',
-                  selectedCities: [],
-                  selectedRegions: [],
-                  selectedBranches: [],
-                })
-              }
+              onChange={() => {}}
             />
             <span
               className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
@@ -86,8 +80,13 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
               {preferences.locationMode === 'current' && <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />}
             </span>
             <Locate className="h-4 w-4 text-gray-400" />
-            <span className="font-medium text-gray-100">לפי מיקום נוכחי</span>
-            <span className="mr-auto text-xs text-gray-500">רדיוס 15 ק"מ</span>
+            <span className="font-medium text-gray-500">לפי מיקום נוכחי</span>
+            <span className="mr-auto flex items-center gap-1.5">
+              <span className="text-xs text-gray-500">רדיוס 15 ק"מ</span>
+              <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                בקרוב
+              </span>
+            </span>
           </label>
 
           <label
@@ -211,7 +210,7 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-white/[0.06] bg-[#0a0a0f]/85 px-4 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
           <div className="text-sm text-gray-400">
-            {!hasLocation && <span>בחר מיקום</span>}
+            {!hasLocation && <span>בחר לפחות עיר אחת</span>}
             {hasLocation && !hasChain && <span>בחר לפחות רשת קולנוע אחת</span>}
             {canContinue && <span className="text-rose-300">מוכן להמשך</span>}
           </div>

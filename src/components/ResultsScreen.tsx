@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ChevronDown,
   ChevronLeft,
@@ -25,9 +25,10 @@ import {
   type ChainId,
 } from '@/data';
 import type { Preferences, SearchCriteria } from '@/types';
-import { virtualMinutesOf } from '@/timeUtils';
+import { virtualMinutesOf, timeToMinutes, nowIsraelMinutes } from '@/timeUtils';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { fetchSeatAvailability, type SeatAvailability } from '@/lib/seatAvailability';
+import { seatAvailabilityFromRecord } from '@/lib/seatAvailability';
+import { todayInIsrael } from '@/lib/supabase';
 
 interface Props {
   criteria: SearchCriteria;
@@ -152,11 +153,6 @@ export function ResultsScreen({ criteria, preferences, onChange, screenings: pro
 
 function ResultCard({ screening, showMovie, movies, cinemas }: { screening: Screening; showMovie: boolean; movies?: Movie[]; cinemas?: Cinema[] }) {
   const [expanded, setExpanded] = useState(false);
-  // On-demand seat availability state, keyed by screening id so a collapsed
-  // row's resolved data isn't reused after re-mounting.
-  const [seatLoading, setSeatLoading] = useState(false);
-  const [seatData, setSeatData] = useState<SeatAvailability | null>(null);
-  const [seatError, setSeatError] = useState(false);
 
   const movie = movies?.find((m) => m.id === screening.movieId);
   const cinema = cinemas?.find((c) => c.id === screening.cinemaId);
@@ -164,43 +160,18 @@ function ResultCard({ screening, showMovie, movies, cinemas }: { screening: Scre
   const city = cinema?.city ?? '';
   const hasBooking = Boolean(screening.bookingUrl);
 
-  // ── On-demand fetch: when the row is expanded, fetch live seat / row
-  //    availability using the screening's booking_url; fall back to the
-  //    seat data already stored on the record (from Supabase), then to null.
-  useEffect(() => {
-    if (!expanded) return;
+  // Seat data is resolved directly from the values the server-side scraper
+  // stored on the screening record in Supabase (available_seats/total_seats/
+  // total_rows). No client-side live fetch — Cinema City's seats API is
+  // reCAPTCHA-gated and returns 403 to any direct/HTTP request, so the only
+  // reliable source is the pre-scraped DB data.
+  const seatData = seatAvailabilityFromRecord(
+    screening.availableSeats,
+    screening.totalSeats,
+    screening.totalRows
+  );
 
-    let cancelled = false;
-    setSeatLoading(true);
-    setSeatError(false);
-    setSeatData(null);
-
-    const DB_FALLBACK: SeatAvailability = {
-      availableSeats: screening.availableSeats,
-      totalSeats: screening.totalSeats,
-      totalRows: screening.totalRows,
-    };
-
-    fetchSeatAvailability(screening.bookingUrl, DB_FALLBACK)
-      .then((result) => {
-        if (cancelled) return;
-        setSeatData(result);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setSeatError(true);
-        setSeatData(DB_FALLBACK);
-      })
-      .finally(() => {
-        if (!cancelled) setSeatLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [expanded, screening.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const hasSeats = seatData?.availableSeats != null || seatData?.totalSeats != null;
+  const hasSeats = seatData.availableSeats != null || seatData.totalSeats != null;
   const canComputeRatio =
     seatData?.availableSeats != null &&
     seatData?.totalSeats != null &&
@@ -272,29 +243,9 @@ function ResultCard({ screening, showMovie, movies, cinemas }: { screening: Scre
             )}
           </div>
 
-          {/* Seat availability — on-demand fetch while expanded */}
+          {/* Seat availability — stored DB metrics (no client-side fetch) */}
           <div className="mt-4">
-            {seatLoading ? (
-              <div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-sm text-gray-300">
-                <Loader2 className="h-4 w-4 animate-spin text-rose-400" />
-                טוען מפת אולם ומקומות פנויים...
-              </div>
-            ) : seatError ? (
-              <div className="rounded-xl border border-rose-500/20 bg-rose-500/[0.06] px-4 py-3 text-sm text-rose-300">
-                <p>לא הצלחנו לטעון את נתוני המקומות.</p>
-                {hasBooking && (
-                  <a
-                    href={screening.bookingUrl!}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 font-semibold text-rose-200 transition-colors hover:bg-rose-500/20"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    פתח את דף ההזמנה באתר הקולנוע
-                  </a>
-                )}
-              </div>
-            ) : hasSeats ? (
+            {hasSeats ? (
               <>
                 <div className="mb-1.5 flex items-center justify-between text-sm">
                   <span className="flex items-center gap-1.5 text-gray-300">
@@ -366,11 +317,25 @@ function filterScreenings(criteria: SearchCriteria, preferences: Preferences, sc
   const minMin = criteria.minTime ? virtualMinutesOf(criteria.minTime) : 0;
   const maxMin = criteria.maxTime ? virtualMinutesOf(criteria.maxTime) : 24 * 60;
 
+  // When the filter date is today, drop any screening whose start time has
+  // already passed relative to the current Israel local time.
+  const isToday = criteria.date === todayInIsrael();
+  const nowMin = nowIsraelMinutes();
+
   return screenings.filter((s) => {
     // Movie filter
     if (criteria.mode === 'movie' && criteria.movieId && s.movieId !== criteria.movieId) return false;
     // Date filter
     if (criteria.date && s.date !== criteria.date) return false;
+    // Language filter — empty selection means "All Languages" (no filter).
+    if (
+      preferences.selectedLanguages.length > 0 &&
+      !preferences.selectedLanguages.includes(s.audioLang)
+    ) {
+      return false;
+    }
+    // Today's screenings must not already be in the past (unless allDay).
+    if (isToday && !criteria.allDay && timeToMinutes(s.time) < nowMin) return false;
     // Time filter — skip when allDay is checked
     if (!criteria.allDay) {
       const sm = virtualMinutesOf(s.time);

@@ -41,14 +41,18 @@
 
 import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const INPUT_FILE = resolve(__dirname, 'output.json');
+// If output.seats.json exists (from enrichSeats.js), prefer it so the DB gets
+// live seat metrics (available_seats / total_seats / total_rows).
+const INPUT_FILE = existsSync(resolve(__dirname, 'output.seats.json'))
+  ? resolve(__dirname, 'output.seats.json')
+  : resolve(__dirname, 'output.json');
 const TABLE = process.env.SUPABASE_SCREENINGS_TABLE || 'screenings';
 const BATCH_SIZE = 500;
 
@@ -207,6 +211,26 @@ const rows = screenings
         ? rawScreenType.trim()
         : 'רגיל';
 
+    // Live seat metrics (from enrichSeats.js). Only include these columns in
+    // the insert payload when a real numeric value exists — this keeps the
+    // uploader compatible with databases that don't (yet) have the optional
+    // seat columns while still uploading seat data when it's available.
+    const availableSeats =
+      typeof pick(s, 'available_seats', 'availableSeats') === 'number'
+        ? pick(s, 'available_seats', 'availableSeats')
+        : null;
+    const totalSeats =
+      typeof pick(s, 'total_seats', 'totalSeats') === 'number'
+        ? pick(s, 'total_seats', 'totalSeats')
+        : null;
+    const totalRows =
+      typeof pick(s, 'total_rows', 'totalRows') === 'number'
+        ? pick(s, 'total_rows', 'totalRows')
+        : null;
+
+    const hasSeatData =
+      availableSeats !== null || totalSeats !== null || totalRows !== null;
+
     return {
       movie_title: (pick(s, 'movie_title', 'movieTitle') || '').trim() || null,
       cinema_chain: pick(s, 'cinema_chain', 'cinemaChain') || 'Cinema City',
@@ -215,6 +239,11 @@ const rows = screenings
       booking_url: pick(s, 'booking_url', 'bookingUrl') || null,
       language,
       screen_type,
+      // Optional seat metrics — spread only when present so the insert works
+      // against schemas without these columns.
+      ...(hasSeatData
+        ? { available_seats: availableSeats, total_seats: totalSeats, total_rows: totalRows }
+        : {}),
     };
   })
   .filter(Boolean);

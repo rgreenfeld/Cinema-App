@@ -26,6 +26,26 @@ export function addMinutes(time: string, mins: number): string {
   return minutesToTime(timeToMinutes(time) + mins);
 }
 
+/**
+ * Current time-of-day in Israel (Asia/Jerusalem) as minutes since midnight
+ * (e.g. 14:30 → 870). Used to enforce "no past times for today" rules in
+ * the search time selectors and results filtering.
+ */
+export function nowIsraelMinutes(): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Jerusalem',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date());
+  const map: Record<string, string> = {};
+  for (const p of parts) if (p.type !== 'literal') map[p.type] = p.value;
+  // Normalize "24" → 0 (some engines return 24 for midnight with hour12:false).
+  const hour = parseInt(map.hour, 10) % 24;
+  const minute = parseInt(map.minute, 10) || 0;
+  return hour * 60 + minute;
+}
+
 export function clampMaxTime(time: string): string {
   return timeToMinutes(time) > 23 * 60 + 59 ? '23:59' : time;
 }
