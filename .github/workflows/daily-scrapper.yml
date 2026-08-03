@@ -26,6 +26,10 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # Optional: prefer a service_role key (bypasses RLS) so the cleanup
+          # delete of outdated screenings always works. Add this secret in
+          # GitHub → Settings → Secrets and variables → Actions.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           node scrapers/cinemaCity.js
           node scrapers/uploadToSupabase.js

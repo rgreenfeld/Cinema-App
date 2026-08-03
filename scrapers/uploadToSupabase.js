@@ -32,9 +32,22 @@
  * Deleting outdated rows requires a key with DELETE privileges on the table — a
  * `service_role` key (bypasses RLS) or an anon key with a DELETE policy.
  *
+ * IMPORTANT: if the key can INSERT but DELETE silently reports 0 rows, the
+ * table has no DELETE policy (RLS). Add one in Supabase SQL Editor:
+ *
+ *   drop policy if exists "Allow anon delete" on public.screenings;
+ *   create policy "Allow anon delete"
+ *     on public.screenings
+ *     for delete
+ *     using (true);
+ *
  * Environment variables (see .env / .env.example):
  *   SUPABASE_URL        — your Supabase project URL
- *   SUPABASE_ANON_KEY   — anon (or service_role) API key
+ *   SUPABASE_ANON_KEY   — anon (or publishable) API key — used when a
+ *                         service_role key is NOT set
+ *   SUPABASE_SERVICE_ROLE_KEY — service_role key (bypasses RLS).
+ *                         Prefer this for the scraper/uploader so both the
+ *                         INSERT and DELETE steps always work.
  *   SUPABASE_SCREENINGS_TABLE — optional, defaults to "screenings"
  *
  * Usage: node scrapers/uploadToSupabase.js
@@ -60,7 +73,11 @@ const BATCH_SIZE = 500;
 // ─── Validate env ────────────────────────────────────────────────────────────
 
 const url = process.env.SUPABASE_URL;
-const key = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Prefer the service_role key when present — it bypasses RLS, so both the
+// INSERT and DELETE steps work regardless of table policies.
+const key =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+const usingServiceRole = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 if (!url || !key) {
   console.error('❌ Missing Supabase credentials.');
@@ -282,14 +299,24 @@ async function upload() {
   console.log(`📅 Sample normalized date_time: ${cleanRows[0].date_time}`);
   console.log(`🔤 Sample language: ${cleanRows[0].language}`);
   console.log(`🖥 Sample screen_type: ${cleanRows[0].screen_type}`);
+  console.log(`🔑 Using ${usingServiceRole ? 'service_role key (bypasses RLS)' : 'anon/publishable key (RLS applies)'}`);
 
   // ─── Step 1: Delete outdated (past) screenings ───────────────────────────
   const nowISO = new Date().toISOString();
   console.log(`🧹 Cleaning up screenings older than ${nowISO}...`);
 
-  const { error: deleteError } = await supabase
+  // Count rows that SHOULD be deleted so we can verify the delete actually
+  // removed them. A silent "0 deleted while N outdated exist" is the classic
+  // RLS missing-DELETE-policy signature.
+  const { count: outdatedCount } = await supabase
     .from(TABLE)
-    .delete()
+    .select('*', { count: 'exact', head: true })
+    .lt('date_time', nowISO);
+  console.log(`   Found ${outdatedCount ?? '?'} outdated screening(s).`);
+
+  const { error: deleteError, count: deletedCount } = await supabase
+    .from(TABLE)
+    .delete({ count: 'exact' })
     .lt('date_time', nowISO); // timestamp column in the screenings table
 
   if (deleteError) {
@@ -298,7 +325,17 @@ async function upload() {
     process.exit(1);
   }
 
-  console.log('   ✓ Outdated screenings cleaned successfully.');
+  if (deletedCount === 0 && outdatedCount > 0) {
+    console.error('⚠️  DELETE ran but removed 0 rows even though outdated screenings exist.');
+    console.error('   This means your key CANNOT delete rows (RLS has no DELETE policy).');
+    console.error('   Fix: add the policy in Supabase SQL Editor:');
+    console.error('     drop policy if exists "Allow anon delete" on public.screenings;');
+    console.error('     create policy "Allow anon delete" on public.screenings for delete using (true);');
+    console.error('   OR set SUPABASE_SERVICE_ROLE_KEY in your .env and re-run.');
+    process.exit(1);
+  }
+
+  console.log(`   ✓ Outdated screenings cleaned (${deletedCount ?? 0} row(s) removed).`);
 
   // ─── Step 2: Insert fresh records in batches of 500 ──────────────────────
   const batches = chunk(cleanRows, BATCH_SIZE);

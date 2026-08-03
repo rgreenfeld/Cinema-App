@@ -50,12 +50,23 @@ create policy "Allow public read access"
   using (true);
 
 -- Policy: allow server-side writes via the anon key only from trusted context.
--- If you use a service_role key in the uploader, you can skip this policy
--- (service_role bypasses RLS). Otherwise uncomment to allow inserts/upserts:
+-- If you use a service_role key in the uploader, you can skip these policies
+-- (service_role bypasses RLS). Otherwise uncomment to allow inserts and
+-- the cleanup-delete of outdated screenings:
 -- drop policy if exists "Allow anon insert" on public.screenings;
 -- create policy "Allow anon insert"
 --   on public.screenings
 --   for insert
 --   with check (true);
+--
+-- ⚠ IMPORTANT: the uploader DELETEs outdated screenings (date_time < now)
+-- before inserting. Without a DELETE policy the delete silently removes 0
+-- rows while returning no error (RLS). If you use the anon key in the
+-- uploader, this DELETE policy is REQUIRED:
+drop policy if exists "Allow anon delete" on public.screenings;
+create policy "Allow anon delete"
+  on public.screenings
+  for delete
+  using (true);
 
 
