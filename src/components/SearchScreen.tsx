@@ -29,6 +29,22 @@ const EARLIEST_MIN = 10 * 60; // 10:00
 const LATEST_MIN = 23 * 60; // 23:00
 const MAX_SAFE_MIN = 23 * 60 + 59; // 23:59 fallback
 
+/**
+ * Build a compact one-line label for a movie in the select dropdown.
+ * Only real, non-null metadata is appended — no empty "· ⭐" artifacts.
+ */
+function formatMovieOptionLabel(m: Movie): string {
+  const parts: string[] = [m.title];
+  if (m.genre) parts.push(m.genre);
+  if (m.rating != null) parts.push(`⭐ ${m.rating}`);
+  return parts.join(' · ');
+}
+
+/** The movie's first character (for the poster fallback tile). */
+function movieInitial(m: Movie): string {
+  return (m.title || '').trim().charAt(0) || '🎬';
+}
+
 export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch, movies: propMovies, cinemas: propCinemas, screenings: propScreenings, dataLoading, submitMovies, submitMoviesLoading, submitMoviesError }: Props) {
   const dates = useMemo(() => getUpcomingDates(7), []);
   const [hallOpen, setHallOpen] = useState(false);
@@ -70,15 +86,16 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     fetchMoviesByBranchesAndDate(locationBranches, effectiveDate)
       .then((titles) => {
         if (cancelled) return;
-        // Convert fetched titles into the app's Movie[] shape (defaults
-        // matching transformSupabaseRows).
+        // Convert fetched titles into the app's Movie[] shape. No fake/placeholder
+        // values are ever assigned — poster, duration, rating and genre are all
+        // `null` unless a real value is provided by the data layer.
         const movies: Movie[] = titles.map((title) => ({
           id: `supa-m-${title.replace(/\s+/g, '-').replace(/[^א-ת\w-]/g, '')}`,
           title,
-          poster: 'https://images.pexels.com/photos/3130827/pexels-photo-3130827.jpeg?auto=compress&cs=tinysrgb&w=400',
-          durationMin: 120,
-          rating: 7.5,
-          genre: 'סרט',
+          poster: null,
+          durationMin: null,
+          rating: null,
+          genre: null,
         }));
         setDynamicMovies(movies);
       })
@@ -335,7 +352,7 @@ if (submitMoviesLoading) {
                 <option value="">{moviesLoading ? 'טוען סרטים...' : 'בחר סרט...'}</option>
                 {!moviesLoading && movies.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.title} · {m.genre} · ⭐ {m.rating}
+                    {formatMovieOptionLabel(m)}
                   </option>
                 ))}
               </select>
@@ -370,16 +387,12 @@ if (submitMoviesLoading) {
 
             {selectedMovie && (
               <div className="expand-enter mt-3 flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                <img
-                  src={selectedMovie.poster}
-                  alt={selectedMovie.title}
-                  className="h-16 w-12 shrink-0 rounded-lg object-cover"
-                />
+                {/* Poster — rendered only when a real URL exists; otherwise a
+                    styled gradient tile with the movie's initial is shown. */}
+                <MoviePoster movie={selectedMovie} />
                 <div className="min-w-0">
                   <p className="truncate font-bold text-white">{selectedMovie.title}</p>
-                  <p className="text-xs text-gray-400">
-                    {selectedMovie.genre} · {selectedMovie.durationMin} דקות · ⭐ {selectedMovie.rating}
-                  </p>
+                  <MovieMeta movie={selectedMovie} />
                 </div>
               </div>
             )}
@@ -582,6 +595,49 @@ if (submitMoviesLoading) {
       </div>
     </div>
   );
+}
+
+/**
+ * Poster image with a graceful fallback. When no real poster URL exists, or
+ * the image fails to load, a styled gradient tile with the movie's initial
+ * is shown instead of a broken image.
+ */
+function MoviePoster({ movie }: { movie: Movie }) {
+  const [failed, setFailed] = useState(false);
+  const hasPoster = Boolean(movie.poster) && !failed;
+
+  if (!hasPoster) {
+    return (
+      <div className="flex h-16 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-rose-600/30 to-rose-500/10 text-xl font-black text-rose-200 ring-1 ring-white/10">
+        {movieInitial(movie)}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={movie.poster!}
+      alt={movie.title}
+      onError={() => setFailed(true)}
+      className="h-16 w-12 shrink-0 rounded-lg object-cover"
+    />
+  );
+}
+
+/**
+ * One-line metadata for a movie. Only real, non-null values are rendered —
+ * missing rating / duration / genre are simply omitted (no "·  דקות · ⭐"
+ * placeholders).
+ */
+function MovieMeta({ movie }: { movie: Movie }) {
+  const parts: string[] = [];
+  if (movie.genre) parts.push(movie.genre);
+  if (movie.durationMin != null) parts.push(`${movie.durationMin} דקות`);
+  if (movie.rating != null) parts.push(`⭐ ${movie.rating}`);
+
+  if (parts.length === 0) return null;
+
+  return <p className="mt-0.5 text-xs text-gray-400">{parts.join(' · ')}</p>;
 }
 
 function HallTypePicker({

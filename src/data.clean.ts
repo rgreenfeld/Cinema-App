@@ -16,10 +16,14 @@ export type Language = 'עברית' | 'אנגלית' | 'רוסית' | 'ערבי�
 export interface Movie {
   id: string;
   title: string;
-  poster: string;
-  durationMin: number;
-  rating: number;
-  genre: string;
+  /** Real poster URL — null when no authentic poster exists yet. */
+  poster: string | null;
+  /** Real runtime in minutes — null when not available from the source. */
+  durationMin: number | null;
+  /** Real numeric rating — null when not available from the source. */
+  rating: number | null;
+  /** Real genre tag(s) — null when not available from the source. */
+  genre: string | null;
 }
 
 export interface Cinema {
@@ -50,21 +54,23 @@ export interface Screening {
   bookingUrl: string | null;
 }
 
-const MOVIE_POSTER =
-  'https://images.pexels.com/photos/3130827/pexels-photo-3130827.jpeg?auto=compress&cs=tinysrgb&w=400';
-
 /**
  * Convert an array of unique movie titles (as fetched from Supabase) into
- * the app's `Movie[]` shape, using the same defaults as `transformSupabaseRows`.
+ * the app's `Movie[]` shape. No fake/placeholder values are ever assigned:
+ * poster, duration, rating and genre are all `null` unless a real value is
+ * provided via `posterByTitle` (mapping from the `movies` table's `poster_url`).
  */
-export function titlesToMovies(titles: string[]): Movie[] {
+export function titlesToMovies(
+  titles: string[],
+  posterByTitle?: Map<string, string | null>
+): Movie[] {
   return titles.map((title) => ({
     id: `supa-m-${title.replace(/\s+/g, '-').replace(/[^א-ת\w-]/g, '')}`,
     title,
-    poster: MOVIE_POSTER,
-    durationMin: 120,
-    rating: 7.5,
-    genre: 'סרט',
+    poster: posterByTitle?.get(title) ?? null,
+    durationMin: null,
+    rating: null,
+    genre: null,
   }));
 }
 
@@ -120,10 +126,11 @@ export function transformSupabaseRows(
       movieMap.set(movieId, {
         id: movieId,
         title: row.movie_title,
-        poster: 'https://images.pexels.com/photos/3130827/pexels-photo-3130827.jpeg?auto=compress&cs=tinysrgb&w=400',
-        durationMin: 120,
-        rating: 7.5,
-        genre: 'סרט',
+        // Real poster URL from the enrich step — null when not available.
+        poster: row.poster_url ?? null,
+        durationMin: null,
+        rating: null,
+        genre: null,
       });
     }
 

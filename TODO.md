@@ -1,25 +1,45 @@
-# TODO — Capture Onyx/Lounge (and fix Jerusalem) in the scraper
-
-## Root cause (diagnosed via live probes)
-- The `EventsFlat` endpoint's `VenueType` field only ever returns `""`, `Vip`, or
-  `Prime`. It NEVER returns `Onyx`/`Lounge` — those halls are identified ONLY by
-  the query filter `VenueTypeId` (Onyx=8, Lounge=201 from ticketsNew2.js).
-- Querying `VenueTypeId=0` (what the scraper does) excludes Onyx/Lounge entirely,
-  so Glilot's 22 Onyx + 50 Lounge screenings are missed.
-- Querying `VenueTypeId=0` also returns HTTP 500 for Jerusalem (theater 1174),
-  which is why the Jerusalem branch has no entries.
+# UX Cleanup — Remove Mock Data & Add Real Poster URLs
 
 ## Plan
-- [ ] Rewrite the scraper's per-branch fetch to loop over venue types:
-      Ragil=1, VIP=3, Onyx=8, Lounge=201 (plus LateNight=7, Late-VIP=31).
-- [ ] Tag each screening with the hall type from the query filter (Onyx/Lounge/etc.),
-      falling back to the response's `VenueType` field for Prime/VIP.
-- [ ] Deduplicate merged events by eventID, preferring the more specific hall type.
-- [ ] Extend `mapScreenType` aliases + `HallType` union in src/data.ts to include
-      Onyx/Lounge/Prime.
-- [ ] Re-run scraper on Glilot + Jerusalem to verify Onyx/Lounge and Jerusalem rows appear.
 
-## Why Jerusalem was empty
-`EventsFlat?VenueTypeId=0` returns HTTP 500 for theater 1174 (Jerusalem). The per-type
-query (VenueTypeId=1/3) works fine there, so after this fix Jerusalem populates.
+### 1. Schema — add `movies` table
+- **File:** `supabase/schema.sql`
+- Add `public.movies` table with `title` (unique), `poster_url` (nullable text), and read policy.
 
+### 2. Scraper — extract poster URL
+- **File:** `scrapers/cinemaCity.js`
+- Build poster URL from `Pic` field using the CDN pattern.
+- Add `poster_url` to each screening record.
+
+### 3. Uploader — persist poster to `movies` table
+- **File:** `scrapers/uploadToSupabase.js`
+- After inserting screenings, upsert unique movies into `movies` table.
+- Apply non-destructive rule: only overwrite when existing poster is null/empty OR incoming is valid; never null-overwrite a valid URL.
+
+### 4. Supabase client — add `fetchMovies()`
+- **File:** `src/lib/supabase.ts`
+- Add paginated `fetchMovies()` reading the `movies` table.
+
+### 5. Data types — make Movie fields nullable, remove fake defaults
+- **File:** `src/data.ts` + `src/data.clean.ts`
+- `Movie.poster`, `rating`, `genre`, `durationMin` → nullable.
+- Remove `MOVIE_POSTER` constant and pexels fallback.
+
+### 6. App — load real movies
+- **File:** `src/App.tsx`
+- Fetch real movies via `fetchMovies()` and pass to SearchScreen.
+
+### 7. SearchScreen — strict real-data-only rendering
+- **File:** `src/components/SearchScreen.tsx`
+- Use `titlesToMovies` (no inline fake data).
+- Render rating/genre only when real values exist.
+- Poster `<img>` only when valid URL, with `onError` fallback to stylized title container.
+
+## Status
+- [x] 1. Schema — `movies` table added
+- [x] 2. Scraper — poster URL extraction
+- [x] 3. Uploader — movies upsert with non-destructive rule
+- [x] 4. Supabase client — `fetchMovies()`
+- [x] 5. Data types — nullable Movie fields
+- [x] 6. App — load real movies
+- [x] 7. SearchScreen — strict rendering

@@ -52,7 +52,7 @@ export const CHAINS: { id: ChainId; name: string; shortName: string; color: stri
 
 export const LANGUAGES: Language[] = ['עברית', 'אנגלית', 'רוסית', 'ערבית', 'צרפתית', 'מקור', 'מדובב'];
 
-export const HALL_TYPES: HallType[] = ['רגיל', 'VIP', 'IMAX', '4DX', 'ScreenX', '3D', 'Onyx', 'קומפורט'];
+export const HALL_TYPES: HallType[] = ['רגיל', 'VIP', 'IMAX', '4DX', 'ScreenX', '3D', 'Onyx', 'Lounge', 'Prime', 'קומפורט', 'לייט VIP', 'LateNight'];
 
 const DAY_NAMES = ['יום ראשון', 'יום שני', 'יום שלישי', 'יום רביעי', 'יום חמישי', 'יום שישי', 'יום שבת'];
 

@@ -334,8 +334,9 @@ function filterScreenings(criteria: SearchCriteria, preferences: Preferences, sc
     ) {
       return false;
     }
-    // Today's screenings must not already be in the past (unless allDay).
-    if (isToday && !criteria.allDay && timeToMinutes(s.time) < nowMin) return false;
+    // Today's screenings must not already be in the past — always enforced for
+    // today, even when "all day" is selected (only future/today showings remain).
+    if (isToday && timeToMinutes(s.time) < nowMin) return false;
     // Time filter — skip when allDay is checked
     if (!criteria.allDay) {
       const sm = virtualMinutesOf(s.time);

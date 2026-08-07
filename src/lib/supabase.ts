@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { cleanMovieTitle } from '@/utils/movieTitle';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -31,28 +32,58 @@ export type SupabaseScreeningRow = {
   available_seats?: number | null;
   total_seats?: number | null;
   total_rows?: number | null;
+  /** Optional poster URL (from the movies enrichment). Not always present. */
+  poster_url?: string | null;
 };
 
 /**
+ * Supabase/PostgREST caps a single REST response at 1000 rows by default.
+ * Range-based pagination is required to fetch the full screenings table
+ * (which routinely exceeds 1000 rows across multiple days).
+ */
+const PAGE_SIZE = 1000;
+
+/**
+ * A Supabase query builder is thenable (`await` resolves to `{ data, error }`).
+ * Type the pagination helper against that shape so it accepts any
+ * `PostgrestFilterBuilder` produced by `.select(...).order(...).range(...)`.
+ */
+type PagedQueryResult<T> = PromiseLike<{ data: T[] | null; error: Error | null }>;
+
+/** Paginate through a query builder, collecting all rows across pages. */
+async function paginateAll<T>(
+  builder: (from: number, to: number) => PagedQueryResult<T>
+): Promise<T[]> {
+  const all: T[] = [];
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await builder(from, from + PAGE_SIZE - 1);
+    if (error) {
+      console.error('❌ Supabase query failed:', error.message);
+      return [];
+    }
+    const rows = (data || []) as T[];
+    all.push(...rows);
+    if (rows.length < PAGE_SIZE) break; // last page
+  }
+  return all;
+}
+
+/**
  * Fetch all screenings from the `screenings` table.
- * Ordered by date_time ascending.
+ * Ordered by date_time ascending. Paginates past PostgREST's 1000-row cap.
  */
 export async function fetchScreenings(): Promise<SupabaseScreeningRow[]> {
   if (!supabaseUrl || !supabaseAnonKey) {
     return [];
   }
 
-  const { data, error } = await supabase
-    .from('screenings')
-    .select('*')
-    .order('date_time', { ascending: true });
-
-  if (error) {
-    console.error('❌ Supabase query failed:', error.message);
-    return [];
-  }
-
-  return (data as SupabaseScreeningRow[]) || [];
+  return paginateAll<SupabaseScreeningRow>((from, to) =>
+    supabase
+      .from('screenings')
+      .select('*')
+      .order('date_time', { ascending: true })
+      .range(from, to)
+  );
 }
 
 /**
@@ -66,19 +97,15 @@ export async function fetchScreeningsByDate(date: string): Promise<SupabaseScree
 
   const { start, end } = israelDateToUtcRange(date);
 
-  const { data, error } = await supabase
-    .from('screenings')
-    .select('*')
-    .gte('date_time', start)
-    .lte('date_time', end)
-    .order('date_time', { ascending: true });
-
-  if (error) {
-    console.error('❌ Supabase query failed:', error.message);
-    return [];
-  }
-
-  return (data as SupabaseScreeningRow[]) || [];
+  return paginateAll<SupabaseScreeningRow>((from, to) =>
+    supabase
+      .from('screenings')
+      .select('*')
+      .gte('date_time', start)
+      .lte('date_time', end)
+      .order('date_time', { ascending: true })
+      .range(from, to)
+  );
 }
 
 /**
@@ -171,19 +198,22 @@ export async function fetchMoviesByBranchesAndDate(
     query = query.gte('date_time', start);
   }
 
-  const { data, error } = await query;
+  // Paginate past PostgREST's 1000-row cap so every movie title is captured.
+  const titles = await paginateAll<{ movie_title: string }>((from, to) =>
+    query.range(from, to)
+  );
 
-  if (error) {
-    console.error('❌ Supabase movies query failed:', error.message);
-    return [];
+  // Unique, sorted movie titles — deduped on the CLEAN base title so language
+  // / dubbing variants of the same film (e.g. "ספיידרמן: יום חדש" vs
+  // "ספיידרמן: יום חדש-מדובב לרוסית") collapse into a single entry.
+  // The first encountered variant is kept for display/poster purposes.
+  const uniqueByBase = new Map<string, string>();
+  for (const row of titles) {
+    if (!row.movie_title) continue;
+    const base = cleanMovieTitle(row.movie_title);
+    if (!uniqueByBase.has(base)) uniqueByBase.set(base, row.movie_title);
   }
-
-  // Unique, sorted movie titles.
-  const unique = new Set<string>();
-  for (const row of data || []) {
-    if (row.movie_title) unique.add(row.movie_title);
-  }
-  return Array.from(unique).sort((a, b) => a.localeCompare(b, 'he'));
+  return Array.from(uniqueByBase.values()).sort((a, b) => a.localeCompare(b, 'he'));
 }
 
 /**
@@ -219,4 +249,30 @@ export function toDDMMYYYY(isoDate: string): string {
  */
 export function todayInIsraelDDMMYYYY(): string {
   return toDDMMYYYY(todayInIsrael());
+}
+
+/** A row from the `movies` table (real data only — never placeholders). */
+export type SupabaseMovieRow = {
+  title: string;
+  poster_url: string | null;
+  created_at?: string;
+};
+
+/**
+ * Fetch ALL movies from the `movies` table, each with their real poster_url
+ * (null when the movie has no authentic poster yet). Ordered by title.
+ * Paginates past PostgREST's 1000-row cap.
+ */
+export async function fetchMovies(): Promise<SupabaseMovieRow[]> {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return [];
+  }
+
+  return paginateAll<SupabaseMovieRow>((from, to) =>
+    supabase
+      .from('movies')
+      .select('title, poster_url')
+      .order('title', { ascending: true })
+      .range(from, to)
+  );
 }

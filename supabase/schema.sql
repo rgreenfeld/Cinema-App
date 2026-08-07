@@ -39,6 +39,40 @@ create index if not exists screenings_language_idx
 create index if not exists screenings_screen_type_idx
   on public.screenings (screen_type);
 
+-- =============================================================
+-- Movies table — unique movie titles enriched with real data
+-- extracted from the Cinema City site (poster_url comes from the
+-- EventsFlat `Pic` field via the modulus.co.il image CDN).
+-- =============================================================
+create table if not exists public.movies (
+  id             uuid primary key default gen_random_uuid(),
+  title          text not null unique,
+  poster_url     text,
+  created_at     timestamptz not null default now()
+);
+
+-- Useful index for matching by title
+create index if not exists movies_title_idx
+  on public.movies (title);
+
+-- Enable RLS and allow public reads (app needs to display movie posters).
+alter table public.movies enable row level security;
+
+drop policy if exists "Allow public read access on movies" on public.movies;
+create policy "Allow public read access on movies"
+  on public.movies
+  for select
+  using (true);
+
+-- Policy: allow server-side writes via the anon key only from trusted context.
+-- If you use a service_role key in the uploader, you can skip this policy
+-- (service_role bypasses RLS).
+drop policy if exists "Allow anon insert on movies" on public.movies;
+create policy "Allow anon insert on movies"
+  on public.movies
+  for insert
+  with check (true);
+
 -- Enable Row Level Security (recommended: block anonymous writes)
 alter table public.screenings enable row level security;
 

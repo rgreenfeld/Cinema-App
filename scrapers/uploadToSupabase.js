@@ -249,6 +249,10 @@ const rows = screenings
     const hasSeatData =
       availableSeats !== null || totalSeats !== null || totalRows !== null;
 
+    // Real poster URL (scraped from the EventsFlat `Pic` field via the CDN).
+    // Kept as-is — null when the site didn't provide one (never a placeholder).
+    const posterUrl = pick(s, 'poster_url', 'posterUrl') || null;
+
     return {
       movie_title: (pick(s, 'movie_title', 'movieTitle') || '').trim() || null,
       cinema_chain: pick(s, 'cinema_chain', 'cinemaChain') || 'Cinema City',
@@ -262,6 +266,9 @@ const rows = screenings
       ...(hasSeatData
         ? { available_seats: availableSeats, total_seats: totalSeats, total_rows: totalRows }
         : {}),
+      // Poster URL is only added to the screenings payload when real — it is
+      // also upserted into the `movies` table (see uploadMovies()).
+      ...(posterUrl ? { poster_url: posterUrl } : {}),
     };
   })
   .filter(Boolean);
@@ -292,6 +299,119 @@ function chunk(array, size) {
     out.push(array.slice(i, i + size));
   }
   return out;
+}
+
+/**
+ * Valid URL check for poster values — a poster is only considered "real"
+ * when it's a non-empty http(s) URL (we never treat a bare filename or
+ * arbitrary text as a valid poster, and never store placeholders).
+ */
+function isValidPosterUrl(value) {
+  return (
+    typeof value === 'string' &&
+    value.trim() !== '' &&
+    /^https?:\/\//i.test(value.trim())
+  );
+}
+
+const MOVIES_TABLE = process.env.SUPABASE_MOVIES_TABLE || 'movies';
+
+/**
+ * Upsert the unique movies (with their real poster_url) into the `movies`
+ * table, applying the non-destructive enrichment rule:
+ *
+ *   - New movie → insert with poster_url (if valid).
+ *   - Existing movie with NO valid poster_url yet → update it with the
+ *     incoming valid poster_url.
+ *   - Existing movie with a VALID poster_url already stored → NEVER
+ *     overwrite it, and never let a null/empty incoming value wipe it.
+ *
+ * Uses a plain `.insert()` with `onConflict` + `ignoreDuplicates: false`,
+ * then performs a filtered `.update()` for the specific rows that need
+ * enrichment, so we never clobber an existing valid poster.
+ */
+async function uploadMovies(screenings) {
+  // Deduplicate by normalized title, preferring a non-null poster_url.
+  const byTitle = new Map();
+  for (const s of screenings) {
+    const title = (s.movie_title || '').trim();
+    if (!title) continue;
+    const existing = byTitle.get(title);
+    const incoming = isValidPosterUrl(s.poster_url) ? s.poster_url : null;
+    if (!existing || (!existing.poster_url && incoming)) {
+      byTitle.set(title, { title, poster_url: incoming });
+    }
+  }
+
+  const movies = [...byTitle.values()];
+  if (movies.length === 0) {
+    console.log('   ℹ No movies to upsert.');
+    return;
+  }
+
+  console.log(`🎬 Upserting ${movies.length} unique movies into "${MOVIES_TABLE}"...`);
+
+  // 1) Insert missing movies (onConflict title). Rows that already exist are
+  //    ignored here so we never overwrite anything on insert.
+  const { error: insertError } = await supabase
+    .from(MOVIES_TABLE)
+    .upsert(movies, { onConflict: 'title', ignoreDuplicates: true });
+
+  if (insertError) {
+    console.error('❌ Failed to insert movies:', insertError.message);
+    process.exit(1);
+  }
+
+  // 2) Enrich only the rows whose stored poster_url is currently null/empty
+  //    AND we have a valid incoming poster_url. This is the core of the
+  //    non-destructive rule — an existing valid poster is never overwritten,
+  //    and a null incoming value never nulls out an existing URL.
+  const needEnrichment = movies.filter((m) => m.poster_url);
+  if (needEnrichment.length === 0) {
+    console.log('   ✓ All movies already have valid posters (nothing to enrich).');
+    return;
+  }
+
+  const titlesToEnrich = needEnrichment.map((m) => m.title);
+  const { data: existingRows, error: fetchError } = await supabase
+    .from(MOVIES_TABLE)
+    .select('title, poster_url')
+    .in('title', titlesToEnrich);
+
+  if (fetchError) {
+    console.error('❌ Failed to read existing movies for enrichment:', fetchError.message);
+    process.exit(1);
+  }
+
+  const existingByTitle = new Map((existingRows || []).map((r) => [r.title, r]));
+
+  // Only update rows where the stored poster is missing/empty.
+  const toUpdate = needEnrichment.filter((m) => {
+    const stored = existingByTitle.get(m.title);
+    return !stored || !isValidPosterUrl(stored.poster_url);
+  });
+
+  if (toUpdate.length === 0) {
+    console.log('   ✓ Every movie already has a valid poster (no overwrite needed).');
+    return;
+  }
+
+  const updateBatches = chunk(toUpdate, BATCH_SIZE);
+  let updated = 0;
+  for (let i = 0; i < updateBatches.length; i++) {
+    const batch = updateBatches[i];
+    const { error: updateError } = await supabase
+      .from(MOVIES_TABLE)
+      .upsert(batch, { onConflict: 'title' });
+
+    if (updateError) {
+      console.error(`❌ Failed to enrich movies (batch ${i + 1}/${updateBatches.length}):`, updateError.message);
+      process.exit(1);
+    }
+    updated += batch.length;
+  }
+
+  console.log(`   ✓ Enriched ${updated} movie(s) with their real poster URL.`);
 }
 
 async function upload() {
@@ -355,6 +475,12 @@ async function upload() {
   }
 
   console.log(`✅ Sync complete — ${inserted} screenings in table "${TABLE}".`);
+
+  // ─── Step 3: Upsert unique movies into the `movies` table ────────────────
+  // Real poster URLs (from the EventsFlat `Pic` field) are persisted with the
+  // non-destructive rule: never overwrite a valid stored poster, never let a
+  // null incoming value wipe an existing URL.
+  await uploadMovies(cleanRows);
 
   // ─── Summary breakdown ───────────────────────────────────────────────────
   const langCounts = {};

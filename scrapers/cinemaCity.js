@@ -52,6 +52,28 @@ const __dirname = dirname(__filename);
 const BASE_URL = 'https://www.cinema-city.co.il';
 const OUTPUT_FILE = resolve(__dirname, 'output.json');
 
+// ─── Poster image CDN ──────────────────────────────────────────────────────────
+// The EventsFlat payload exposes each movie's poster as a bare FILENAME in the
+// `Pic` field (e.g. "גבעה 338.jpg"). The site serves these through the
+// modulus.co.il image CDN, with the origin pointing at the media server:
+//   https://cdn.modulus.co.il/fetch/cinemacity/{params}/http://80.178.112.171/images/{encoded-filename}
+// The params below are the exact ones the tickets page uses for posters
+// (236×350 poster crop, quality 95, verified to return HTTP 200 image/jpeg).
+const POSTER_CDN_PREFIX =
+  'https://cdn.modulus.co.il/fetch/cinemacity/w_236,h_350,mode_,quality_95,v_4f7026f8-2419-4c0e-a835-774fecc120bf41/http://80.178.112.171/images/';
+
+/**
+ * Build a full poster URL from the EventsFlat `Pic` field.
+ * Returns null when the field is missing/empty so callers can store a
+ * clean null (never a fake/placeholder image).
+ */
+function posterUrlFromPic(pic) {
+  if (!pic) return null;
+  const filename = String(pic).trim();
+  if (!filename) return null;
+  return `${POSTER_CDN_PREFIX}${encodeURIComponent(filename)}`;
+}
+
 const BRANCHES = [
   { name: 'סינמה סיטי גלילות',  theaterId: 1170 },
   { name: 'סינמה סיטי ראשל"צ',  theaterId: 1173 },
@@ -375,6 +397,9 @@ async function scrapeCinemaCity() {
           cinema_chain: 'Cinema City',
           language: extractLanguage(item, movieTitle),
           screen_type,
+          // Real poster URL built from the EventsFlat `Pic` filename.
+          // null when the payload doesn't carry one — never a placeholder.
+          poster_url: posterUrlFromPic(item.Pic),
         };
 
         // Prefer the more specific hall type on collision.
