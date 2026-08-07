@@ -207,6 +207,11 @@ function inferLanguage(movieTitle) {
  */
 const SCREEN_TYPE_ALIASES = {
   vip: 'VIP',
+  'לייט vip': 'לייט VIP',
+  'late vip': 'לייט VIP',
+  'latenight': 'LateNight',
+  'late night': 'LateNight',
+  prime: 'Prime',
   '4dx': '4DX',
   imax: 'IMAX',
   screenx: 'ScreenX',
@@ -214,9 +219,23 @@ const SCREEN_TYPE_ALIASES = {
   '3d': '3D',
   '2d': '2D',
   onyx: 'Onyx',
+  lounge: 'Lounge',
   comfort: 'קומפורט',
   קומפורט: 'קומפורט',
 };
+
+// Venue types per the site's ticketsNew2.js (VenueTypeId is the ONLY reliable
+// signal for Onyx/Lounge — the EventsFlat response's VenueType field stays "").
+// We query each venue type separately and tag the hall from the filter, since
+// VenueTypeId=0 excludes Onyx/Lounge (and returns HTTP 500 for some branches).
+const VENUE_TYPES = [
+  { id: 1, label: 'רגיל' },      // regular halls
+  { id: 3, label: 'VIP' },       // VIP
+  { id: 8, label: 'Onyx' },      // ONYX (Glilot)
+  { id: 201, label: 'Lounge' },  // Lounge (Glilot)
+  { id: 7, label: 'LateNight' }, // late showings
+  { id: 31, label: 'לייט VIP' }, // late VIP
+];
 
 function mapScreenType(venueType) {
   if (!venueType || String(venueType).trim() === '') return 'רגיל';
@@ -322,9 +341,72 @@ async function scrapeCinemaCity() {
     process.stdout.write(`   [${i + 1}/${BRANCHES.length}] ${branch.name}... `);
 
     try {
-      // Use EventsFlat which returns individual items with VenueType.
-      // Date=0 returns ALL upcoming dates/screenings for the theater in one response.
-      const data = await page.evaluate(async (theaterId) => {
+      // Query each venue type separately. The EventsFlat response's VenueType
+      // field only ever returns ""/Vip/Prime — it NEVER marks Onyx/Lounge.
+      // Those halls are identified ONLY by the VenueTypeId query filter, so we
+      // loop over the venue types and tag the hall from the filter. This also
+      // avoids the HTTP 500 that VenueTypeId=0 returns for some branches (e.g.
+      // Jerusalem), and captures Onyx/Lounge at Glilot.
+      // Dedups by eventID, preferring the most specific hall type.
+      const seen = new Map(); // eventID -> best screening
+      const addScreening = (item, venueLabel) => {
+        const movieTitle = (item.Name || '').trim();
+        if (!movieTitle) return;
+        const d = item.Dates;
+        if (!d) return;
+
+        const eventId = d.EventId;
+        const theaterId = d.TheaterId || branch.theaterId;
+        const dateTime = toISODateTime(d.Date);
+        if (!dateTime || !eventId) return;
+
+        // Hall type from the query filter (authoritative for Onyx/Lounge),
+        // or from the response's VenueType field (Vip/Prime) as a fallback,
+        // or 'רגיל' when neither specifies a special hall.
+        const fromFilter = venueLabel && venueLabel !== 'רגיל' ? venueLabel : null;
+        const fromField = extractScreenType(item);
+        const screen_type = fromFilter || fromField || 'רגיל';
+
+        const screening = {
+          movie_title: movieTitle,
+          branch: branch.name,
+          date_time: dateTime,
+          booking_url: `${BASE_URL}/order/?eventID=${eventId}&theaterId=${theaterId}`,
+          cinema_chain: 'Cinema City',
+          language: extractLanguage(item, movieTitle),
+          screen_type,
+        };
+
+        // Prefer the more specific hall type on collision.
+        const existing = seen.get(eventId);
+        const existingIsSpecial = existing && existing.screen_type !== 'רגיל';
+        const newIsSpecial = screen_type !== 'רגיל';
+        if (!existing || (newIsSpecial && !existingIsSpecial)) {
+          seen.set(eventId, screening);
+        }
+      };
+
+      // 1) Explicit venue-type queries (Ragil, VIP, Onyx, Lounge, LateNight, Late-VIP).
+      for (const vt of VENUE_TYPES) {
+        const data = await page.evaluate(async (theaterId, venueTypeId) => {
+          const res = await fetch(
+            `/tickets/EventsFlat?TheatreId=${theaterId}&VenueTypeId=${venueTypeId}&MovieId=0&Date=0`,
+            { credentials: 'include' }
+          );
+          if (!res.ok) return null;
+          return await res.json();
+        }, branch.theaterId, vt.id);
+
+        if (data && Array.isArray(data)) {
+          for (const item of data) addScreening(item, vt.label);
+        }
+        await new Promise((r) => setTimeout(r, 300));
+      }
+
+      // 2) Fallback: the generic VenueTypeId=0 query (catches Prime & anything
+      //    not covered by an explicit venue-type id). If it 500s (Jerusalem),
+      //    that's fine — the explicit per-type queries above already capture it.
+      const generic = await page.evaluate(async (theaterId) => {
         const res = await fetch(
           `/tickets/EventsFlat?TheatreId=${theaterId}&VenueTypeId=0&MovieId=0&Date=0`,
           { credentials: 'include' }
@@ -333,39 +415,13 @@ async function scrapeCinemaCity() {
         return await res.json();
       }, branch.theaterId);
 
-      if (!data || !Array.isArray(data)) {
-        console.log('⚠ Empty/error response');
-        continue;
+      if (generic && Array.isArray(generic)) {
+        for (const item of generic) addScreening(item, null);
       }
 
-      // Each item in EventsFlat = one movie + one showtime (Dates is a single object).
-      let addedCount = 0;
-      for (const item of data) {
-        const movieTitle = (item.Name || '').trim();
-        if (!movieTitle) continue;
-
-        const d = item.Dates;
-        if (!d) continue;
-
-        const eventId = d.EventId;
-        const theaterId = d.TheaterId || branch.theaterId;
-        const dateTime = toISODateTime(d.Date);
-
-        if (!dateTime || !eventId) continue;
-
-        allScreenings.push({
-          movie_title: movieTitle,
-          branch: branch.name,
-          date_time: dateTime,
-          booking_url: `${BASE_URL}/order/?eventID=${eventId}&theaterId=${theaterId}`,
-          cinema_chain: 'Cinema City',
-          language: extractLanguage(item, movieTitle),
-          screen_type: extractScreenType(item),
-        });
-        addedCount++;
-      }
-
-      console.log(`✓ ${addedCount} screenings`);
+      const screenings = [...seen.values()];
+      allScreenings.push(...screenings);
+      console.log(`✓ ${screenings.length} screenings`);
     } catch (err) {
       console.log(`✗ Error: ${err.message}`);
     }
