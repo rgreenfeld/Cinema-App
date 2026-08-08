@@ -93,6 +93,8 @@ const DAYS_TO_SCRAPE = Math.max(3, parseInt(process.env.PLANET_DAYS || '7', 10) 
 const BATCH_SIZE = 500;
 const REQUEST_TIMEOUT_MS = 25000;
 const RETRIES = 2;
+const FILM_FETCH_CONCURRENCY = 3;
+const BRANCH_FETCH_CONCURRENCY = 3;
 
 // ─── Screen-type mapping from attributeIds ───────────────────────────────────
 const SCREEN_TYPE_ATTRS = [
@@ -171,6 +173,26 @@ function buildPlanetBookingUrl(evt, cinemaId) {
 const BOOKING_URL_PATTERN = /^https:\/\/(?:www\.planetcinema\.co\.il\/il\/booking-router\/launch\/[0-9]+\?lang=he|tickets5\.planetcinema\.co\.il\/order\/[0-9]+\?lang=he)$/i;
 function isPlanetBookingUrl(value) {
   return typeof value === 'string' && BOOKING_URL_PATTERN.test(value.trim());
+}
+
+async function asyncPool(items, iteratorFn, concurrency) {
+  const results = [];
+  const executing = [];
+
+  for (const item of items) {
+    const promise = Promise.resolve().then(() => iteratorFn(item));
+    results.push(promise);
+
+    if (concurrency <= items.length) {
+      const e = promise.then(() => executing.splice(executing.indexOf(e), 1));
+      executing.push(e);
+      if (executing.length >= concurrency) {
+        await Promise.race(executing);
+      }
+    }
+  }
+
+  return Promise.all(results);
 }
 
 // ─── Language mapping from the event's `languages` object ────────────────────
@@ -329,36 +351,54 @@ async function scrapePlanetSchedule() {
   const filmsByDate = new Map(); // date -> Map(filmId -> film)
   const screenings = [];
 
-  for (const date of dates) {
-    const filmsUrl = `${BASE_URL}${API_BASE}/films/until/${date}`;
-    let filmsData;
-    try {
-      filmsData = await fetchJson(filmsUrl);
-    } catch (err) {
-      console.warn(`   ⚠ Could not fetch films for ${date}: ${err.message}`);
-      continue;
+  const filmFetchResults = await asyncPool(
+    dates,
+    async (date) => {
+      const filmsUrl = `${BASE_URL}${API_BASE}/films/until/${date}`;
+      try {
+        const filmsData = await fetchJson(filmsUrl);
+        const films = (filmsData?.body?.films) || [];
+        return { date, filmMap: new Map(films.map((f) => [f.id, f])) };
+      } catch (err) {
+        return { date, filmMap: new Map(), error: err.message };
+      }
+    },
+    FILM_FETCH_CONCURRENCY
+  );
+
+  for (const result of filmFetchResults) {
+    if (result.error) {
+      console.warn(`   ⚠ Could not fetch films for ${result.date}: ${result.error}`);
     }
-    const films = (filmsData?.body?.films) || [];
-    const filmMap = new Map(films.map((f) => [f.id, f]));
-    filmsByDate.set(date, filmMap);
+    filmsByDate.set(result.date, result.filmMap);
   }
 
   for (const date of dates) {
     const filmMap = filmsByDate.get(date) || new Map();
-    process.stdout.write(`   📅 ${date}... `);
+    console.log(`   📅 ${date}...`);
+
+    const branchResults = await asyncPool(
+      BRANCHES,
+      async (branch) => {
+        const url = `${BASE_URL}${API_BASE}/film-events/in-cinema/${branch.apiId}/at-date/${date}`;
+        try {
+          const data = await fetchJson(url);
+          return { branch, events: data?.body?.events || [] };
+        } catch (err) {
+          return { branch, events: null, error: err.message };
+        }
+      },
+      BRANCH_FETCH_CONCURRENCY
+    );
 
     let dayCount = 0;
-    for (const branch of BRANCHES) {
-      const url = `${BASE_URL}${API_BASE}/film-events/in-cinema/${branch.apiId}/at-date/${date}`;
-      let data;
-      try {
-        data = await fetchJson(url);
-      } catch (err) {
-        console.log(`\n   ⚠ ${branch.name} (${date}): ${err.message}`);
+    for (const result of branchResults) {
+      const { branch, events, error } = result;
+      if (error) {
+        console.log(`   ⚠ ${branch.name} (${date}): ${error}`);
         continue;
       }
 
-      const events = data?.body?.events || [];
       for (const evt of events) {
         const film = filmMap.get(evt.filmId);
         const rawTitle = (film?.name || '').trim();
@@ -380,20 +420,6 @@ async function scrapePlanetSchedule() {
           language = fromTitle;
         }
 
-// Build the guest-facing booking URL.
-        //
-        // IMPORTANT: The raw `bookingLink`
-        // (tickets5.planetcinema.co.il/api/order/{id}) returns HTTP 404 for
-        // guests, and the "booking-router-launch" link
-        // (www.planetcinema.co.il/il/booking-router/launch/{id}) 308-redirects
-        // to br.planetcinema.co.il which is heavily Cloudflare-guarded and
-        // shows "you have been blocked" to many users without a session.
-        //
-        // We use Planet's public browser entry point for direct navigation.
-        // The internal POST-only `/il/booking-router/booking` route returns a
-        // JSON error when GET'd directly, so we use the launch URL instead.
-        //
-        //   https://www.planetcinema.co.il/il/booking-router/launch/{eventId}?lang=he
         const bookingUrl = buildPlanetBookingUrl(evt, branch.apiId);
         if (!bookingUrl || !isPlanetBookingUrl(bookingUrl)) {
           console.warn(`⚠ Skipping event ${evt.id || evt.eventId || '<unknown>'} for ${branch.name} — invalid booking URL: ${bookingUrl}`);
@@ -414,9 +440,7 @@ async function scrapePlanetSchedule() {
       }
     }
 
-    console.log(`✓ ${dayCount} screenings`);
-    // Polite delay between date requests.
-    await new Promise((r) => setTimeout(r, 300));
+    console.log(`   ✓ ${dayCount} screenings`);
   }
 
   console.log(`\n🎬 Total screenings scraped: ${screenings.length}`);
