@@ -58,6 +58,7 @@ import { createClient } from '@supabase/supabase-js';
 import { readFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { normalizeMovieTitle } from './normalizeMovieTitle.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -198,6 +199,14 @@ function pick(row, ...keys) {
   return undefined;
 }
 
+function normalizeTitle(value) {
+  if (value === null || value === undefined) return null;
+  const title = String(value).trim();
+  if (!title) return null;
+  if (/^(null|undefined)$/i.test(title)) return null;
+  return title;
+}
+
 const rows = screenings
   .map((s, i) => {
     // Normalize the date_time. Prefer the new combined `date_time` field,
@@ -229,6 +238,16 @@ const rows = screenings
         ? rawScreenType.trim()
         : 'רגיל';
 
+    const sourceTitle = normalizeTitle(pick(s, 'movie_title', 'movieTitle'));
+    if (!sourceTitle) {
+      console.warn(`⚠ Skipping row ${i + 1} (missing/invalid movie_title):`, JSON.stringify(s));
+      return null;
+    }
+
+    // Normalize title variants into one canonical title (e.g. "האודיסאה - מדובב לצרפתית" -> "האודיסאה").
+    const normalized = normalizeMovieTitle(sourceTitle);
+    const movieTitle = normalizeTitle(normalized.cleanTitle) || sourceTitle;
+
     // Live seat metrics (from enrichSeats.js). Only include these columns in
     // the insert payload when a real numeric value exists — this keeps the
     // uploader compatible with databases that don't (yet) have the optional
@@ -250,7 +269,7 @@ const rows = screenings
       availableSeats !== null || totalSeats !== null || totalRows !== null;
 
     return {
-      movie_title: (pick(s, 'movie_title', 'movieTitle') || '').trim() || null,
+      movie_title: movieTitle,
       cinema_chain: pick(s, 'cinema_chain', 'cinemaChain') || 'Cinema City',
       branch: (pick(s, 'branch') || '').trim() || null,
       date_time: dateTime,
@@ -337,8 +356,17 @@ async function upload() {
 
   console.log(`   ✓ Outdated screenings cleaned (${deletedCount ?? 0} row(s) removed).`);
 
+  // Some DBs include a dedicated `clean_title` column. Populate it when present,
+  // while keeping compatibility with schemas that only have `movie_title`.
+  let rowsForInsert = cleanRows;
+  const cleanTitleProbe = await supabase.from(TABLE).select('clean_title').limit(1);
+  if (!cleanTitleProbe.error) {
+    rowsForInsert = cleanRows.map((row) => ({ ...row, clean_title: row.movie_title }));
+    console.log('   ✓ Detected clean_title column; it will be populated on insert.');
+  }
+
   // ─── Step 2: Insert fresh records in batches of 500 ──────────────────────
-  const batches = chunk(cleanRows, BATCH_SIZE);
+  const batches = chunk(rowsForInsert, BATCH_SIZE);
   let inserted = 0;
 
   for (let i = 0; i < batches.length; i++) {

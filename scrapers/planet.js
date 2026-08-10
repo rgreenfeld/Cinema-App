@@ -60,8 +60,9 @@
  *   SUPABASE_SCREENINGS_TABLE — optional, defaults to "screenings" (the table
  *                               the app reads; the task's "showtimes" name is
  *                               aliased here via env override if you use it)
- *   PLANET_DAYS                — optional, how many days to scrape (default 7,
- *                                min 3)
+*   (no day-count parameter)   — the scraper automatically discovers and
+*                                pulls the maximum currently available
+*                                upcoming schedule window from the API
  *
  * Usage:  node scrapers/planet.js
  */
@@ -89,12 +90,12 @@ const BRANCHES = [
   { apiId: '1075', name: 'פלאנט זכרון יעקב' },    // Zichron Yaakov
 ];
 
-const DAYS_TO_SCRAPE = Math.max(3, parseInt(process.env.PLANET_DAYS || '7', 10) || 7);
 const BATCH_SIZE = 500;
 const REQUEST_TIMEOUT_MS = 25000;
 const RETRIES = 2;
-const FILM_FETCH_CONCURRENCY = 3;
 const BRANCH_FETCH_CONCURRENCY = 3;
+const MAX_DISCOVERY_DAYS = 120;
+const STOP_AFTER_EMPTY_DAYS = 3;
 
 // ─── Screen-type mapping from attributeIds ───────────────────────────────────
 const SCREEN_TYPE_ATTRS = [
@@ -328,53 +329,36 @@ async function fetchJson(url) {
 // ─── Scraper ─────────────────────────────────────────────────────────────────
 
 /**
- * Fetch the full Planet schedule for the next N days across all branches.
+ * Fetch the full Planet schedule across all branches using auto-discovery
+ * until the upstream API appears exhausted.
  * Returns an array of normalized screening records.
  */
 async function scrapePlanetSchedule() {
   console.log('🚀 Starting Planet cinemas scraper...');
-  console.log(`🏢 Branches: ${BRANCHES.length} | 📅 Days: ${DAYS_TO_SCRAPE}\n`);
+  console.log(`🏢 Branches: ${BRANCHES.length} | 📅 Mode: auto-discovery (max available)\n`);
 
-  // Build the list of dates to scrape (Israel local dates).
+  // Discover dates dynamically and stop after a short empty tail.
   const dates = [];
   const now = new Date();
-  for (let i = 0; i < DAYS_TO_SCRAPE; i++) {
-    const d = new Date(now);
-    d.setDate(d.getDate() + i);
-    const iso = formatIsraelDate(d);
-    if (!dates.includes(iso)) dates.push(iso);
-  }
-  const untilDate = dates[dates.length - 1];
-  console.log(`📅 Date range: ${dates[0]} → ${untilDate}\n`);
-
-  // Fetch the film catalog once (for poster URLs + Hebrew titles).
-  const filmsByDate = new Map(); // date -> Map(filmId -> film)
   const screenings = [];
 
-  const filmFetchResults = await asyncPool(
-    dates,
-    async (date) => {
-      const filmsUrl = `${BASE_URL}${API_BASE}/films/until/${date}`;
-      try {
-        const filmsData = await fetchJson(filmsUrl);
-        const films = (filmsData?.body?.films) || [];
-        return { date, filmMap: new Map(films.map((f) => [f.id, f])) };
-      } catch (err) {
-        return { date, filmMap: new Map(), error: err.message };
-      }
-    },
-    FILM_FETCH_CONCURRENCY
-  );
+  let emptyDaysInARow = 0;
+  for (let offset = 0; offset < MAX_DISCOVERY_DAYS; offset++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() + offset);
+    const date = formatIsraelDate(d);
+    dates.push(date);
 
-  for (const result of filmFetchResults) {
-    if (result.error) {
-      console.warn(`   ⚠ Could not fetch films for ${result.date}: ${result.error}`);
+    let filmMap = new Map();
+    const filmsUrl = `${BASE_URL}${API_BASE}/films/until/${date}`;
+    try {
+      const filmsData = await fetchJson(filmsUrl);
+      const films = (filmsData?.body?.films) || [];
+      filmMap = new Map(films.map((f) => [f.id, f]));
+    } catch (err) {
+      console.warn(`   ⚠ Could not fetch films for ${date}: ${err.message}`);
     }
-    filmsByDate.set(result.date, result.filmMap);
-  }
 
-  for (const date of dates) {
-    const filmMap = filmsByDate.get(date) || new Map();
     console.log(`   📅 ${date}...`);
 
     const branchResults = await asyncPool(
@@ -408,6 +392,11 @@ async function scrapePlanetSchedule() {
         if (!showTime) continue;
 
         const normalized = normalizeMovieTitle(rawTitle);
+        const cleanTitle = (normalized.cleanTitle || rawTitle || '').trim();
+        if (!cleanTitle || /^null$/i.test(cleanTitle) || /^undefined$/i.test(cleanTitle)) {
+          console.warn(`⚠ Skipping event ${evt.id || evt.eventId || '<unknown>'} for ${branch.name} — invalid clean title: ${cleanTitle}`);
+          continue;
+        }
 
         // Language: prefer the API's structured languages; fall back to the
         // title-inference language from normalizeMovieTitle.
@@ -428,7 +417,7 @@ async function scrapePlanetSchedule() {
 
         screenings.push({
           rawTitle,
-          cleanTitle: normalized.cleanTitle || rawTitle,
+          cleanTitle,
           branchName: branch.name,
           showTime, // UTC ISO string
           bookingUrl,
@@ -441,6 +430,20 @@ async function scrapePlanetSchedule() {
     }
 
     console.log(`   ✓ ${dayCount} screenings`);
+
+    if (dayCount === 0) {
+      emptyDaysInARow += 1;
+      if (emptyDaysInARow >= STOP_AFTER_EMPTY_DAYS) {
+        console.log(`   ⏹ Stopping discovery after ${STOP_AFTER_EMPTY_DAYS} empty day(s) in a row.`);
+        break;
+      }
+    } else {
+      emptyDaysInARow = 0;
+    }
+  }
+
+  if (dates.length > 0) {
+    console.log(`\n📅 Date range scanned: ${dates[0]} → ${dates[dates.length - 1]}`);
   }
 
   console.log(`\n🎬 Total screenings scraped: ${screenings.length}`);
@@ -632,8 +635,17 @@ async function uploadShowtimes(screenings) {
   }
   console.log(`   ✓ Existing Planet screenings removed (${deletedCount ?? 0} row(s)).`);
 
+  // If the DB has a dedicated clean_title column, populate it from the
+  // canonical movie title while keeping compatibility with leaner schemas.
+  let rowsForInsert = rows;
+  const cleanTitleProbe = await supabase.from(SCREENINGS_TABLE).select('clean_title').limit(1);
+  if (!cleanTitleProbe.error) {
+    rowsForInsert = rows.map((row) => ({ ...row, clean_title: row.movie_title }));
+    console.log('   ✓ Detected clean_title column; it will be populated on insert.');
+  }
+
   // ─── Step 2: Insert fresh records in batches ────────────────────────────
-  const batches = chunk(rows, BATCH_SIZE);
+  const batches = chunk(rowsForInsert, BATCH_SIZE);
   let inserted = 0;
 
   for (let i = 0; i < batches.length; i++) {

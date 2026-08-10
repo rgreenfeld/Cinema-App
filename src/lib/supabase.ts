@@ -17,6 +17,8 @@ const supabase = createClient(
   supabaseAnonKey || 'placeholder-key'
 );
 
+const PAGE_SIZE = 1000;
+
 export type SupabaseScreeningRow = {
   id: string;
   movie_title: string;
@@ -42,17 +44,28 @@ export async function fetchScreenings(): Promise<SupabaseScreeningRow[]> {
     return [];
   }
 
-  const { data, error } = await supabase
-    .from('screenings')
-    .select('*')
-    .order('date_time', { ascending: true });
+  const allRows: SupabaseScreeningRow[] = [];
 
-  if (error) {
-    console.error('❌ Supabase query failed:', error.message);
-    return [];
+  for (let page = 0; ; page++) {
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    const { data, error } = await supabase
+      .from('screenings')
+      .select('*')
+      .order('date_time', { ascending: true })
+      .range(from, to);
+
+    if (error) {
+      console.error('❌ Supabase query failed:', error.message);
+      return [];
+    }
+
+    const rows = (data as SupabaseScreeningRow[]) || [];
+    allRows.push(...rows);
+    if (rows.length < PAGE_SIZE) break;
   }
 
-  return (data as SupabaseScreeningRow[]) || [];
+  return allRows;
 }
 
 /**
@@ -66,19 +79,30 @@ export async function fetchScreeningsByDate(date: string): Promise<SupabaseScree
 
   const { start, end } = israelDateToUtcRange(date);
 
-  const { data, error } = await supabase
-    .from('screenings')
-    .select('*')
-    .gte('date_time', start)
-    .lte('date_time', end)
-    .order('date_time', { ascending: true });
+  const allRows: SupabaseScreeningRow[] = [];
 
-  if (error) {
-    console.error('❌ Supabase query failed:', error.message);
-    return [];
+  for (let page = 0; ; page++) {
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    const { data, error } = await supabase
+      .from('screenings')
+      .select('*')
+      .gte('date_time', start)
+      .lte('date_time', end)
+      .order('date_time', { ascending: true })
+      .range(from, to);
+
+    if (error) {
+      console.error('❌ Supabase query failed:', error.message);
+      return [];
+    }
+
+    const rows = (data as SupabaseScreeningRow[]) || [];
+    allRows.push(...rows);
+    if (rows.length < PAGE_SIZE) break;
   }
 
-  return (data as SupabaseScreeningRow[]) || [];
+  return allRows;
 }
 
 /**
@@ -151,38 +175,50 @@ export async function fetchMoviesByBranchesAndDate(
   // Log the active query parameters.
   console.log('Querying Supabase with cinemas:', branches, 'and date:', formattedDate);
 
-  let query = supabase.from('screenings').select('movie_title');
-
-  // Filter by the mapped cinema names. The schema column that holds the full
-  // cinema branch names is `branch` (e.g. "סינמה סיטי גלילות"). An empty
-  // branch list means no cinema filter (e.g. "current location" mode).
-  if (branches.length > 0) {
-    query = query.in('branch', branches);
-  }
-
-  if (date) {
-    // Specific date → full day in the Israel-local timezone (UTC bounds).
-    const { start, end } = israelDateToUtcRange(date);
-    query = query.gte('date_time', start).lte('date_time', end);
-  } else {
-    // No date specified → all future/today screenings for those cinemas
-    // (from the start of today in Israel onward).
-    const { start } = israelDateToUtcRange(todayInIsrael());
-    query = query.gte('date_time', start);
-  }
-
-  const { data, error } = await query;
-
-  if (error) {
-    console.error('❌ Supabase movies query failed:', error.message);
-    return [];
-  }
-
   // Unique, sorted movie titles.
   const unique = new Set<string>();
-  for (const row of data || []) {
-    if (row.movie_title) unique.add(row.movie_title);
+
+  for (let page = 0; ; page++) {
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+
+    let query = supabase
+      .from('screenings')
+      .select('movie_title')
+      .order('date_time', { ascending: true })
+      .range(from, to);
+
+    // Filter by the mapped cinema names. The schema column that holds the full
+    // cinema branch names is `branch` (e.g. "סינמה סיטי גלילות"). An empty
+    // branch list means no cinema filter (e.g. "current location" mode).
+    if (branches.length > 0) {
+      query = query.in('branch', branches);
+    }
+
+    if (date) {
+      // Specific date → full day in the Israel-local timezone (UTC bounds).
+      const { start, end } = israelDateToUtcRange(date);
+      query = query.gte('date_time', start).lte('date_time', end);
+    } else {
+      // No date specified → all future/today screenings for those cinemas
+      // (from the start of today in Israel onward).
+      const { start } = israelDateToUtcRange(todayInIsrael());
+      query = query.gte('date_time', start);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error('❌ Supabase movies query failed:', error.message);
+      return [];
+    }
+
+    const rows = (data as Array<{ movie_title: string | null }>) || [];
+    for (const row of rows) {
+      if (row.movie_title) unique.add(row.movie_title);
+    }
+    if (rows.length < PAGE_SIZE) break;
   }
+
   return Array.from(unique).sort((a, b) => a.localeCompare(b, 'he'));
 }
 

@@ -191,7 +191,10 @@ export function normalizeMovieTitle(rawTitle) {
   }
 
   const meta = extractMeta(rawTitle);
-  const cleanTitle = stripTags(rawTitle);
+  const stripped = stripTags(rawTitle);
+  const fallback = collapseSpaces(normalizeDashes(rawTitle));
+  // Never return an empty clean title when the source title is usable.
+  const cleanTitle = stripped || fallback;
 
   return {
     cleanTitle,
@@ -219,6 +222,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     ['The Odyssey - Dubbed', 'The Odyssey', 'hebrew', true],
     ['The Odyssey (Hebrew)', 'The Odyssey', 'hebrew', false],
     ['האודיסאה', 'האודיסאה', 'original', false],
+    ['Null', 'Null', 'original', false],
+    ['null', 'null', 'original', false],
+    ['מדובב', 'מדובב', 'hebrew', true],
     ['', '', 'original', false],
     [null, '', 'original', false],
     [undefined, '', 'original', false],

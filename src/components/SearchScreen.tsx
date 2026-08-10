@@ -44,16 +44,11 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     [preferences.selectedCities, preferences.selectedRegions]
   );
 
-  // Effective date: the chosen date, or today if none is selected yet.
-  const effectiveDate = criteria.date ?? dates[0] ?? null;
-
-  // Only run the dynamic in-screen fetch when we don't already have movies
-  // from the preferences → search submit fetch. This avoids a redundant
-  // duplicate query right after the transition.
-  const alreadyHaveMovies = (submitMovies && submitMovies.length > 0) || submitMoviesLoading;
+  // Effective date for query/filtering. When null, treat as upcoming (today+).
+  const effectiveDate = criteria.date ?? null;
+  const screeningSource = propScreenings ?? [];
 
   useEffect(() => {
-    if (alreadyHaveMovies) return; // Movies already fetched on submit.
     let cancelled = false;
 
     // No date → nothing to fetch.
@@ -67,7 +62,8 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     setMoviesLoading(true);
     setMoviesError(false);
 
-    fetchMoviesByBranchesAndDate(locationBranches, effectiveDate)
+    // No date selected yet -> fetch upcoming titles (today and forward).
+    fetchMoviesByBranchesAndDate(locationBranches, effectiveDate ?? undefined)
       .then((titles) => {
         if (cancelled) return;
         // Convert fetched titles into the app's Movie[] shape (defaults
@@ -92,22 +88,138 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     return () => {
       cancelled = true;
     };
-  }, [locationBranches, effectiveDate, alreadyHaveMovies]);
+  }, [locationBranches, effectiveDate]);
 
-  // If the currently selected movie is no longer in the fetched list,
+  // Build movie options directly from the same screenings context used by
+  // time-based browsing, so the dropdown cannot miss titles that are visible
+  // in "by hours" mode.
+  const moviesFromScreenings = useMemo(() => {
+    if (!propMovies || !propCinemas || screeningSource.length === 0) return [];
+
+    const today = todayInIsrael();
+
+    const cinemaById = new Map(propCinemas.map((c) => [c.id, c]));
+    const movieById = new Map(propMovies.map((m) => [m.id, m]));
+    const out = new Map<string, Movie>();
+
+    for (const s of screeningSource) {
+      if (effectiveDate) {
+        if (s.date !== effectiveDate) continue;
+      } else if (s.date < today) {
+        // No selected date -> only upcoming (today and forward).
+        continue;
+      }
+
+      const cinema = cinemaById.get(s.cinemaId);
+      if (!cinema) continue;
+
+      if (preferences.selectedChains.length > 0 && !preferences.selectedChains.includes(cinema.chain)) {
+        continue;
+      }
+
+      if (
+        preferences.locationMode === 'regions' &&
+        preferences.selectedBranches.length > 0 &&
+        !preferences.selectedBranches.includes(cinema.name)
+      ) {
+        continue;
+      }
+
+      const movie = movieById.get(s.movieId);
+      if (movie) out.set(movie.id, movie);
+    }
+
+    return Array.from(out.values()).sort((a, b) => a.title.localeCompare(b.title, 'he'));
+  }, [effectiveDate, propMovies, propCinemas, screeningSource, preferences.selectedChains, preferences.locationMode, preferences.selectedBranches]);
+
+  // Prefer date/location/chain-aware lists first so "movie" mode matches
+  // what users can see in time-based browsing.
+  const movies =
+    (dynamicMovies.length > 0
+      ? dynamicMovies
+      : moviesFromScreenings.length > 0
+        ? moviesFromScreenings
+        : submitMovies && submitMovies.length > 0
+          ? submitMovies
+          : propMovies) ?? [];
+
+  // For each currently available movie option, compute only the dates that
+  // have screenings under the active location/chain preferences.
+  const availableDatesByMovieId = useMemo(() => {
+    if (!propMovies || !propCinemas || screeningSource.length === 0 || movies.length === 0) {
+      return new Map<string, string[]>();
+    }
+
+    const today = todayInIsrael();
+    const cinemaById = new Map(propCinemas.map((c) => [c.id, c]));
+    const movieById = new Map(propMovies.map((m) => [m.id, m]));
+
+    const movieTitlesByOptionId = new Map<string, Set<string>>();
+    for (const m of movies) {
+      const titles = new Set<string>();
+      titles.add(m.title);
+      const canonical = movieById.get(m.id);
+      if (canonical?.title) titles.add(canonical.title);
+      movieTitlesByOptionId.set(m.id, titles);
+    }
+
+    const out = new Map<string, Set<string>>();
+
+    for (const s of screeningSource) {
+      if (s.date < today) continue;
+
+      const cinema = cinemaById.get(s.cinemaId);
+      if (!cinema) continue;
+
+      if (preferences.selectedChains.length > 0 && !preferences.selectedChains.includes(cinema.chain)) {
+        continue;
+      }
+
+      if (
+        preferences.locationMode === 'regions' &&
+        preferences.selectedBranches.length > 0 &&
+        !preferences.selectedBranches.includes(cinema.name)
+      ) {
+        continue;
+      }
+
+      const canonicalMovieTitle = movieById.get(s.movieId)?.title;
+
+      for (const [optionId, titles] of movieTitlesByOptionId) {
+        if (s.movieId !== optionId && (!canonicalMovieTitle || !titles.has(canonicalMovieTitle))) {
+          continue;
+        }
+
+        const set = out.get(optionId) ?? new Set<string>();
+        set.add(s.date);
+        out.set(optionId, set);
+      }
+    }
+
+    const sorted = new Map<string, string[]>();
+    for (const [movieId, set] of out) {
+      sorted.set(movieId, Array.from(set).sort((a, b) => a.localeCompare(b)));
+    }
+
+    return sorted;
+  }, [movies, propMovies, propCinemas, screeningSource, preferences.selectedChains, preferences.locationMode, preferences.selectedBranches]);
+
+  const movieDateOptions = useMemo(() => {
+    if (criteria.mode !== 'movie') return dates;
+    if (!criteria.movieId) return dates;
+    const filtered = availableDatesByMovieId.get(criteria.movieId) ?? [];
+    return filtered.length > 0 ? filtered : dates;
+  }, [criteria.mode, criteria.movieId, availableDatesByMovieId, dates]);
+
+  // If the currently selected movie is no longer in the available list,
   // clear the stale selection so the dropdown stays consistent.
   useEffect(() => {
     if (!criteria.movieId) return;
     if (moviesLoading) return;
-    if (dynamicMovies.length > 0 && !dynamicMovies.some((m) => m.id === criteria.movieId)) {
+    if (movies.length > 0 && !movies.some((m) => m.id === criteria.movieId)) {
       onChange({ ...criteria, movieId: null });
     }
-  }, [dynamicMovies, moviesLoading, criteria.movieId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-// Use real data if available. The movies fetched on the preferences → search
-// submit take priority; fall back to the pre-fetched prop list.
-const movies = (submitMovies && submitMovies.length > 0 ? submitMovies : propMovies) ?? [];
-const screeningSource = propScreenings ?? [];
+  }, [movies, moviesLoading, criteria.movieId]); // eslint-disable-line react-hooks/exhaustive-deps
 
 // Show a full-screen loading spinner during the submit fetch (preferences →
 // search transition), so the user knows data is being retrieved.
@@ -220,9 +332,19 @@ if (submitMoviesLoading) {
   };
 
   const setMovie = (movieId: string) => {
-    // Default the date to today when a movie is selected
-    const today = dates[0] ?? null;
-    onChange({ ...criteria, movieId, date: today, minTime: null, maxTime: null, hallTypes: [], allDay: false });
+    // Keep date only if it exists for the new movie; otherwise reset date/time.
+    const nextMovieDates = availableDatesByMovieId.get(movieId) ?? [];
+    const keepCurrentDate = Boolean(criteria.date && nextMovieDates.includes(criteria.date));
+
+    onChange({
+      ...criteria,
+      movieId,
+      date: keepCurrentDate ? criteria.date : null,
+      minTime: null,
+      maxTime: null,
+      hallTypes: [],
+      allDay: false,
+    });
     setHallOpen(false);
   };
 
@@ -392,11 +514,10 @@ if (submitMoviesLoading) {
               <select
                 value={criteria.date ?? ''}
                 onChange={(e) => setDate(e.target.value)}
-                disabled={!criteria.movieId}
                 className="select-base appearance-none pl-10"
               >
                 <option value="">בחר יום...</option>
-                {dates.map((d) => (
+                {movieDateOptions.map((d) => (
                   <option key={d} value={d}>
                     {formatDateLabel(d)}
                   </option>

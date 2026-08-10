@@ -53,6 +53,15 @@ export interface Screening {
 const MOVIE_POSTER =
   'https://images.pexels.com/photos/3130827/pexels-photo-3130827.jpeg?auto=compress&cs=tinysrgb&w=400';
 
+function mapCinemaChainToId(chainValue: string): ChainId {
+  const v = (chainValue || '').trim().toLowerCase();
+  if (v === 'planet' || v === 'yes planet' || v === 'yes-planet' || v === 'יס פלאנט') return 'yes-planet';
+  if (v === 'cinema city' || v === 'cinema-city' || v === 'סינמה סיטי') return 'cinema-city';
+  if (v === 'lev' || v === 'רשת לב' || v === 'לב') return 'lev';
+  if (v === 'hot cinema' || v === 'hot-cinema' || v === 'הוט סינמה') return 'hot-cinema';
+  return 'indie';
+}
+
 /**
  * Convert an array of unique movie titles (as fetched from Supabase) into
  * the app's `Movie[]` shape, using the same defaults as `transformSupabaseRows`.
@@ -137,7 +146,7 @@ export function transformSupabaseRows(
       cinemaMap.set(cinemaId, {
         id: cinemaId,
         name: row.branch,
-        chain: 'cinema-city',
+        chain: mapCinemaChainToId(row.cinema_chain),
         city,
         region,
       });

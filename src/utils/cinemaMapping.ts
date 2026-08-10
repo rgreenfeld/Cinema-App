@@ -23,6 +23,12 @@ export const CINEMA_LOCATION_MAP: Record<string, CinemaLocation> = {
   'סינמה סיטי באר שבע': { city: 'באר שבע', region: 'דרום' },
   'סינמה סיטי חדרה': { city: 'חדרה', region: 'צפון' },
   'סינמה סיטי אשדוד': { city: 'אשדוד', region: 'דרום' },
+  'פלאנט אילון': { city: 'רמת גן', region: 'מרכז' },
+  'פלאנט חיפה': { city: 'חיפה', region: 'חיפה והקריות' },
+  'פלאנט ראשון לציון': { city: 'ראשון לציון', region: 'מרכז' },
+  'פלאנט ירושלים': { city: 'ירושלים', region: 'ירושלים והסביבה' },
+  'פלאנט באר שבע': { city: 'באר שבע', region: 'דרום' },
+  'פלאנט זכרון יעקב': { city: 'זכרון יעקב', region: 'חיפה והקריות' },
 };
 
 const UNKNOWN: CinemaLocation = { city: 'אחר', region: 'אחר' };

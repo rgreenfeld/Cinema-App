@@ -3,7 +3,7 @@ import { PreferencesScreen } from '@/components/PreferencesScreen';
 import { SearchScreen } from '@/components/SearchScreen';
 import { ResultsScreen } from '@/components/ResultsScreen';
 import { emptyPreferences, emptySearchCriteria, type Preferences, type SearchCriteria, type Screen } from '@/types';
-import { fetchScreenings, fetchMoviesByBranchesAndDate, todayInIsrael } from '@/lib/supabase';
+import { fetchScreenings, fetchMoviesByBranchesAndDate } from '@/lib/supabase';
 import { transformSupabaseRows, titlesToMovies, type Screening, type Movie, type Cinema } from '@/data';
 import { getCinemaNamesForSelection } from '@/utils/cinemaMapping';
 
@@ -45,7 +45,7 @@ function App() {
    *
    * 1. Maps the selected cities/regions back to full cinema branch names
    *    (e.g. "רמת השרון" → "סינמה סיטי גלילות").
-   * 2. Queries Supabase for the screenings in those branches today.
+    * 2. Queries Supabase for upcoming screenings (today and forward) in those branches.
    * 3. Deduplicates by movie title and stores the unique list into state.
    * 4. Transitions to the movie selection (search) screen.
    */
@@ -54,13 +54,13 @@ function App() {
       preferences.selectedCities,
       preferences.selectedRegions
     );
-    const date = todayInIsrael();
 
     setSubmitLoading(true);
     setSubmitError(false);
 
     try {
-      const titles = await fetchMoviesByBranchesAndDate(branches, date);
+      // Fetch all upcoming titles (today and forward) for the selected locations.
+      const titles = await fetchMoviesByBranchesAndDate(branches);
       const fetchedMovies = titlesToMovies(titles);
       console.log('Fetched movies from Supabase:', fetchedMovies);
 
