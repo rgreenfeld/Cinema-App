@@ -2,6 +2,8 @@ const collapseSpaces = (s: string) => s.replace(/\s+/g, ' ').trim();
 const normalizeDashes = (s: string) => s.replace(/[–—‑]/g, '-');
 
 const TAG_RULES = [
+  { re: /מדובב\s*לעברית|dubbed\s*(?:in\s*)?hebrew/i, language: 'hebrew', isDubbed: true },
+  { re: /מדובב\s*לאנגלית|dubbed\s*(?:in\s*)?english/i, language: 'english', isDubbed: true },
   { re: /מדובב\s*לרוסית|dubbed\s*(?:in\s*)?russian/i, language: 'russian', isDubbed: true },
   { re: /מדובב\s*לצרפתית|dubbed\s*(?:in\s*)?french/i, language: 'french', isDubbed: true },
   { re: /מדובב\s*לערבית|dubbed\s*(?:in\s*)?arabic/i, language: 'arabic', isDubbed: true },
@@ -14,9 +16,13 @@ const TAG_RULES = [
 ] as const;
 
 const TRAILING_TAG_SOURCE = [
+  'מדובב\\s*לעברית',
+  'מדובב\\s*לאנגלית',
   'מדובב\\s*לרוסית',
   'מדובב\\s*לצרפתית',
   'מדובב\\s*לערבית',
+  'dubbed\\s*(?:in\\s*)?hebrew',
+  'dubbed\\s*(?:in\\s*)?english',
   'dubbed\\s*(?:in\\s*)?russian',
   'dubbed\\s*(?:in\\s*)?french',
   'dubbed\\s*(?:in\\s*)?arabic',

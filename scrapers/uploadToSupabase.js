@@ -58,7 +58,7 @@ import { createClient } from '@supabase/supabase-js';
 import { readFileSync, existsSync } from 'fs';
 import { resolve, dirname, isAbsolute } from 'path';
 import { fileURLToPath } from 'url';
-import { normalizeMovieTitle } from './normalizeMovieTitle.js';
+import { normalizeMovieTitle, LANGUAGE_TO_HEBREW } from './normalizeMovieTitle.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -236,6 +236,42 @@ function normalizeScreenTypeValue(value) {
   return trimmed;
 }
 
+function inferredLanguageFromTitle(sourceTitle) {
+  const normalized = normalizeMovieTitle(sourceTitle);
+  const mapped = LANGUAGE_TO_HEBREW[normalized.language] || null;
+  return {
+    normalized,
+    language: mapped,
+  };
+}
+
+function normalizeDubbedValue(sourceDubbed, rawLanguage, normalizedTitleMeta) {
+  if (typeof sourceDubbed === 'boolean') return sourceDubbed;
+
+  const raw = typeof rawLanguage === 'string' ? rawLanguage.trim() : '';
+  if (raw === 'מדובב') return true;
+
+  return Boolean(normalizedTitleMeta?.isDubbed);
+}
+
+function normalizeLanguageValue(rawLanguage, sourceTitle) {
+  const fallbackLanguage = typeof rawLanguage === 'string' && rawLanguage.trim() !== ''
+    ? rawLanguage.trim()
+    : 'מקור';
+
+  const { language: inferredLanguage, normalized } = inferredLanguageFromTitle(sourceTitle);
+
+  // When the title explicitly carries a dubbed/language tag, prefer that
+  // audio language over a generic upstream value like "מדובב" or "מקור".
+  if (inferredLanguage && normalized.language !== 'original') {
+    if (fallbackLanguage === 'מדובב' || fallbackLanguage === 'מקור' || normalized.isDubbed) {
+      return inferredLanguage;
+    }
+  }
+
+  return fallbackLanguage;
+}
+
 const rows = screenings
   .map((s, i) => {
     // Normalize the date_time. Prefer the new combined `date_time` field,
@@ -255,12 +291,6 @@ const rows = screenings
       return null;
     }
 
-    const rawLanguage = pick(s, 'language', 'languageName');
-    const language =
-      typeof rawLanguage === 'string' && rawLanguage.trim() !== ''
-        ? rawLanguage.trim()
-        : 'מקור';
-
     const rawScreenType = pick(s, 'screen_type', 'screenType', 'hallType', 'venueType');
     const screen_type = normalizeScreenTypeValue(rawScreenType);
 
@@ -272,6 +302,9 @@ const rows = screenings
 
     // Normalize title variants into one canonical title (e.g. "האודיסאה - מדובב לצרפתית" -> "האודיסאה").
     const normalized = normalizeMovieTitle(sourceTitle);
+    const rawLanguage = pick(s, 'language', 'languageName');
+    const language = normalizeLanguageValue(rawLanguage, sourceTitle);
+    const is_dubbed = normalizeDubbedValue(pick(s, 'is_dubbed', 'isDubbed'), rawLanguage, normalized);
     const movieTitle = normalizeTitle(normalized.cleanTitle) || sourceTitle;
 
     // Live seat metrics (from enrichSeats.js). Only include these columns in
@@ -301,6 +334,7 @@ const rows = screenings
       date_time: dateTime,
       booking_url: pick(s, 'booking_url', 'bookingUrl') || null,
       language,
+      is_dubbed,
       screen_type,
       // Optional seat metrics — spread only when present so the insert works
       // against schemas without these columns.
@@ -323,6 +357,7 @@ if (rows.length === 0) {
 const cleanRows = rows.map((item) => ({
   ...item,
   language: item.language || 'מקור',
+  is_dubbed: Boolean(item.is_dubbed),
   screen_type: item.screen_type || 'רגיל',
 }));
 
@@ -389,6 +424,12 @@ async function upload() {
   if (!cleanTitleProbe.error) {
     rowsForInsert = cleanRows.map((row) => ({ ...row, clean_title: row.movie_title }));
     console.log('   ✓ Detected clean_title column; it will be populated on insert.');
+  }
+
+  const dubbedProbe = await supabase.from(TABLE).select('is_dubbed').limit(1);
+  if (dubbedProbe.error) {
+    rowsForInsert = rowsForInsert.map(({ is_dubbed, ...row }) => row);
+    console.log('   ℹ is_dubbed column not found; uploads will omit dubbed flags.');
   }
 
   // ─── Step 2: Insert fresh records in batches of 500 ──────────────────────

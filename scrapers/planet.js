@@ -245,6 +245,12 @@ function mapLanguage(languages = {}, isDubbedTag = false) {
   return isDubbedTag ? 'מדובב' : 'מקור';
 }
 
+function hasDubbedAudio(languages = {}, inferredDubbed = false) {
+  const dubbed = (languages.dubbed || []).filter(Boolean);
+  const voiceover = (languages.voiceover || []).filter(Boolean);
+  return dubbed.length > 0 || voiceover.length > 0 || inferredDubbed;
+}
+
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 
 /**
@@ -401,7 +407,7 @@ async function scrapePlanetSchedule() {
         // Language: prefer the API's structured languages; fall back to the
         // title-inference language from normalizeMovieTitle.
         let language = mapLanguage(evt.languages);
-        if (language === 'מקור' && normalized.language && normalized.language !== 'original') {
+        if ((language === 'מקור' || language === 'מדובב') && normalized.language && normalized.language !== 'original') {
           const fromTitle =
             { hebrew: 'עברית', english: 'אנגלית', russian: 'רוסית', french: 'צרפתית', arabic: 'ערבית' }[
               normalized.language
@@ -424,6 +430,7 @@ async function scrapePlanetSchedule() {
           screenType: mapScreenType(evt.attributeIds),
           posterUrl: film?.posterLink || null,
           language,
+          isDubbed: hasDubbedAudio(evt.languages, normalized.isDubbed),
         });
         dayCount++;
       }
@@ -591,6 +598,7 @@ async function uploadShowtimes(screenings) {
     date_time: s.showTime,
     booking_url: s.bookingUrl,
     language: s.language || 'מקור',
+    is_dubbed: Boolean(s.isDubbed),
     screen_type: s.screenType || 'רגיל',
   }));
 
@@ -642,6 +650,12 @@ async function uploadShowtimes(screenings) {
   if (!cleanTitleProbe.error) {
     rowsForInsert = rows.map((row) => ({ ...row, clean_title: row.movie_title }));
     console.log('   ✓ Detected clean_title column; it will be populated on insert.');
+  }
+
+  const dubbedProbe = await supabase.from(SCREENINGS_TABLE).select('is_dubbed').limit(1);
+  if (dubbedProbe.error) {
+    rowsForInsert = rowsForInsert.map(({ is_dubbed, ...row }) => row);
+    console.log('   ℹ is_dubbed column not found; Planet upload will omit dubbed flags.');
   }
 
   // ─── Step 2: Insert fresh records in batches ────────────────────────────

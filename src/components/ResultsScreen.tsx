@@ -34,13 +34,17 @@ const ORIGINAL_LANGUAGE_GROUP = new Set(['מקור', 'עברית', 'אנגלית
 
 function matchesSelectedLanguageFilter(
   selectedLanguages: Preferences['selectedLanguages'],
-  audioLang: Screening['audioLang']
+  audioLang: Screening['audioLang'],
+  isDubbed: Screening['isDubbed']
 ): boolean {
   if (selectedLanguages.length === 0) return true;
 
   return selectedLanguages.some((selected) => {
     if (selected === 'שפת מקור') {
       return ORIGINAL_LANGUAGE_GROUP.has(audioLang);
+    }
+    if (selected === 'מדובב') {
+      return isDubbed && audioLang === 'עברית';
     }
     return selected === audioLang;
   });
@@ -228,6 +232,7 @@ function ResultCard({ screening, showMovie, movies, cinemas }: { screening: Scre
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             <DetailBadge icon={<Layers className="h-3 w-3 text-gray-400" />} label={screening.hallType} />
             <DetailBadge icon={<Volume2 className="h-3 w-3 text-gray-400" />} label={screening.audioLang} />
+            {screening.isDubbed && <DetailBadge icon={<Volume2 className="h-3 w-3 text-gray-400" />} label="מדובב" />}
           </div>
 
           {chainData && (
@@ -251,6 +256,7 @@ function ResultCard({ screening, showMovie, movies, cinemas }: { screening: Scre
           <div className="flex flex-wrap gap-2">
             <DetailBadge icon={<Layers className="h-3.5 w-3.5 text-gray-400" />} label={screening.hallType} />
             <DetailBadge icon={<Volume2 className="h-3.5 w-3.5 text-gray-400" />} label={screening.audioLang} />
+            {screening.isDubbed && <DetailBadge icon={<Volume2 className="h-3.5 w-3.5 text-gray-400" />} label="מדובב" />}
             {seatData?.totalRows != null && (
               <DetailBadge
                 icon={<Layers className="h-3.5 w-3.5 text-gray-400" />}
@@ -344,7 +350,7 @@ function filterScreenings(criteria: SearchCriteria, preferences: Preferences, sc
     // Date filter
     if (criteria.date && s.date !== criteria.date) return false;
     // Language filter — empty selection means "All Languages" (no filter).
-    if (!matchesSelectedLanguageFilter(preferences.selectedLanguages, s.audioLang)) {
+    if (!matchesSelectedLanguageFilter(preferences.selectedLanguages, s.audioLang, s.isDubbed)) {
       return false;
     }
     // Today's screenings must not already be in the past (unless allDay).

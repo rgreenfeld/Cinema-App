@@ -47,6 +47,10 @@ const normalizeDashes = (s) => s.replace(/[–—‑]/g, '-');
 // before the generic ones ("מדובב", "רוסית") so we don't collide.
 
 const TAG_RULES = [
+  // Hebrew-dubbed explicitly: "מדובב לעברית" / "dubbed in hebrew"
+  { re: /מדובב\s*לעברית|dubbed\s*(?:in\s*)?hebrew/i, language: 'hebrew', isDubbed: true },
+  // English-dubbed explicitly: "מדובב לאנגלית" / "dubbed in english"
+  { re: /מדובב\s*לאנגלית|dubbed\s*(?:in\s*)?english/i, language: 'english', isDubbed: true },
   // Russian-dubbed explicitly: "מדובב לרוסית" / "dubbed in russian"
   { re: /מדובב\s*לרוסית|dubbed\s*(?:in\s*)?russian/i, language: 'russian', isDubbed: true },
   // French-dubbed explicitly: "מדובב לצרפתית" / "dubbed in french"
@@ -78,9 +82,13 @@ export const LANGUAGE_TO_HEBREW = {
 };
 
 const TRAILING_TAG_SOURCE = [
+  'מדובב\\s*לעברית',
+  'מדובב\\s*לאנגלית',
   'מדובב\\s*לרוסית',
   'מדובב\\s*לצרפתית',
   'מדובב\\s*לערבית',
+  'dubbed\\s*(?:in\\s*)?hebrew',
+  'dubbed\\s*(?:in\\s*)?english',
   'dubbed\\s*(?:in\\s*)?russian',
   'dubbed\\s*(?:in\\s*)?french',
   'dubbed\\s*(?:in\\s*)?arabic',
@@ -205,6 +213,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const tests = [
     // [input, expectedClean, expectedLanguage, expectedIsDubbed]
     ['האודיסאה - רוסית', 'האודיסאה', 'russian', false],
+    ['האודיסאה - מדובב לעברית', 'האודיסאה', 'hebrew', true],
+    ['האודיסאה - מדובב לאנגלית', 'האודיסאה', 'english', true],
     ['האודיסאה (רוסית)', 'האודיסאה', 'russian', false],
     ['האודיסאה – רוסית', 'האודיסאה', 'russian', false],
     ['האודיסאה (מדובב)', 'האודיסאה', 'hebrew', true],

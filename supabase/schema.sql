@@ -12,12 +12,16 @@ create table if not exists public.screenings (
   date_time      timestamptz not null,
   booking_url    text,
   language       text not null default 'מקור',
+  is_dubbed      boolean not null default false,
   screen_type    text not null default 'רגיל',
   available_seats integer,  -- optional: available seats for this screening (null when not scraped)
   total_seats    integer,   -- optional: total seats in the hall (null when not scraped)
   total_rows     integer,   -- optional: number of rows in the hall (null when not scraped)
   created_at     timestamptz not null default now()
 );
+
+alter table public.screenings
+  add column if not exists is_dubbed boolean not null default false;
 
 -- Useful index for querying by screening time
 create index if not exists screenings_date_time_idx
@@ -34,6 +38,9 @@ create index if not exists screenings_movie_title_idx
 -- Useful index for filtering by language
 create index if not exists screenings_language_idx
   on public.screenings (language);
+
+create index if not exists screenings_is_dubbed_idx
+  on public.screenings (is_dubbed);
 
 -- Useful index for filtering by screen type
 create index if not exists screenings_screen_type_idx

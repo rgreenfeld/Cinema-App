@@ -39,6 +39,7 @@ export interface Screening {
   time: string; // HH:MM
   hallType: HallType;
   audioLang: Language;
+  isDubbed: boolean;
   /** Subtitle language — null when the DB record doesn't provide it. */
   subtitleLang: Language | null;
   /** Total seats in the hall — null when not available for this screening. */
@@ -152,6 +153,7 @@ export function transformSupabaseRows(
       time,
       hallType: (row.screen_type || 'רגיל') as HallType,
       audioLang: (row.language || 'מקור') as Language,
+      isDubbed: Boolean(row.is_dubbed),
       subtitleLang: null,
       totalSeats: row.total_seats ?? null,
       availableSeats: row.available_seats ?? null,

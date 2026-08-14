@@ -29,6 +29,7 @@ export type SupabaseScreeningRow = {
   date_time: string;
   booking_url: string | null;
   language: string;
+  is_dubbed?: boolean | null;
   screen_type: string;
   created_at: string;
   /** Optional seat / row metrics — null when not scraped/available for a screening. */
