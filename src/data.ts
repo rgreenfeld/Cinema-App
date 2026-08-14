@@ -1,5 +1,6 @@
 import type { SupabaseScreeningRow } from '@/lib/supabase';
 import { getCinemaLocation } from '@/utils/cinemaMapping';
+import { normalizeMovieTitle } from '@/utils/normalizeMovieTitle';
 
 export type ChainId = 'cinema-city' | 'yes-planet' | 'lev' | 'hot-cinema' | 'indie';
 
@@ -53,6 +54,17 @@ export interface Screening {
 const MOVIE_POSTER =
   'https://images.pexels.com/photos/3130827/pexels-photo-3130827.jpeg?auto=compress&cs=tinysrgb&w=400';
 
+function canonicalMovieTitle(rawTitle: string | null | undefined): string {
+  const normalized = normalizeMovieTitle(rawTitle || '').cleanTitle;
+  const fallback = (rawTitle || '').trim();
+  return normalized || fallback;
+}
+
+function movieIdFromTitle(rawTitle: string | null | undefined): string {
+  const title = canonicalMovieTitle(rawTitle);
+  return `supa-m-${title.replace(/\s+/g, '-').replace(/[^א-ת\w-]/g, '')}`;
+}
+
 function mapCinemaChainToId(chainValue: string): ChainId {
   const v = (chainValue || '').trim().toLowerCase();
   if (v === 'planet' || v === 'yes planet' || v === 'yes-planet' || v === 'יס פלאנט') return 'yes-planet';
@@ -74,14 +86,17 @@ function normalizeHallType(value: string | null | undefined): HallType {
  * the app's `Movie[]` shape, using the same defaults as `transformSupabaseRows`.
  */
 export function titlesToMovies(titles: string[]): Movie[] {
-  return titles.map((title) => ({
-    id: `supa-m-${title.replace(/\s+/g, '-').replace(/[^א-ת\w-]/g, '')}`,
-    title,
+  return titles.map((title) => {
+    const canonicalTitle = canonicalMovieTitle(title);
+    return {
+    id: movieIdFromTitle(canonicalTitle),
+    title: canonicalTitle,
     poster: MOVIE_POSTER,
     durationMin: 120,
     rating: 7.5,
     genre: 'סרט',
-  }));
+  };
+  });
 }
 
 // ─── Supabase data transformation ──────────────────────────────────────────
@@ -128,14 +143,14 @@ export function transformSupabaseRows(
 
   for (const row of supabaseRows) {
     const { date, time } = utcIsoToIsraelLocal(row.date_time);
+    const normalizedTitle = canonicalMovieTitle(row.clean_title || row.movie_title);
 
     // Derive a stable movie ID from the title
-    const movieSlug = row.movie_title.replace(/\s+/g, '-').replace(/[^א-ת\w-]/g, '');
-    const movieId = `supa-m-${movieSlug}`;
+    const movieId = movieIdFromTitle(normalizedTitle);
     if (!movieMap.has(movieId)) {
       movieMap.set(movieId, {
         id: movieId,
-        title: row.movie_title,
+        title: normalizedTitle,
         poster: 'https://images.pexels.com/photos/3130827/pexels-photo-3130827.jpeg?auto=compress&cs=tinysrgb&w=400',
         durationMin: 120,
         rating: 7.5,

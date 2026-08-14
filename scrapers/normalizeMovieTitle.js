@@ -41,24 +41,6 @@
 const collapseSpaces = (s) => s.replace(/\s+/g, ' ').trim();
 const normalizeDashes = (s) => s.replace(/[–—‑]/g, '-');
 
-/**
- * Build a regex that matches a language/dubbing tag wrapped in any common
- * delimiter: "- word", "(word)", "[word]", or bare "word".
- * @param {string} word  the literal tag text, e.g. 'רוסית' or 'russian'
- */
-function tagRegex(word) {
-  return new RegExp(
-    '[' +
-      '-–—‑(\\[\\s]*' +        // opening delimiter: hyphen, dash, paren, bracket, space
-      ']?' +                     // optional closing bracket check (handled inline below)
-      '\\s*' +                   // optional spaces
-      '(' + word + ')' +         // the tag word itself (case-insensitive via flag)
-      '\\s*' +                   // optional trailing spaces
-      '[)\\]]?',                 // optional closing paren/bracket
-    'i'
-  );
-}
-
 // ─── Canonical tag → { language, isDubbed } mapping ────────────────────────
 // Each entry: a regex that matches the tag word/phrase, and the result.
 // Order matters: more specific patterns (e.g. "מדובב לרוסית") must come
@@ -95,23 +77,39 @@ export const LANGUAGE_TO_HEBREW = {
   original: 'מקור',
 };
 
-/**
- * Build a regex that matches a tag wrapped in a delimiter AND captures the
- * full delimiter+tag so it can be removed cleanly from the title.
- *
- * Delimiters supported: "- tag", "– tag", "(tag)", "[tag]".
- * Returns null for input that isn't a non-empty string.
- */
-function stripTagRegex(word) {
-  // Escape regex-special chars in the word (Hebrew/English words are safe,
-  // but be defensive).
-  const esc = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  // Match: optional leading hyphen/dash/paren/bracket + spaces + word + spaces + optional closing paren/bracket
-  return new RegExp(
-    '[-–—‑(\\[]?\\s*' + esc + '\\s*[)\\]]?',
-    'i'
-  );
-}
+const TRAILING_TAG_SOURCE = [
+  'מדובב\\s*לרוסית',
+  'מדובב\\s*לצרפתית',
+  'מדובב\\s*לערבית',
+  'dubbed\\s*(?:in\\s*)?russian',
+  'dubbed\\s*(?:in\\s*)?french',
+  'dubbed\\s*(?:in\\s*)?arabic',
+  'מדובב',
+  'dubbed',
+  'רוסית',
+  'russian',
+  'צרפתית',
+  'french',
+  'ערבית',
+  'arabic',
+  'אנגלית',
+  'english',
+  'עברית',
+  'hebrew',
+  'מתורגם',
+  'subtitled',
+  'subtitles',
+].join('|');
+
+const TRAILING_DECORATOR_PATTERNS = [
+  new RegExp(`\\s*[-,:]\\s*(?:${TRAILING_TAG_SOURCE})\\s*$`, 'i'),
+  new RegExp(`\\s*\\((?:${TRAILING_TAG_SOURCE})\\)\\s*$`, 'i'),
+  new RegExp(`\\s*\\[(?:${TRAILING_TAG_SOURCE})\\]\\s*$`, 'i'),
+  new RegExp(`\\s+(?:${TRAILING_TAG_SOURCE})\\s*$`, 'i'),
+  /\s*[-,:]\s*הסרט\s*$/i,
+  /\s+הסרט\s*$/i,
+  /\s*[.!?,:;]+\s*$/,
+];
 
 /**
  * Remove ALL recognized language/dubbing tags from a title, returning the
@@ -126,24 +124,23 @@ function stripTags(rawTitle) {
 
   let t = collapseSpaces(normalizeDashes(rawTitle));
 
-  // Strip every recognized tag.
-  for (const { re } of TAG_RULES) {
-    // Remove the tag word itself (first occurrence) — tags are typically a
-    // single token, but "מדובב לרוסית" is two tokens; handle both by
-    // removing the matched phrase and any surrounding delimiter.
-    t = t
-      .replace(tagRegex(re.source), ' ')
-      .replace(re, ' ');
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const pattern of TRAILING_DECORATOR_PATTERNS) {
+      const next = t.replace(pattern, '').trim();
+      if (next !== t) {
+        t = next;
+        changed = true;
+      }
+    }
   }
 
   // Clean up leftover separators / dangling brackets.
   t = t
-    // Remove trailing/leading hyphens, dashes, parens, brackets and spaces.
-    .replace(/^[\s\-–—‑()\[\],.]+/, '')
-    .replace(/[\s\-–—‑()\[\],.]+$/, '')
-    // Collapse any double separators left mid-string (e.g. "a - - b").
-    .replace(/\s*[-–—‑()\[\]]\s*[-–—‑()\[\]]+/g, ' ')
-    // Collapse multiple spaces.
+    .replace(/^[\s\-,.]+/, '')
+    .replace(/[\s\-,.]+$/, '')
+    .replace(/\s*[([]\s*$/, '')
     .replace(/\s{2,}/g, ' ')
     .trim();
 
@@ -218,9 +215,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     ['האודיסאה (מתורגם)', 'האודיסאה', 'english', false],
     ['האודיסאה - מתורגם', 'האודיסאה', 'english', false],
     ['האודיסאה - מדובב לרוסית', 'האודיסאה', 'russian', true],
+    ['האודיסאה-מדובב לרוסית', 'האודיסאה', 'russian', true],
     ['The Odyssey (English)', 'The Odyssey', 'english', false],
     ['The Odyssey - Dubbed', 'The Odyssey', 'hebrew', true],
     ['The Odyssey (Hebrew)', 'The Odyssey', 'hebrew', false],
+    ['ספיידרמן: יום חדש-מדובב לצרפתית', 'ספיידרמן: יום חדש', 'french', true],
+    ['מואנה (לייב אקשן)-מדובב', 'מואנה (לייב אקשן)', 'hebrew', true],
+    ['צעצוע של סיפור 5-מדובב לצרפתית', 'צעצוע של סיפור 5', 'french', true],
+    ['קופה ראשית: הסרט', 'קופה ראשית', 'original', false],
+    ['ההזמנה.', 'ההזמנה', 'original', false],
     ['האודיסאה', 'האודיסאה', 'original', false],
     ['Null', 'Null', 'original', false],
     ['null', 'null', 'original', false],

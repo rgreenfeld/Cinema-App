@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, Settings2, Search, Clock, Calendar, Film, Clapperboard, Check, Loader2 } from 'lucide-react';
 import { HALL_TYPES, getUpcomingDates, formatDateLabel } from '@/constants';
 import type { Preferences, SearchCriteria } from '@/types';
-import type { Movie, Cinema, Screening } from '@/data';
+import { titlesToMovies, type Movie, type Cinema, type Screening } from '@/data';
 import { buildIntervals, timeToMinutes, minutesToTime, nowIsraelMinutes } from '@/timeUtils';
 import { fetchMoviesByBranchesAndDate, todayInIsrael } from '@/lib/supabase';
 import { getCinemaNamesForSelection } from '@/utils/cinemaMapping';
@@ -66,17 +66,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     fetchMoviesByBranchesAndDate(locationBranches, effectiveDate ?? undefined)
       .then((titles) => {
         if (cancelled) return;
-        // Convert fetched titles into the app's Movie[] shape (defaults
-        // matching transformSupabaseRows).
-        const movies: Movie[] = titles.map((title) => ({
-          id: `supa-m-${title.replace(/\s+/g, '-').replace(/[^א-ת\w-]/g, '')}`,
-          title,
-          poster: 'https://images.pexels.com/photos/3130827/pexels-photo-3130827.jpeg?auto=compress&cs=tinysrgb&w=400',
-          durationMin: 120,
-          rating: 7.5,
-          genre: 'סרט',
-        }));
-        setDynamicMovies(movies);
+        setDynamicMovies(titlesToMovies(titles));
       })
       .catch(() => {
         if (!cancelled) setMoviesError(true);

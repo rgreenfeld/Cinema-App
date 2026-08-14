@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { normalizeMovieTitle } from '@/utils/normalizeMovieTitle';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -22,6 +23,7 @@ const PAGE_SIZE = 1000;
 export type SupabaseScreeningRow = {
   id: string;
   movie_title: string;
+  clean_title?: string | null;
   cinema_chain: string;
   branch: string;
   date_time: string;
@@ -214,7 +216,9 @@ export async function fetchMoviesByBranchesAndDate(
 
     const rows = (data as Array<{ movie_title: string | null }>) || [];
     for (const row of rows) {
-      if (row.movie_title) unique.add(row.movie_title);
+      if (!row.movie_title) continue;
+      const normalizedTitle = normalizeMovieTitle(row.movie_title).cleanTitle || row.movie_title.trim();
+      if (normalizedTitle) unique.add(normalizedTitle);
     }
     if (rows.length < PAGE_SIZE) break;
   }
