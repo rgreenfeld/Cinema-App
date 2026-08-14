@@ -56,18 +56,29 @@
 import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync, existsSync } from 'fs';
-import { resolve, dirname } from 'path';
+import { resolve, dirname, isAbsolute } from 'path';
 import { fileURLToPath } from 'url';
 import { normalizeMovieTitle } from './normalizeMovieTitle.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// If output.seats.json exists (from enrichSeats.js), prefer it so the DB gets
-// live seat metrics (available_seats / total_seats / total_rows).
-const INPUT_FILE = existsSync(resolve(__dirname, 'output.seats.json'))
+// Optional override for the source file, useful when uploading another chain
+// through the same normalization/uploader flow (for example Hot Cinema).
+const configuredInputPath = (process.env.SUPABASE_INPUT_FILE || '').trim();
+
+// Default behavior remains unchanged for Cinema City:
+// if output.seats.json exists (from enrichSeats.js), prefer it; otherwise use
+// output.json from the schedule scraper.
+const defaultInputFile = existsSync(resolve(__dirname, 'output.seats.json'))
   ? resolve(__dirname, 'output.seats.json')
   : resolve(__dirname, 'output.json');
+
+const INPUT_FILE = configuredInputPath
+  ? (isAbsolute(configuredInputPath)
+      ? configuredInputPath
+      : resolve(__dirname, configuredInputPath))
+  : defaultInputFile;
 const TABLE = process.env.SUPABASE_SCREENINGS_TABLE || 'screenings';
 const BATCH_SIZE = 500;
 
@@ -94,14 +105,24 @@ try {
   screenings = JSON.parse(readFileSync(INPUT_FILE, 'utf-8'));
 } catch (err) {
   console.error(`❌ Could not read ${INPUT_FILE}:`, err.message);
-  console.error('   Run `node scrapers/cinemaCity.js` first to generate the file.');
+  console.error('   Generate the scraper output first, then rerun this uploader.');
   process.exit(1);
 }
 
 if (!Array.isArray(screenings) || screenings.length === 0) {
-  console.error('❌ No screenings found in output.json.');
+  console.error(`❌ No screenings found in ${INPUT_FILE}.`);
   process.exit(1);
 }
+
+console.log(`📥 Upload source file: ${INPUT_FILE}`);
+console.log(`🎬 Records loaded: ${screenings.length}`);
+
+const chainCounts = screenings.reduce((acc, item) => {
+  const key = (item?.cinema_chain || 'unknown').toString();
+  acc[key] = (acc[key] || 0) + 1;
+  return acc;
+}, {});
+console.log(`🏷 Chain breakdown: ${Object.entries(chainCounts).map(([k, v]) => `${k}=${v}`).join(', ')}`);
 
 // ─── Date/time normalization helpers ───────────────────────────────────────────
 
@@ -207,6 +228,14 @@ function normalizeTitle(value) {
   return title;
 }
 
+function normalizeScreenTypeValue(value) {
+  if (typeof value !== 'string') return 'רגיל';
+  const trimmed = value.trim();
+  if (!trimmed) return 'רגיל';
+  if (trimmed.toLowerCase() === 'regular') return 'רגיל';
+  return trimmed;
+}
+
 const rows = screenings
   .map((s, i) => {
     // Normalize the date_time. Prefer the new combined `date_time` field,
@@ -233,10 +262,7 @@ const rows = screenings
         : 'מקור';
 
     const rawScreenType = pick(s, 'screen_type', 'screenType', 'hallType', 'venueType');
-    const screen_type =
-      typeof rawScreenType === 'string' && rawScreenType.trim() !== ''
-        ? rawScreenType.trim()
-        : 'רגיל';
+    const screen_type = normalizeScreenTypeValue(rawScreenType);
 
     const sourceTitle = normalizeTitle(pick(s, 'movie_title', 'movieTitle'));
     if (!sourceTitle) {

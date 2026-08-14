@@ -62,6 +62,13 @@ function mapCinemaChainToId(chainValue: string): ChainId {
   return 'indie';
 }
 
+function normalizeHallType(value: string | null | undefined): HallType {
+  const raw = (value || '').trim();
+  if (!raw) return 'רגיל';
+  if (raw.toLowerCase() === 'regular') return 'רגיל';
+  return raw as HallType;
+}
+
 /**
  * Convert an array of unique movie titles (as fetched from Supabase) into
  * the app's `Movie[]` shape, using the same defaults as `transformSupabaseRows`.
@@ -158,7 +165,7 @@ export function transformSupabaseRows(
       cinemaId,
       date,
       time,
-      hallType: (row.screen_type || 'רגיל') as HallType,
+      hallType: normalizeHallType(row.screen_type),
       audioLang: (row.language || 'מקור') as Language,
       subtitleLang: null,
       totalSeats: row.total_seats ?? null,

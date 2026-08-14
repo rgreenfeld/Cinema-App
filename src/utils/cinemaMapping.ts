@@ -1,7 +1,7 @@
 /**
- * Cinema branch → city & region mapping.
+ * Cinema branch -> city & region mapping.
  *
- * Maps the full cinema branch names (as scraped from the Cinema City site)
+ * Maps full cinema branch names (as scraped from all supported chains)
  * to a city and a region. These are the source of truth for:
  *   - the location options rendered on the preferences screen,
  *   - the city/region stored on each `Cinema` derived from scraped data.
@@ -29,6 +29,20 @@ export const CINEMA_LOCATION_MAP: Record<string, CinemaLocation> = {
   'פלאנט ירושלים': { city: 'ירושלים', region: 'ירושלים והסביבה' },
   'פלאנט באר שבע': { city: 'באר שבע', region: 'דרום' },
   'פלאנט זכרון יעקב': { city: 'זכרון יעקב', region: 'חיפה והקריות' },
+  'הוט סינמה קריון': { city: 'קריית ביאליק', region: 'חיפה והקריות' },
+  'הוט סינמה חיפה': { city: 'חיפה', region: 'חיפה והקריות' },
+  'הוט סינמה כפר סבא': { city: 'כפר סבא', region: 'שרון' },
+  'הוט סינמה אשקלון': { city: 'אשקלון', region: 'דרום' },
+  'הוט סינמה רחובות': { city: 'רחובות', region: 'שפלה' },
+  'הוט סינמה פתח תקווה': { city: 'פתח תקווה', region: 'מרכז' },
+  'הוט סינמה מודיעין': { city: 'מודיעין', region: 'ירושלים והסביבה' },
+  'הוט סינמה כרמיאל': { city: 'כרמיאל', region: 'צפון' },
+  'הוט סינמה אשדוד': { city: 'אשדוד', region: 'דרום' },
+  'הוט סינמה נהריה': { city: 'נהריה', region: 'צפון' },
+  'הוט סינמה נתניה': { city: 'נתניה', region: 'שרון' },
+  // Current Hot Cinema feed occasionally emits these aliases.
+  'הוט סינמה Натания': { city: 'נתניה', region: 'שרון' },
+  'הוט סינמה DREAM STAGE': { city: 'נתניה', region: 'שרון' },
 };
 
 const UNKNOWN: CinemaLocation = { city: 'אחר', region: 'אחר' };

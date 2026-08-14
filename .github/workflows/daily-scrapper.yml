@@ -41,3 +41,13 @@ jobs:
         run: |
           node scrapers/planet.js
 
+      - name: Run Hot Cinema scraper + upload
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_INPUT_FILE: output.hot.json
+        run: |
+          node scrapers/hotCinema.js
+          node scrapers/uploadToSupabase.js
+
