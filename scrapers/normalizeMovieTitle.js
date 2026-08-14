@@ -82,6 +82,11 @@ export const LANGUAGE_TO_HEBREW = {
 };
 
 const TRAILING_TAG_SOURCE = [
+  'מתורגם\\s*רוסית',
+  'מתורגם\\s*צרפתית',
+  'מתורגם\\s*ערבית',
+  'מתורגם\\s*אנגלית',
+  'מתורגם\\s*עברית',
   'מדובב\\s*לעברית',
   'מדובב\\s*לאנגלית',
   'מדובב\\s*לרוסית',
@@ -110,6 +115,7 @@ const TRAILING_TAG_SOURCE = [
 ].join('|');
 
 const TRAILING_DECORATOR_PATTERNS = [
+  new RegExp(`\\s*[-,:]?\\s*(?:${TRAILING_TAG_SOURCE})(?:\\s*[-:]\\s*|\\s+)[А-Яа-яЁё][А-Яа-яЁё0-9 .,!?'"()\\-:]*$`, 'i'),
   new RegExp(`\\s*[-,:]\\s*(?:${TRAILING_TAG_SOURCE})\\s*$`, 'i'),
   new RegExp(`\\s*\\((?:${TRAILING_TAG_SOURCE})\\)\\s*$`, 'i'),
   new RegExp(`\\s*\\[(?:${TRAILING_TAG_SOURCE})\\]\\s*$`, 'i'),
@@ -226,6 +232,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     ['האודיסאה - מתורגם', 'האודיסאה', 'english', false],
     ['האודיסאה - מדובב לרוסית', 'האודיסאה', 'russian', true],
     ['האודיסאה-מדובב לרוסית', 'האודיסאה', 'russian', true],
+    ['האודיסאה מדובב לרוסית ОДИССЕЯ', 'האודיסאה', 'russian', true],
+    ['ספיידרמן: יום חדש מדובב לרוסית - ЧЕЛОВЕК-ПАУК: НОВЫЙ ДЕНЬ', 'ספיידרמן: יום חדש', 'russian', true],
+    ['האחד והיחיד שלי מתורגם רוסית Мой единственный и не', 'האחד והיחיד שלי', 'russian', false],
     ['The Odyssey (English)', 'The Odyssey', 'english', false],
     ['The Odyssey - Dubbed', 'The Odyssey', 'hebrew', true],
     ['The Odyssey (Hebrew)', 'The Odyssey', 'hebrew', false],

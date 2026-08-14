@@ -16,6 +16,11 @@ const TAG_RULES = [
 ] as const;
 
 const TRAILING_TAG_SOURCE = [
+  'מתורגם\\s*רוסית',
+  'מתורגם\\s*צרפתית',
+  'מתורגם\\s*ערבית',
+  'מתורגם\\s*אנגלית',
+  'מתורגם\\s*עברית',
   'מדובב\\s*לעברית',
   'מדובב\\s*לאנגלית',
   'מדובב\\s*לרוסית',
@@ -44,6 +49,7 @@ const TRAILING_TAG_SOURCE = [
 ].join('|');
 
 const TRAILING_DECORATOR_PATTERNS = [
+  new RegExp(`\\s*[-,:]?\\s*(?:${TRAILING_TAG_SOURCE})(?:\\s*[-:]\\s*|\\s+)[А-Яа-яЁё][А-Яа-яЁё0-9 .,!?'"()\\-:]*$`, 'i'),
   new RegExp(`\\s*[-,:]\\s*(?:${TRAILING_TAG_SOURCE})\\s*$`, 'i'),
   new RegExp(`\\s*\\((?:${TRAILING_TAG_SOURCE})\\)\\s*$`, 'i'),
   new RegExp(`\\s*\\[(?:${TRAILING_TAG_SOURCE})\\]\\s*$`, 'i'),
