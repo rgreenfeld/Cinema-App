@@ -1,4 +1,4 @@
-import type { ChainId, Language } from '@/data';
+import type { ChainId, LanguageFilter } from '@/data';
 
 export type Screen = 'preferences' | 'search' | 'results';
 
@@ -11,7 +11,7 @@ export interface Preferences {
    *  Preserves the full display names for filtering and rendering. */
   selectedBranches: string[];
   selectedChains: ChainId[];
-  selectedLanguages: Language[];
+  selectedLanguages: LanguageFilter[];
 }
 
 export type SearchMode = 'movie' | 'time';

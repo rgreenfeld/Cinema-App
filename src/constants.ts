@@ -1,4 +1,4 @@
-import type { ChainId, HallType, Language } from '@/data';
+import type { ChainId, HallType, LanguageFilter } from '@/data';
 import { CINEMA_LOCATION_MAP } from '@/utils/cinemaMapping';
 
 export type RegionName =
@@ -50,7 +50,7 @@ export const CHAINS: { id: ChainId; name: string; shortName: string; color: stri
   { id: 'indie', name: 'קולנוע עצמאי', shortName: 'עצמאי', color: 'bg-violet-500/15 text-violet-300 border-violet-500/30' },
 ];
 
-export const LANGUAGES: Language[] = ['עברית', 'אנגלית', 'רוסית', 'ערבית', 'צרפתית', 'מקור', 'מדובב'];
+export const LANGUAGES: LanguageFilter[] = ['שפת מקור', 'רוסית', 'ערבית', 'צרפתית', 'מדובב'];
 
 export const HALL_TYPES: HallType[] = ['רגיל', 'VIP', 'IMAX', '4DX', 'ScreenX', '3D', 'Onyx', 'קומפורט'];
 

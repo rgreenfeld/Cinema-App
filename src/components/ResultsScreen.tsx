@@ -30,6 +30,22 @@ import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { seatAvailabilityFromRecord } from '@/lib/seatAvailability';
 import { todayInIsrael } from '@/lib/supabase';
 
+const ORIGINAL_LANGUAGE_GROUP = new Set(['מקור', 'עברית', 'אנגלית', 'מקור עם כתוביות']);
+
+function matchesSelectedLanguageFilter(
+  selectedLanguages: Preferences['selectedLanguages'],
+  audioLang: Screening['audioLang']
+): boolean {
+  if (selectedLanguages.length === 0) return true;
+
+  return selectedLanguages.some((selected) => {
+    if (selected === 'שפת מקור') {
+      return ORIGINAL_LANGUAGE_GROUP.has(audioLang);
+    }
+    return selected === audioLang;
+  });
+}
+
 interface Props {
   criteria: SearchCriteria;
   preferences: Preferences;
@@ -328,10 +344,7 @@ function filterScreenings(criteria: SearchCriteria, preferences: Preferences, sc
     // Date filter
     if (criteria.date && s.date !== criteria.date) return false;
     // Language filter — empty selection means "All Languages" (no filter).
-    if (
-      preferences.selectedLanguages.length > 0 &&
-      !preferences.selectedLanguages.includes(s.audioLang)
-    ) {
+    if (!matchesSelectedLanguageFilter(preferences.selectedLanguages, s.audioLang)) {
       return false;
     }
     // Today's screenings must not already be in the past (unless allDay).

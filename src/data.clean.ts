@@ -11,7 +11,8 @@ export interface CinemaChain {
 }
 
 export type HallType = 'רגיל' | 'VIP' | 'IMAX' | '4DX' | 'ScreenX' | '3D' | 'Onyx' | 'קומפורט';
-export type Language = 'עברית' | 'אנגלית' | 'רוסית' | 'ערבית' | 'צרפתית' | 'מקור' | 'מדובב';
+export type Language = 'עברית' | 'אנגלית' | 'רוסית' | 'ערבית' | 'צרפתית' | 'מקור' | 'מקור עם כתוביות' | 'מדובב';
+export type LanguageFilter = 'שפת מקור' | 'רוסית' | 'ערבית' | 'צרפתית' | 'מדובב';
 
 export interface Movie {
   id: string;
