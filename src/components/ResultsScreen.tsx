@@ -111,26 +111,10 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
   return (
     <div className="screen-enter mx-auto max-w-3xl px-4 pb-16 pt-6">
       {/* Header context */}
-      <header className="mb-6">
+      <header className="sticky top-0 z-20 -mx-4 mb-6 border-b border-white/[0.06] bg-[#0a0a0f]/95 px-4 pb-3 pt-6 backdrop-blur-md">
         <div className="cinema-card flex items-center justify-between gap-3 p-4">
           <div className="min-w-0">
-            {criteria.mode === 'movie' ? (
-              <label className="flex items-center gap-2 text-xs text-gray-500">
-                <Calendar className="h-3.5 w-3.5 shrink-0" />
-                <span className="sr-only">תאריך</span>
-                <select
-                  value={criteria.date ?? ''}
-                  onChange={(event) => onCriteriaChange({ ...criteria, date: event.target.value })}
-                  className="bg-transparent text-xs text-gray-300 outline-none"
-                >
-                  {dateOptions.map((date) => (
-                    <option key={date} value={date} className="bg-[#12121a]">
-                      {formatDateLabel(date)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ) : (
+            {criteria.mode === 'time' && (
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <Calendar className="h-3.5 w-3.5" />
                 {dateLabel}
@@ -148,10 +132,27 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
             </p>
           </div>
           {criteria.mode === 'movie' ? (
-            <button type="button" onClick={onChange} className="btn-primary shrink-0 px-4 py-2.5 text-sm">
-              <ChevronLeft className="h-4 w-4" />
-              חזור
-            </button>
+            <div className="flex shrink-0 items-center gap-2">
+              <label className="relative">
+                <span className="sr-only">תאריך</span>
+                <Calendar className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <select
+                  value={criteria.date ?? ''}
+                  onChange={(event) => onCriteriaChange({ ...criteria, date: event.target.value })}
+                  className="h-11 max-w-[9.5rem] appearance-none rounded-xl border border-white/10 bg-white/[0.03] py-2 pr-9 pl-3 text-sm font-semibold text-gray-100 outline-none transition-colors hover:border-white/20 focus:border-rose-500/60 focus:ring-2 focus:ring-rose-500/20"
+                >
+                  {dateOptions.map((date) => (
+                    <option key={date} value={date} className="bg-[#12121a]">
+                      {formatDateLabel(date)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button type="button" onClick={onChange} className="btn-primary h-11 shrink-0 px-4 py-2.5 text-sm">
+                <ChevronLeft className="h-4 w-4" />
+                חזור
+              </button>
+            </div>
           ) : (
             <button type="button" onClick={onChange} className="btn-primary shrink-0 px-4 py-2.5 text-sm">
               <ChevronLeft className="h-4 w-4" />
