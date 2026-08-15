@@ -2,7 +2,7 @@ import type { SupabaseScreeningRow } from '@/lib/supabase';
 import { getCinemaLocation } from '@/utils/cinemaMapping';
 import { normalizeMovieTitle } from '@/utils/normalizeMovieTitle';
 
-export type ChainId = 'cinema-city' | 'yes-planet' | 'lev' | 'hot-cinema' | 'indie';
+export type ChainId = 'cinema-city' | 'yes-planet' | 'lev' | 'hot-cinema' | 'movieland' | 'indie';
 
 export interface CinemaChain {
   id: ChainId;
@@ -73,6 +73,7 @@ function mapCinemaChainToId(chainValue: string): ChainId {
   if (v === 'cinema city' || v === 'cinema-city' || v === 'סינמה סיטי') return 'cinema-city';
   if (v === 'lev' || v === 'רשת לב' || v === 'לב') return 'lev';
   if (v === 'hot cinema' || v === 'hot-cinema' || v === 'הוט סינמה') return 'hot-cinema';
+  if (v === 'movieland' || v === 'movie land' || v === 'מובילנד') return 'movieland';
   return 'indie';
 }
 
