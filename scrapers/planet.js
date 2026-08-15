@@ -582,15 +582,15 @@ async function uploadMovies(screenings) {
 
 /**
  * Upload Planet screenings into the `screenings` table (the table the app
- * reads). Since the table has no unique constraint, we mirror the existing
- * uploadToSupabase.js pipeline: delete this chain's outdated rows, then insert
- * the fresh ones in batches. This keeps Planet data in sync without stale
- * duplicates across runs.
+ * reads). Since the table has no unique constraint, insert the fresh rows and
+ * then remove the preceding Planet schedule. This keeps Planet data in sync
+ * without stale duplicates or an empty results window during a refresh.
  *
  * The delete requires DELETE privileges — use a service_role key or ensure a
  * DELETE policy exists (see the schema / uploadToSupabase.js notes).
  */
 async function uploadShowtimes(screenings) {
+  const syncStartedAt = new Date().toISOString();
   const rows = screenings.map((s) => ({
     movie_title: s.cleanTitle,
     cinema_chain: 'planet',
@@ -608,40 +608,6 @@ async function uploadShowtimes(screenings) {
   }
 
   console.log(`🎫 Syncing ${rows.length} Planet showtimes into "${SCREENINGS_TABLE}"...`);
-
-  // ─── Step 1: Delete ALL existing Planet screenings ─────────────────────────
-  // The scraper re-fetches the full upcoming schedule every run, so the safest
-  // sync is to remove every existing `cinema_chain='planet'` row and insert the
-  // fresh set. Syncing only "outdated" rows (date_time < now) leaves the
-  // previously-uploaded future rows behind, producing duplicates (stale
-  // blocked router-launch URLs alongside fresh ones). Deleting all Planet rows
-  // keeps the table clean and consistent on every run.
-  console.log(`🧹 Removing all existing Planet screenings...`);
-
-  const { count: existingCount } = await supabase
-    .from(SCREENINGS_TABLE)
-    .select('*', { count: 'exact', head: true })
-    .eq('cinema_chain', 'planet');
-  console.log(`   Found ${existingCount ?? '?'} existing Planet screening(s).`);
-
-  const { error: deleteError, count: deletedCount } = await supabase
-    .from(SCREENINGS_TABLE)
-    .delete({ count: 'exact' })
-    .eq('cinema_chain', 'planet');
-
-  if (deleteError) {
-    console.error('❌ Failed to delete existing Planet screenings:', deleteError.message);
-    console.error('   Delete requires DELETE privileges — use a service_role key or add a DELETE policy.');
-    process.exit(1);
-  }
-
-  if ((existingCount ?? 0) > 0 && deletedCount === 0) {
-    console.error('⚠️  DELETE ran but removed 0 rows even though Planet screenings exist.');
-    console.error('   This means your key CANNOT delete rows (RLS has no DELETE policy).');
-    console.error('   Fix: add the policy in Supabase SQL Editor, or set SUPABASE_SERVICE_ROLE_KEY.');
-    process.exit(1);
-  }
-  console.log(`   ✓ Existing Planet screenings removed (${deletedCount ?? 0} row(s)).`);
 
   // If the DB has a dedicated clean_title column, populate it from the
   // canonical movie title while keeping compatibility with leaner schemas.
@@ -674,6 +640,40 @@ async function uploadShowtimes(screenings) {
     console.log(`   ✓ Batch ${i + 1}/${batches.length} inserted (${batches[i].length} rows)`);
   }
   console.log(`   ✓ ${inserted} Planet showtimes inserted.`);
+
+  // The fresh schedule is now available to readers. Remove only rows from an
+  // earlier sync so users never encounter an empty Planet result set.
+  console.log(`🧹 Removing older Planet screenings...`);
+  const { count: existingCount, error: countError } = await supabase
+    .from(SCREENINGS_TABLE)
+    .select('*', { count: 'exact', head: true })
+    .eq('cinema_chain', 'planet')
+    .lt('created_at', syncStartedAt);
+
+  if (countError) {
+    console.error('❌ Failed to count older Planet screenings:', countError.message);
+    process.exit(1);
+  }
+
+  const { error: deleteError, count: deletedCount } = await supabase
+    .from(SCREENINGS_TABLE)
+    .delete({ count: 'exact' })
+    .eq('cinema_chain', 'planet')
+    .lt('created_at', syncStartedAt);
+
+  if (deleteError) {
+    console.error('❌ Failed to delete older Planet screenings:', deleteError.message);
+    console.error('   Delete requires DELETE privileges — use a service_role key or add a DELETE policy.');
+    process.exit(1);
+  }
+
+  if ((existingCount ?? 0) > 0 && deletedCount === 0) {
+    console.error('⚠️  DELETE ran but removed 0 rows even though older Planet screenings were found.');
+    console.error('   This means your key CANNOT delete rows (RLS has no DELETE policy).');
+    console.error('   Fix: add the policy in Supabase SQL Editor, or set SUPABASE_SERVICE_ROLE_KEY.');
+    process.exit(1);
+  }
+  console.log(`   ✓ Older Planet screenings removed (${deletedCount ?? 0} row(s)).`);
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
