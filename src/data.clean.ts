@@ -1,7 +1,7 @@
 import type { SupabaseScreeningRow } from '@/lib/supabase';
 import { getCinemaLocation } from '@/utils/cinemaMapping';
 
-export type ChainId = 'cinema-city' | 'yes-planet' | 'lev' | 'hot-cinema' | 'indie';
+export type ChainId = 'cinema-city' | 'yes-planet' | 'lev' | 'hot-cinema' | 'movieland' | 'indie';
 
 export interface CinemaChain {
   id: ChainId;

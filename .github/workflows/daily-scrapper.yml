@@ -59,3 +59,22 @@ jobs:
           node scrapers/hotCinema.js
           node scrapers/uploadToSupabase.js
 
+      - name: Run Movieland scraper + upload
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_INPUT_FILE: output.movieland.json
+        run: |
+          node scrapers/movieland.js
+          node scrapers/uploadToSupabase.js
+
+      - name: Run Lev Cinema scraper + upload
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_INPUT_FILE: output.lev.json
+        run: |
+          node scrapers/lev.js
+          node scrapers/uploadToSupabase.js

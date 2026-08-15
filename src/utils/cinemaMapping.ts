@@ -43,6 +43,19 @@ export const CINEMA_LOCATION_MAP: Record<string, CinemaLocation> = {
   // Current Hot Cinema feed occasionally emits these aliases.
   'הוט סינמה Натания': { city: 'נתניה', region: 'שרון' },
   'הוט סינמה DREAM STAGE': { city: 'נתניה', region: 'שרון' },
+  'מובילנד הצוק ת"א': { city: 'תל אביב', region: 'מרכז' },
+  'מובילנד חיפה': { city: 'חיפה', region: 'חיפה והקריות' },
+  'מובילנד כרמיאל': { city: 'כרמיאל', region: 'צפון' },
+  'מובילנד נתניה': { city: 'נתניה', region: 'שרון' },
+  'מובילנד עפולה': { city: 'עפולה', region: 'צפון' },
+  'מובילנד עזריאלי ת"א- Summer Sky': { city: 'תל אביב', region: 'מרכז' },
+  'לב תל אביב': { city: 'תל אביב', region: 'מרכז' },
+  'לב סמדר': { city: 'ירושלים', region: 'ירושלים והסביבה' },
+  'לב דניאל': { city: 'הרצליה', region: 'מרכז' },
+  'לב אבן יהודה': { city: 'אבן יהודה', region: 'שרון' },
+  'לב עומר': { city: 'עומר', region: 'דרום' },
+  'לב רמת השרון': { city: 'רמת השרון', region: 'מרכז' },
+  'לב רעננה': { city: 'רעננה', region: 'שרון' },
 };
 
 const UNKNOWN: CinemaLocation = { city: 'אחר', region: 'אחר' };

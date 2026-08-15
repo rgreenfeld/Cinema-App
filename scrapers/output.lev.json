@@ -1,0 +1,3252 @@
+[
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T11:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603148"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-15T11:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603133"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T11:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603435"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T12:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603439"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-15T12:45:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603415"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603290"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603626"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-15T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603156"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-15T13:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603425"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב עומר",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603571"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-15T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603134"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-15T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603289"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603155"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-15T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603581"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-15T13:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603608"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-15T13:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603135"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T13:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603434"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-15T13:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603293"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T14:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603147"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-15T14:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603428"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T14:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603418"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T15:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603627"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T15:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603441"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-15T15:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603440"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T15:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603292"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב עומר",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-15T15:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603569"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מילה שלי",
+    "date_time": "2026-08-15T15:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603136"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T15:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603582"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-15T15:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603416"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603605"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-15T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603283"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603433"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T16:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603154"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-15T16:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603152"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603144"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603151"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T16:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603296"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "מילה שלי",
+    "date_time": "2026-08-15T17:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603442"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T17:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603419"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T17:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603623"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-15T17:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603422"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-15T17:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603297"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב עומר",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T18:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603568"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T18:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603580"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-15T18:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603138"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T18:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603604"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603142"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-15T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603413"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-15T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603424"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T18:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603284"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T18:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603286"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T18:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603132"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T18:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603432"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-15T18:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603140"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T19:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603146"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T19:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603622"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-15T19:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603430"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T19:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603420"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T20:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603578"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-15T20:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603287"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-15T20:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603139"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב עומר",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T20:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603570"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-15T20:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603141"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T20:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603288"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T20:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603606"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-15T20:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603421"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-15T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603436"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603285"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603137"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T21:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603431"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-15T21:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603143"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-15T21:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603145"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-15T21:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603426"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T21:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603414"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T21:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603624"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-15T21:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603417"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-16T10:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603464"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-16T10:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603462"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-16T10:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603459"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603471"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-16T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603461"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-16T11:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603165"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-16T11:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603306"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-16T11:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603167"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-16T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603178"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-16T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603175"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-16T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603304"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "מרסופילאמי-מדובב",
+    "date_time": "2026-08-16T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603303"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "תיכון מגשימים",
+    "date_time": "2026-08-16T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603159"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "תיכון מגשימים",
+    "date_time": "2026-08-16T12:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603454"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-16T12:40:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603446"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-16T12:50:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603310"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-16T13:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603169"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-16T13:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603309"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-16T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603311"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מרסופילאמי-מדובב",
+    "date_time": "2026-08-16T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603176"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-16T13:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603161"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-16T13:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603457"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-16T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603158"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T13:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603470"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-16T13:30:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603162"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-16T13:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603463"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-16T14:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603460"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-16T14:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603466"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-16T15:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603445"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-16T15:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603177"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-16T15:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603160"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-16T15:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603449"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-16T15:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603447"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603469"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-16T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603302"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-16T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603301"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מילה שלי",
+    "date_time": "2026-08-16T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603168"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603181"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-16T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603166"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603628"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603601"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-16T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603305"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-16T17:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603450"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-16T17:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603164"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-16T17:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603455"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-16T17:10:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603163"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-16T17:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603453"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-16T18:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603298"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-16T18:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603443"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T18:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603299"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-16T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603171"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603468"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-16T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603456"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T18:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603183"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-16T18:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603157"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-16T18:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603179"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-16T18:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603602"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-16T18:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603629"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-16T19:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603465"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-16T19:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603173"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-16T19:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603451"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-16T19:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603307"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-16T20:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603308"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T20:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603300"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-16T20:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603172"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-16T20:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603452"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-16T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603472"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603182"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-16T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603467"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-16T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603174"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-16T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603444"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-16T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603603"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-16T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603630"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-16T21:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603458"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-16T21:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603170"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-16T21:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603180"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-16T21:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603448"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-17T10:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603494"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-17T10:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603492"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-17T10:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603489"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-17T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603491"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-17T11:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603192"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-17T11:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603322"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-17T11:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603194"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-17T11:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603323"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-17T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603205"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-17T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603324"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-17T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603202"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "תיכון מגשימים",
+    "date_time": "2026-08-17T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603186"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T11:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603501"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "תיכון מגשימים",
+    "date_time": "2026-08-17T12:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603484"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-17T12:40:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603476"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-17T13:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603196"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-17T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603317"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מרסופילאמי-מדובב",
+    "date_time": "2026-08-17T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603203"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-17T13:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603188"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-17T13:10:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603319"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-17T13:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603487"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-17T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603185"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-17T13:30:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603189"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "מרסופילאמי-מדובב",
+    "date_time": "2026-08-17T13:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603493"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T13:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603500"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-17T14:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603490"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-17T14:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603496"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-17T15:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603475"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-17T15:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603204"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-17T15:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603187"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-17T15:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603479"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-17T15:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603477"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-17T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603312"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-17T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603315"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מילה שלי",
+    "date_time": "2026-08-17T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603195"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603208"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603499"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-17T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603193"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-17T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603318"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-17T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603600"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-17T16:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603633"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-17T17:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603480"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-17T17:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603191"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-17T17:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603485"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-17T17:10:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603190"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-17T17:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603483"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T18:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603313"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-17T18:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603473"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-17T18:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603316"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-17T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603198"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-17T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603486"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T18:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603210"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T18:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603498"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-17T18:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603599"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-17T18:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603184"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-17T18:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603632"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-17T18:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603206"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-17T19:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603495"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-17T19:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603200"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-17T19:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603481"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-17T19:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603320"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-17T20:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603321"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T20:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603314"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T20:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603598"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T20:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603631"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-17T20:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603199"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-17T20:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603482"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-17T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603502"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603209"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-17T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603201"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-17T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603474"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-17T21:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603197"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-17T21:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603497"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-17T21:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603488"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-17T21:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603207"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-17T21:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603478"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-18T10:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603532"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-18T10:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603519"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T10:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603517"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-18T10:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603509"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T10:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603508"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-18T10:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603219"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603333"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603638"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603596"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603584"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603218"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603337"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603215"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-18T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603336"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T11:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603220"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T11:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603235"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T11:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603511"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T12:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603507"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603332"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603533"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-18T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603212"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603521"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-18T13:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603531"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-18T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603234"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-18T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603331"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603213"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603586"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T13:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603597"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T13:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603637"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-18T13:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603233"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T13:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603512"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T13:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603335"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T14:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603221"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-18T14:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603503"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T14:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603527"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T15:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603505"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T15:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603334"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-18T15:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603506"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מילה שלי",
+    "date_time": "2026-08-18T15:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603232"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-18T15:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603529"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T15:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603587"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603635"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603594"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-18T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603325"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603513"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T16:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603214"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T16:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603216"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603211"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603217"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T16:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603338"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב עומר",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T17:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603573"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "מילה שלי",
+    "date_time": "2026-08-18T17:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603504"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T17:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603526"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-18T17:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603523"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T17:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603339"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T18:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603634"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T18:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603585"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-18T18:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603230"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T18:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603593"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-18T18:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603518"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603226"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T18:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603326"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T18:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603328"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T18:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603224"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T18:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603514"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T18:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603228"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-18T18:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603522"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T19:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603222"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב עומר",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T19:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603572"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-18T19:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603516"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T19:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603525"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T20:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603583"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-18T20:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603329"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-18T20:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603229"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T20:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603636"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-18T20:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603227"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T20:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603330"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T20:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603595"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-18T20:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603524"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603327"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603231"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T21:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603515"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-18T21:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603225"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-18T21:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603510"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-18T21:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603223"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-18T21:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603520"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T21:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603530"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-18T21:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603528"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-19T10:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603554"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-19T10:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603551"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-19T10:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603548"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-19T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603550"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-19T11:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603244"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-19T11:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603348"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-19T11:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603246"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-19T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603257"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-19T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603553"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-19T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603254"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-19T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603346"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "מרסופילאמי-מדובב",
+    "date_time": "2026-08-19T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603345"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "תיכון מגשימים",
+    "date_time": "2026-08-19T11:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603238"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T11:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603561"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "תיכון מגשימים",
+    "date_time": "2026-08-19T12:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603543"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-19T12:40:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603535"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-19T12:50:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603352"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-19T13:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603248"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-19T13:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603351"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-19T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603353"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מרסופילאמי-מדובב",
+    "date_time": "2026-08-19T13:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603255"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-19T13:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603240"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "מרסופילאמי-מדובב",
+    "date_time": "2026-08-19T13:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603552"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-19T13:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603546"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-19T13:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603237"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צעצוע של סיפור 5 מדובב",
+    "date_time": "2026-08-19T13:30:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603241"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T13:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603560"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-19T14:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603549"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-19T14:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603556"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-19T14:50:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603534"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מפרץ ההרפתקאות: אי הדינוזאורים-מדובב",
+    "date_time": "2026-08-19T15:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603256"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "פרנקי והמפלצות-מדובב",
+    "date_time": "2026-08-19T15:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603239"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-19T15:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603538"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-19T15:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603536"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-19T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603350"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-19T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603343"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מילה שלי",
+    "date_time": "2026-08-19T16:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603247"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603260"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "צבעי הזמן",
+    "date_time": "2026-08-19T16:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603245"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T16:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603559"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-19T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603591"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-19T16:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603347"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-19T16:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603640"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-19T16:50:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603544"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-19T17:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603539"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "טפיטי: הרפתקה במדבר מדובב",
+    "date_time": "2026-08-19T17:00:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603243"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "מיניונים ומפלצות מדובב",
+    "date_time": "2026-08-19T17:10:00",
+    "screen_type": "רגיל",
+    "language": "עברית",
+    "is_dubbed": true,
+    "booking_url": "https://ticket.lev.co.il/order/603242"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-19T17:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603542"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-19T18:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603588"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-19T18:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603642"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T18:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603341"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-19T18:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603344"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-19T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603250"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603558"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T18:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603590"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T18:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603262"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T18:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603639"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-19T18:45:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603236"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-19T18:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603555"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "יקירתי",
+    "date_time": "2026-08-19T18:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603258"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-19T19:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603252"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-19T19:20:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603540"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-19T19:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603349"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב דניאל",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T20:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603589"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-19T20:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603340"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב אבן יהודה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T20:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603342"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-19T20:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603251"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "האודיסאה",
+    "date_time": "2026-08-19T20:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603541"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רמת השרון",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-19T20:50:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603592"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603261"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-19T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603253"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ספיידרמן: יום חדש",
+    "date_time": "2026-08-19T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603547"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב סמדר",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-19T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603641"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "אשליות מתוקות",
+    "date_time": "2026-08-19T21:00:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603545"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "חג מולד מר",
+    "date_time": "2026-08-19T21:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603557"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-19T21:10:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603249"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב רעננה",
+    "movie_title": "גבעה 338",
+    "date_time": "2026-08-19T21:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603259"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "בחזרה מההימאליה",
+    "date_time": "2026-08-19T21:40:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603562"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "ההזמנה.",
+    "date_time": "2026-08-19T22:15:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/603537"
+  },
+  {
+    "cinema_chain": "Lev",
+    "branch": "לב תל אביב",
+    "movie_title": "מועדון שבת בבוקר &#8211; שנת הבגידה שלי",
+    "date_time": "2026-08-22T10:30:00",
+    "screen_type": "רגיל",
+    "booking_url": "https://ticket.lev.co.il/order/601386"
+  }
+]
