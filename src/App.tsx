@@ -6,9 +6,11 @@ import { emptyPreferences, emptySearchCriteria, type Preferences, type SearchCri
 import { fetchScreenings, fetchMoviesByBranchesAndDate } from '@/lib/supabase';
 import { transformSupabaseRows, titlesToMovies, type Screening, type Movie, type Cinema } from '@/data';
 import { getCinemaNamesForSelection } from '@/utils/cinemaMapping';
+import { getUserPreferences } from '@/services/storage';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('preferences');
+  const [preferencesInitialized, setPreferencesInitialized] = useState(false);
   const [preferences, setPreferences] = useState<Preferences>(emptyPreferences);
   const [criteria, setCriteria] = useState<SearchCriteria>(emptySearchCriteria);
 
@@ -39,6 +41,51 @@ function App() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    const restorePreferences = async () => {
+      try {
+        const stored = await getUserPreferences();
+        if (!stored) return;
+
+        const restoredPreferences: Preferences = {
+          ...emptyPreferences,
+          locationMode: stored.useLocation ? 'current' : 'regions',
+          selectedCities: stored.selectedCities,
+          selectedBranches: getCinemaNamesForSelection(stored.selectedCities, []),
+          selectedChains: stored.favoriteCinemas as Preferences['selectedChains'] ?? [],
+          selectedLanguages: stored.selectedLanguages as Preferences['selectedLanguages'],
+        };
+
+        setPreferences(restoredPreferences);
+
+        if (
+          restoredPreferences.locationMode !== 'regions' ||
+          restoredPreferences.selectedCities.length === 0 ||
+          restoredPreferences.selectedChains.length === 0
+        ) {
+          return;
+        }
+
+        setSubmitLoading(true);
+        const titles = await fetchMoviesByBranchesAndDate(restoredPreferences.selectedBranches);
+        setSubmitMovies(titlesToMovies(titles));
+        setScreen('search');
+      } catch (err) {
+        console.error('Failed to restore movies from saved preferences:', err);
+        setSubmitError(true);
+      } finally {
+        setSubmitLoading(false);
+        setPreferencesInitialized(true);
+      }
+    };
+
+    restorePreferences();
+  }, []);
+
+  if (!preferencesInitialized) {
+    return <div className="min-h-screen" />;
+  }
 
   /**
    * Triggered by the "המשך למציאת סרטים" button on the preferences screen.

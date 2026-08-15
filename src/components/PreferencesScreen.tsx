@@ -1,8 +1,10 @@
+import { useEffect, useRef, useState } from 'react';
 import { Check, MapPin, Film, Languages, ArrowLeft, Clapperboard, Globe, Locate } from 'lucide-react';
 import { CHAINS, LANGUAGES } from '@/constants';
 import type { Preferences } from '@/types';
 import { RegionCitySelector } from '@/components/RegionCitySelector';
 import { getCinemaNamesForSelection } from '@/utils/cinemaMapping';
+import { getUserPreferences, saveUserPreferences } from '@/services/storage';
 
 interface Props {
   preferences: Preferences;
@@ -11,6 +13,48 @@ interface Props {
 }
 
 export function PreferencesScreen({ preferences, onChange, onContinue }: Props) {
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const preferencesRef = useRef(preferences);
+  preferencesRef.current = preferences;
+
+  useEffect(() => {
+    let active = true;
+
+    getUserPreferences().then((stored) => {
+      if (!active || !stored) return;
+
+      const selectedBranches = stored.favoriteCinemas ?? getCinemaNamesForSelection(stored.selectedCities, []);
+      onChange({
+        ...preferencesRef.current,
+        locationMode: stored.useLocation ? 'current' : 'regions',
+        selectedCities: stored.selectedCities,
+        selectedBranches,
+        selectedLanguages: stored.selectedLanguages as Preferences['selectedLanguages'],
+      });
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [onChange]);
+
+  const handleContinue = async () => {
+    if (!canContinue) return;
+
+    try {
+      await saveUserPreferences({
+        selectedCities: preferences.selectedCities,
+        selectedLanguages: preferences.selectedLanguages,
+        useLocation: preferences.locationMode === 'current',
+        favoriteCinemas: preferences.selectedChains,
+      });
+      setSaveMessage('ההעדפות נשמרו');
+      await onContinue();
+    } catch {
+      setSaveMessage('שמירת ההעדפות נכשלה');
+    }
+  };
+
   const toggleChain = (id: string) => {
     const selected = preferences.selectedChains.includes(id as never)
       ? preferences.selectedChains.filter((c) => c !== id)
@@ -210,11 +254,12 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-white/[0.06] bg-[#0a0a0f]/85 px-4 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
           <div className="text-sm text-gray-400">
-            {!hasLocation && <span>בחר לפחות עיר אחת</span>}
-            {hasLocation && !hasChain && <span>בחר לפחות רשת קולנוע אחת</span>}
-            {canContinue && <span className="text-rose-300">מוכן להמשך</span>}
+            {saveMessage && <span className="text-rose-300">{saveMessage}</span>}
+            {!saveMessage && !hasLocation && <span>בחר לפחות עיר אחת</span>}
+            {!saveMessage && hasLocation && !hasChain && <span>בחר לפחות רשת קולנוע אחת</span>}
+            {!saveMessage && canContinue && <span className="text-rose-300">מוכן להמשך</span>}
           </div>
-          <button type="button" onClick={onContinue} disabled={!canContinue} className="btn-primary">
+          <button type="button" onClick={handleContinue} disabled={!canContinue} className="btn-primary">
             המשך למציאת סרטים
             <ArrowLeft className="h-5 w-5" />
           </button>
