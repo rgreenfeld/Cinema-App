@@ -1,4 +1,5 @@
-import type { ChainId, LanguageFilter } from '@/data';
+import type { ChainId, HallType, LanguageFilter } from '@/data';
+import { HALL_TYPES } from '@/constants';
 
 export type Screen = 'preferences' | 'search' | 'results';
 
@@ -32,7 +33,7 @@ export const emptyPreferences: Preferences = {
   selectedRegions: [],
   selectedBranches: [],
   selectedChains: [],
-  selectedLanguages: [],
+  selectedLanguages: ['שפת מקור'],
 };
 
 export const emptySearchCriteria: SearchCriteria = {
@@ -41,6 +42,6 @@ export const emptySearchCriteria: SearchCriteria = {
   date: null,
   minTime: null,
   maxTime: null,
-  hallTypes: [],
+  hallTypes: [...HALL_TYPES] as HallType[],
   allDay: false,
 };

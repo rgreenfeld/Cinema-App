@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ChevronDown,
   ChevronLeft,
@@ -12,7 +12,6 @@ import {
   Loader2,
 } from 'lucide-react';
 import {
-  HALL_TYPES,
   CHAINS,
   getUpcomingDates,
   formatDateLabel,
@@ -54,6 +53,7 @@ interface Props {
   criteria: SearchCriteria;
   preferences: Preferences;
   onChange: () => void;
+  onCriteriaChange: (criteria: SearchCriteria) => void;
   screenings?: Screening[];
   movies?: Movie[];
   cinemas?: Cinema[];
@@ -72,7 +72,7 @@ function chainDataShortName(chainId: ChainId): string {
   return chain?.shortName ?? chainId;
 }
 
-export function ResultsScreen({ criteria, preferences, onChange, screenings: propScreenings, movies: propMovies, cinemas: propCinemas }: Props) {
+export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChange, screenings: propScreenings, movies: propMovies, cinemas: propCinemas }: Props) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [loading, setLoading] = useState(false);
 
@@ -98,6 +98,15 @@ export function ResultsScreen({ criteria, preferences, onChange, screenings: pro
     ? propMovies?.find((m) => m.id === criteria.movieId)
     : undefined;
   const dateLabel = criteria.date ? formatDateLabel(criteria.date) : '';
+  const dateOptions = useMemo(() => {
+    const dates = getUpcomingDates(7);
+    if (criteria.date && !dates.includes(criteria.date)) return [criteria.date, ...dates];
+    return dates;
+  }, [criteria.date]);
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [criteria]);
 
   return (
     <div className="screen-enter mx-auto max-w-3xl px-4 pb-16 pt-6">
@@ -105,10 +114,28 @@ export function ResultsScreen({ criteria, preferences, onChange, screenings: pro
       <header className="mb-6">
         <div className="cinema-card flex items-center justify-between gap-3 p-4">
           <div className="min-w-0">
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <Calendar className="h-3.5 w-3.5" />
-              {dateLabel}
-            </div>
+            {criteria.mode === 'movie' ? (
+              <label className="flex items-center gap-2 text-xs text-gray-500">
+                <Calendar className="h-3.5 w-3.5 shrink-0" />
+                <span className="sr-only">תאריך</span>
+                <select
+                  value={criteria.date ?? ''}
+                  onChange={(event) => onCriteriaChange({ ...criteria, date: event.target.value })}
+                  className="bg-transparent text-xs text-gray-300 outline-none"
+                >
+                  {dateOptions.map((date) => (
+                    <option key={date} value={date} className="bg-[#12121a]">
+                      {formatDateLabel(date)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Calendar className="h-3.5 w-3.5" />
+                {dateLabel}
+              </div>
+            )}
             {selectedMovie ? (
               <h1 className="mt-1 truncate text-lg font-black text-white">{selectedMovie.title}</h1>
             ) : (
@@ -120,10 +147,17 @@ export function ResultsScreen({ criteria, preferences, onChange, screenings: pro
               {criteria.hallTypes.length > 0 && ` · ${criteria.hallTypes.join(', ')}`}
             </p>
           </div>
-          <button type="button" onClick={onChange} className="btn-primary shrink-0 px-4 py-2.5 text-sm">
-            <ChevronLeft className="h-4 w-4" />
-            החלף
-          </button>
+          {criteria.mode === 'movie' ? (
+            <button type="button" onClick={onChange} className="btn-primary shrink-0 px-4 py-2.5 text-sm">
+              <ChevronLeft className="h-4 w-4" />
+              חזור
+            </button>
+          ) : (
+            <button type="button" onClick={onChange} className="btn-primary shrink-0 px-4 py-2.5 text-sm">
+              <ChevronLeft className="h-4 w-4" />
+              החלף
+            </button>
+          )}
         </div>
       </header>
 

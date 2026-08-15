@@ -104,6 +104,7 @@ function App() {
           criteria={criteria}
           preferences={preferences}
           onChange={() => setScreen('search')}
+          onCriteriaChange={setCriteria}
           screenings={realScreenings.length > 0 ? realScreenings : undefined}
           movies={realMovies.length > 0 ? realMovies : undefined}
           cinemas={realCinemas.length > 0 ? realCinemas : undefined}

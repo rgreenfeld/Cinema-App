@@ -4,7 +4,7 @@ import { ChevronDown, Settings2, Search, Clock, Calendar, Film, Clapperboard, Ch
 import { HALL_TYPES, getUpcomingDates, formatDateLabel } from '@/constants';
 import type { Preferences, SearchCriteria } from '@/types';
 import { titlesToMovies, type Movie, type Cinema, type Screening } from '@/data';
-import { buildIntervals, timeToMinutes, minutesToTime, nowIsraelMinutes } from '@/timeUtils';
+import { buildIntervals, timeToMinutes, nowIsraelMinutes } from '@/timeUtils';
 import { fetchMoviesByBranchesAndDate, todayInIsrael } from '@/lib/supabase';
 import { getCinemaNamesForSelection } from '@/utils/cinemaMapping';
 
@@ -29,9 +29,11 @@ const EARLIEST_MIN = 10 * 60; // 10:00
 const LATEST_MIN = 23 * 60; // 23:00
 const MAX_SAFE_MIN = 23 * 60 + 59; // 23:59 fallback
 
-export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch, movies: propMovies, cinemas: propCinemas, screenings: propScreenings, dataLoading, submitMovies, submitMoviesLoading, submitMoviesError }: Props) {
+export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch, movies: propMovies, cinemas: propCinemas, screenings: propScreenings, submitMovies, submitMoviesLoading, submitMoviesError }: Props) {
   const dates = useMemo(() => getUpcomingDates(7), []);
   const [hallOpen, setHallOpen] = useState(false);
+  const [movieOpen, setMovieOpen] = useState(false);
+  const [movieQuery, setMovieQuery] = useState('');
 
   // ── Dynamic movies from Supabase (location + date aware) ──────────────
   const [dynamicMovies, setDynamicMovies] = useState<Movie[]>([]);
@@ -133,6 +135,12 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
           ? submitMovies
           : propMovies) ?? [];
 
+  const matchingMovies = useMemo(() => {
+    const query = movieQuery.trim().toLocaleLowerCase('he');
+    if (!query) return movies;
+    return movies.filter((movie) => movie.title.toLocaleLowerCase('he').includes(query));
+  }, [movies, movieQuery]);
+
   // For each currently available movie option, compute only the dates that
   // have screenings under the active location/chain preferences.
   const availableDatesByMovieId = useMemo(() => {
@@ -211,22 +219,6 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     }
   }, [movies, moviesLoading, criteria.movieId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-// Show a full-screen loading spinner during the submit fetch (preferences →
-// search transition), so the user knows data is being retrieved.
-if (submitMoviesLoading) {
-  return (
-    <div className="screen-enter flex min-h-[70vh] flex-col items-center justify-center gap-4 px-4 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600/20 to-rose-500/5 ring-1 ring-rose-500/20">
-        <Loader2 className="h-8 w-8 animate-spin text-rose-400" />
-      </div>
-      <div>
-        <p className="text-lg font-bold text-white">טוען סרטים מהשרת...</p>
-        <p className="mt-1 text-sm text-gray-400">מחפש הקרנות בבתי הקולנוע שנבחרו</p>
-      </div>
-    </div>
-  );
-}
-
   const selectedMovie = criteria.movieId ? (movies ? movies.find(m => m.id === criteria.movieId) : undefined) : undefined;
 
   const getChain = (cinemaId: string) => {
@@ -235,14 +227,6 @@ if (submitMoviesLoading) {
       return c?.chain;
     }
     return undefined;
-  };
-
-  const getCity = (cinemaId: string) => {
-    if (propCinemas) {
-      const c = propCinemas.find(c => c.id === cinemaId);
-      return c?.city ?? '';
-    }
-    return '';
   };
 
   const getBranchName = (cinemaId: string) => {
@@ -308,6 +292,22 @@ if (submitMoviesLoading) {
     return buildIntervals(startMin, latestScreeningMin);
   }, [criteria.minTime, latestScreeningMin]);
 
+  // Show a full-screen loading spinner during the submit fetch (preferences →
+  // search transition), after all hooks have been called consistently.
+  if (submitMoviesLoading) {
+    return (
+      <div className="screen-enter flex min-h-[70vh] flex-col items-center justify-center gap-4 px-4 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600/20 to-rose-500/5 ring-1 ring-rose-500/20">
+          <Loader2 className="h-8 w-8 animate-spin text-rose-400" />
+        </div>
+        <div>
+          <p className="text-lg font-bold text-white">טוען סרטים מהשרת...</p>
+          <p className="mt-1 text-sm text-gray-400">מחפש הקרנות בבתי הקולנוע שנבחרו</p>
+        </div>
+      </div>
+    );
+  }
+
   const setMode = (mode: 'movie' | 'time') => {
     onChange({
       mode,
@@ -315,10 +315,12 @@ if (submitMoviesLoading) {
       date: null,
       minTime: null,
       maxTime: null,
-      hallTypes: [],
+      hallTypes: [...HALL_TYPES],
       allDay: false,
     });
     setHallOpen(false);
+    setMovieOpen(false);
+    setMovieQuery('');
   };
 
   const setMovie = (movieId: string) => {
@@ -332,10 +334,12 @@ if (submitMoviesLoading) {
       date: keepCurrentDate ? criteria.date : null,
       minTime: null,
       maxTime: null,
-      hallTypes: [],
+      hallTypes: [...HALL_TYPES],
       allDay: false,
     });
     setHallOpen(false);
+    setMovieOpen(false);
+    setMovieQuery('');
   };
 
   const setDate = (date: string) => {
@@ -343,13 +347,8 @@ if (submitMoviesLoading) {
   };
 
   const setMinTime = (minTime: string) => {
-    if (criteria.mode === 'time') {
-      // Dynamically compute max as the latest screening time for the selected data/preferences
-      const max = minutesToTime(Math.min(timeToMinutes(minTime) + 3 * 60, latestScreeningMin));
-      onChange({ ...criteria, minTime, maxTime: max });
-    } else {
-      onChange({ ...criteria, minTime, maxTime: null });
-    }
+    const currentMaxIsValid = criteria.maxTime && timeToMinutes(criteria.maxTime) > timeToMinutes(minTime);
+    onChange({ ...criteria, minTime, maxTime: currentMaxIsValid ? criteria.maxTime : null });
   };
 
   const setMaxTime = (maxTime: string) => {
@@ -377,7 +376,7 @@ if (submitMoviesLoading) {
   const canSearch =
     criteria.mode === 'movie'
       ? Boolean(criteria.movieId && criteria.date && (criteria.allDay || (criteria.minTime && criteria.maxTime)))
-      : Boolean(criteria.date && (criteria.allDay || criteria.minTime));
+      : Boolean(criteria.date && (criteria.allDay || (criteria.minTime && criteria.maxTime)));
 
   const locationLabel =
     preferences.locationMode === 'current'
@@ -438,23 +437,44 @@ if (submitMoviesLoading) {
           <div>
             <label className="field-label">בחירת סרט</label>
             <div className="relative">
-              <select
-                value={criteria.movieId ?? ''}
-                onChange={(e) => setMovie(e.target.value)}
+              <button
+                type="button"
+                onClick={() => setMovieOpen((open) => !open)}
                 disabled={moviesLoading}
-                className="select-base appearance-none pl-10"
+                className="select-base flex items-center justify-between gap-3"
               >
-                <option value="">{moviesLoading ? 'טוען סרטים...' : 'בחר סרט...'}</option>
-                {!moviesLoading && movies.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.title} · {m.genre} · ⭐ {m.rating}
-                  </option>
-                ))}
-              </select>
-              {moviesLoading ? (
-                <Loader2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-rose-400" />
-              ) : (
-                <ChevronDown className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                <span className={selectedMovie ? 'truncate text-gray-100' : 'text-gray-500'}>
+                  {moviesLoading ? 'טוען סרטים...' : selectedMovie?.title ?? 'בחר סרט...'}
+                </span>
+                {moviesLoading ? <Loader2 className="h-4 w-4 shrink-0 animate-spin text-rose-400" /> : <ChevronDown className={`h-4 w-4 shrink-0 text-gray-500 transition-transform ${movieOpen ? 'rotate-180' : ''}`} />}
+              </button>
+              {movieOpen && !moviesLoading && (
+                <div className="expand-enter absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-white/[0.1] bg-[#12121a] shadow-xl shadow-black/40">
+                  <div className="border-b border-white/[0.06] p-2">
+                    <input
+                      autoFocus
+                      value={movieQuery}
+                      onChange={(event) => setMovieQuery(event.target.value)}
+                      placeholder="חיפוש סרט..."
+                      className="select-base py-2.5"
+                    />
+                  </div>
+                  <div className="max-h-64 overflow-y-auto p-2">
+                    {matchingMovies.length > 0 ? matchingMovies.map((movie) => (
+                      <button
+                        type="button"
+                        key={movie.id}
+                        onClick={() => setMovie(movie.id)}
+                        className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-right transition-colors ${criteria.movieId === movie.id ? 'bg-rose-500/15 text-rose-100' : 'text-gray-300 hover:bg-white/[0.06]'}`}
+                      >
+                        <span className="truncate font-medium">{movie.title}</span>
+                        <span className="shrink-0 text-xs text-gray-500">{movie.genre}</span>
+                      </button>
+                    )) : (
+                      <p className="px-3 py-4 text-center text-sm text-gray-500">לא נמצאו סרטים תואמים</p>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
 
@@ -634,10 +654,22 @@ if (submitMoviesLoading) {
               </div>
             </div>
             <div>
-              <label className="field-label">שעת סיום (אוטומטי)</label>
-              <div className="flex h-[50px] items-center rounded-xl border border-white/10 bg-white/[0.03] px-4 text-gray-400">
-                {criteria.maxTime ?? '—'}
-                <span className="mr-auto text-xs text-gray-600">עד ההקרנה האחרונה</span>
+              <label className="field-label">שעת התחלה מקסימלית</label>
+              <div className="relative">
+                <select
+                  value={criteria.maxTime ?? ''}
+                  onChange={(e) => setMaxTime(e.target.value)}
+                  disabled={timeSelectsDisabled || !criteria.minTime}
+                  className="select-base appearance-none pl-10"
+                >
+                  <option value="">בחר שעה...</option>
+                  {maxTimes.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+                <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
               </div>
             </div>
           </div>
