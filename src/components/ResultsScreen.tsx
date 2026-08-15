@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import {
   CHAINS,
-  getUpcomingDates,
   formatDateLabel,
   formatShortDate,
 } from '@/constants';
@@ -99,10 +98,31 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
     : undefined;
   const dateLabel = criteria.date ? formatDateLabel(criteria.date) : '';
   const dateOptions = useMemo(() => {
-    const dates = getUpcomingDates(7);
-    if (criteria.date && !dates.includes(criteria.date)) return [criteria.date, ...dates];
-    return dates;
-  }, [criteria.date]);
+    if (criteria.mode !== 'movie' || !criteria.movieId) return [];
+
+    const cinemaById = new Map((propCinemas ?? []).map((cinema) => [cinema.id, cinema]));
+    const availableDates = new Set<string>();
+
+    for (const screening of screeningSource) {
+      if (screening.movieId !== criteria.movieId) continue;
+      if (screening.date < todayInIsrael()) continue;
+
+      const cinema = cinemaById.get(screening.cinemaId);
+      if (!cinema) continue;
+      if (preferences.selectedChains.length > 0 && !preferences.selectedChains.includes(cinema.chain)) continue;
+      if (
+        preferences.locationMode === 'regions' &&
+        preferences.selectedBranches.length > 0 &&
+        !preferences.selectedBranches.includes(cinema.name)
+      ) {
+        continue;
+      }
+
+      availableDates.add(screening.date);
+    }
+
+    return Array.from(availableDates).sort((first, second) => first.localeCompare(second));
+  }, [criteria.mode, criteria.movieId, preferences.locationMode, preferences.selectedBranches, preferences.selectedChains, propCinemas, screeningSource]);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
