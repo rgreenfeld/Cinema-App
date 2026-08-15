@@ -97,6 +97,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     for (const s of screeningSource) {
       if (effectiveDate) {
         if (s.date !== effectiveDate) continue;
+        if (s.date === today && timeToMinutes(s.time) < nowIsraelMinutes()) continue;
       } else if (s.date < today) {
         // No selected date -> only upcoming (today and forward).
         continue;
@@ -124,16 +125,22 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     return Array.from(out.values()).sort((a, b) => a.title.localeCompare(b.title, 'he'));
   }, [effectiveDate, propMovies, propCinemas, screeningSource, preferences.selectedChains, preferences.locationMode, preferences.selectedBranches]);
 
-  // Prefer date/location/chain-aware lists first so "movie" mode matches
-  // what users can see in time-based browsing.
+  // Before a movie is selected, prefer date/location-aware options so the
+  // dropdown is useful. Once selected, keep the broad source stable: changing
+  // the date or returning from results must not replace the movie catalogue
+  // with only the titles screening on that date.
   const movies =
-    (dynamicMovies.length > 0
-      ? dynamicMovies
-      : moviesFromScreenings.length > 0
-        ? moviesFromScreenings
-        : submitMovies && submitMovies.length > 0
-          ? submitMovies
-          : propMovies) ?? [];
+    (criteria.movieId
+      ? submitMovies && submitMovies.length > 0
+        ? submitMovies
+        : propMovies
+      : dynamicMovies.length > 0
+        ? dynamicMovies
+        : moviesFromScreenings.length > 0
+          ? moviesFromScreenings
+          : submitMovies && submitMovies.length > 0
+            ? submitMovies
+            : propMovies) ?? [];
 
   const matchingMovies = useMemo(() => {
     const query = movieQuery.trim().toLocaleLowerCase('he');
@@ -165,6 +172,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
 
     for (const s of screeningSource) {
       if (s.date < today) continue;
+      if (s.date === today && timeToMinutes(s.time) < nowIsraelMinutes()) continue;
 
       const cinema = cinemaById.get(s.cinemaId);
       if (!cinema) continue;
