@@ -510,16 +510,22 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
 
             {selectedMovie && (
               <div className="expand-enter mt-3 flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                <img
-                  src={selectedMovie.poster}
-                  alt={selectedMovie.title}
-                  className="h-16 w-12 shrink-0 rounded-lg object-cover"
-                />
+                {selectedMovie.poster && (
+                  <img
+                    src={selectedMovie.poster}
+                    alt={selectedMovie.title}
+                    className="h-16 w-12 shrink-0 rounded-lg object-cover"
+                  />
+                )}
                 <div className="min-w-0">
                   <p className="truncate font-bold text-white">{selectedMovie.title}</p>
-                  <p className="text-xs text-gray-400">
-                    {selectedMovie.genre} · {selectedMovie.durationMin} דקות · ⭐ {selectedMovie.rating}
-                  </p>
+                  {(selectedMovie.durationMin != null || selectedMovie.rating != null) && (
+                    <p className="text-xs text-gray-400">
+                      {selectedMovie.durationMin != null && `${selectedMovie.durationMin} דקות`}
+                      {selectedMovie.durationMin != null && selectedMovie.rating != null && ' · '}
+                      {selectedMovie.rating != null && `⭐ ${selectedMovie.rating}`}
+                    </p>
+                  )}
                 </div>
               </div>
             )}

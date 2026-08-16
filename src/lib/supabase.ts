@@ -201,7 +201,8 @@ export async function fetchMoviesByBranchesAndDate(
     if (date) {
       // Specific date → full day in the Israel-local timezone (UTC bounds).
       const { start, end } = israelDateToUtcRange(date);
-      query = query.gte('date_time', start).lte('date_time', end);
+      const effectiveStart = date === todayInIsrael() ? new Date().toISOString() : start;
+      query = query.gte('date_time', effectiveStart).lte('date_time', end);
     } else {
       // No date specified → all future/today screenings for those cinemas
       // (from the start of today in Israel onward).

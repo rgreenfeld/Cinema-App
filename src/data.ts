@@ -18,9 +18,12 @@ export type LanguageFilter = 'שפת מקור' | 'רוסית' | 'ערבית' | '
 export interface Movie {
   id: string;
   title: string;
-  poster: string;
-  durationMin: number;
-  rating: number;
+  /** Poster image URL — null when no real poster is available (never fake/placeholder). */
+  poster: string | null;
+  /** Runtime in minutes — null when not known (never fake/placeholder). */
+  durationMin: number | null;
+  /** Rating out of 10 — null when not known (never fake/placeholder). */
+  rating: number | null;
   genre: string;
 }
 
@@ -52,9 +55,6 @@ export interface Screening {
   /** Official booking/seat-selection URL for this screening — null when missing. */
   bookingUrl: string | null;
 }
-
-const MOVIE_POSTER =
-  'https://images.pexels.com/photos/3130827/pexels-photo-3130827.jpeg?auto=compress&cs=tinysrgb&w=400';
 
 function canonicalMovieTitle(rawTitle: string | null | undefined): string {
   const normalized = normalizeMovieTitle(rawTitle || '').cleanTitle;
@@ -94,9 +94,9 @@ export function titlesToMovies(titles: string[]): Movie[] {
     return {
     id: movieIdFromTitle(canonicalTitle),
     title: canonicalTitle,
-    poster: MOVIE_POSTER,
-    durationMin: 120,
-    rating: 7.5,
+    poster: null,
+    durationMin: null,
+    rating: null,
     genre: 'סרט',
   };
   });
@@ -154,9 +154,9 @@ export function transformSupabaseRows(
       movieMap.set(movieId, {
         id: movieId,
         title: normalizedTitle,
-        poster: 'https://images.pexels.com/photos/3130827/pexels-photo-3130827.jpeg?auto=compress&cs=tinysrgb&w=400',
-        durationMin: 120,
-        rating: 7.5,
+        poster: null,
+        durationMin: null,
+        rating: null,
         genre: 'סרט',
       });
     }

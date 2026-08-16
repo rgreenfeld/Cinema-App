@@ -408,8 +408,8 @@ function filterScreenings(criteria: SearchCriteria, preferences: Preferences, sc
     if (!matchesSelectedLanguageFilter(preferences.selectedLanguages, s.audioLang, s.isDubbed)) {
       return false;
     }
-    // Today's screenings must not already be in the past (unless allDay).
-    if (isToday && !criteria.allDay && timeToMinutes(s.time) < nowMin) return false;
+    // Today's screenings must not already be in the past.
+    if (isToday && timeToMinutes(s.time) < nowMin) return false;
     // Time filter — skip when allDay is checked
     if (!criteria.allDay) {
       const sm = virtualMinutesOf(s.time);
