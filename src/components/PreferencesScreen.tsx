@@ -23,7 +23,7 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
     getUserPreferences().then((stored) => {
       if (!active || !stored) return;
 
-      const selectedBranches = stored.favoriteCinemas ?? getCinemaNamesForSelection(stored.selectedCities, []);
+      const selectedBranches = getCinemaNamesForSelection(stored.selectedCities, []);
       onChange({
         ...preferencesRef.current,
         locationMode: stored.useLocation ? 'current' : 'regions',
