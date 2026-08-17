@@ -31,6 +31,8 @@ jobs:
           node scrapers/pruneOldScreenings.js
 
       - name: Run scraper + upload pipeline
+        id: cinema-city
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -42,6 +44,8 @@ jobs:
           node scrapers/cinemaCity.js
           node scrapers/uploadToSupabase.js
       - name: Run Planet Scraper
+        id: planet
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -50,6 +54,8 @@ jobs:
           node scrapers/planet.js
 
       - name: Run Hot Cinema scraper + upload
+        id: hot-cinema
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -60,6 +66,8 @@ jobs:
           node scrapers/uploadToSupabase.js
 
       - name: Run Movieland scraper + upload
+        id: movieland
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -70,6 +78,8 @@ jobs:
           node scrapers/uploadToSupabase.js
 
       - name: Run Lev Cinema scraper + upload
+        id: lev
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -78,3 +88,14 @@ jobs:
         run: |
           node scrapers/lev.js
           node scrapers/uploadToSupabase.js
+
+      - name: Fail job if any chain scraper failed
+        if: |
+          steps.cinema-city.outcome == 'failure' ||
+          steps.planet.outcome == 'failure' ||
+          steps.hot-cinema.outcome == 'failure' ||
+          steps.movieland.outcome == 'failure' ||
+          steps.lev.outcome == 'failure'
+        run: |
+          echo "One or more chain scrapers failed (see step outcomes above); marking job as failed."
+          exit 1
