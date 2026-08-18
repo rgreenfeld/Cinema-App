@@ -38,6 +38,22 @@
  */
 
 const BASE_URL = 'https://movieland.co.il';
+
+// Optional: route requests through a proxy (e.g. residential proxy) to avoid
+// IP-reputation blocks against datacenter IPs (such as GitHub Actions
+// runners). Set MOVIELAND_PROXY_URL to a proxy URL, e.g.
+// "http://user:pass@host:port".
+const PROXY_URL = (process.env.MOVIELAND_PROXY_URL || '').trim();
+let proxyDispatcher;
+async function getProxyDispatcher() {
+  if (!PROXY_URL) return undefined;
+  if (!proxyDispatcher) {
+    const { ProxyAgent } = await import('undici');
+    proxyDispatcher = new ProxyAgent(PROXY_URL);
+  }
+  return proxyDispatcher;
+}
+
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
   '(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
@@ -76,7 +92,8 @@ async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    return await fetch(url, { ...options, signal: controller.signal });
+    const dispatcher = await getProxyDispatcher();
+    return await fetch(url, { ...options, signal: controller.signal, ...(dispatcher ? { dispatcher } : {}) });
   } finally {
     clearTimeout(timer);
   }
