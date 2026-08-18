@@ -2,8 +2,9 @@ name: Daily Cinema Scraper
 
 on:
   schedule:
-    # מריץ את הסקרייפר כל יום ב-06:00 בבוקר לפי שעון ישראל (04:00 UTC)
-    - cron: '0 4 * * *'
+    # מריץ את הסקרייפר פעמיים ביום, ב-05:00 וב-17:00 לפי שעון ישראל (קיץ, UTC+3 = 02:00 ו-14:00 UTC).
+    # לב"ד: בחורף (שעון סטנדרטי, UTC+2) זה יריץ בפועל ב-04:00/16:00 שעון ישראל.
+    - cron: '0 2,14 * * *'
   workflow_dispatch: # מאפשר להריץ את הסקרייפר גם ידנית בלחיצת כפתור ב-GitHub
 
 jobs:
@@ -97,5 +98,10 @@ jobs:
           steps.movieland.outcome == 'failure' ||
           steps.lev.outcome == 'failure'
         run: |
-          echo "One or more chain scrapers failed (see step outcomes above); marking job as failed."
+          echo "One or more chain scrapers failed. Note: with continue-on-error: true, GitHub shows those steps as green (conclusion=success) in the UI, but their real outcome is 'failure' — check below and the raw logs of each step for the actual error."
+          echo "cinema-city: ${{ steps.cinema-city.outcome }}"
+          echo "planet:      ${{ steps.planet.outcome }}"
+          echo "hot-cinema:  ${{ steps.hot-cinema.outcome }}"
+          echo "movieland:   ${{ steps.movieland.outcome }}"
+          echo "lev:         ${{ steps.lev.outcome }}"
           exit 1

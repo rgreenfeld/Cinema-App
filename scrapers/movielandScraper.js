@@ -54,6 +54,12 @@ const BRANCHES = [
 ];
 
 const REQUEST_TIMEOUT_MS = 20000;
+const MAX_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 2000;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function hasValue(v) {
   return v !== null && v !== undefined && String(v).trim() !== '';
@@ -89,19 +95,35 @@ async function fetchTheaterEvents(theaterId) {
     isHideVODRent: 'true',
   });
 
-  const res = await fetchWithTimeout(`${BASE_URL}/api/Events?${params.toString()}`, {
-    headers: {
-      'User-Agent': USER_AGENT,
-      Accept: 'application/json, text/plain, */*',
-      'Accept-Language': 'he-IL,he;q=0.9,en;q=0.8',
-    },
-  });
+  const url = `${BASE_URL}/api/Events?${params.toString()}`;
+  const headers = {
+    'User-Agent': USER_AGENT,
+    Accept: 'application/json, text/plain, */*',
+    'Accept-Language': 'he-IL,he;q=0.9,en;q=0.8',
+    Referer: `${BASE_URL}/`,
+    Origin: BASE_URL,
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+  };
 
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} for TheatreId=${theaterId}`);
+  let lastErr;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const res = await fetchWithTimeout(url, { headers });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status} for TheatreId=${theaterId}`);
+      }
+      return await res.json();
+    } catch (err) {
+      lastErr = err;
+      // 403s are often a transient anti-bot block (e.g. datacenter IP
+      // rate-limiting) rather than a permanent one — retry a couple of
+      // times with a delay before giving up on this branch.
+      if (attempt < MAX_ATTEMPTS) await sleep(RETRY_DELAY_MS * attempt);
+    }
   }
-
-  return await res.json();
+  throw lastErr;
 }
 
 /**
