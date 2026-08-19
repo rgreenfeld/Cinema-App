@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, MapPin, Film, Languages, ArrowLeft, Clapperboard, Globe, Locate } from 'lucide-react';
+import { Check, MapPin, Film, Languages, ArrowLeft, Globe, Locate } from 'lucide-react';
 import { CHAINS, LANGUAGES } from '@/constants';
 import type { Preferences } from '@/types';
 import { RegionCitySelector } from '@/components/RegionCitySelector';
@@ -81,8 +81,12 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
     <div className="screen-enter mx-auto max-w-3xl px-4 pb-32 pt-10 sm:pt-16">
       {/* Header */}
       <div className="mb-10 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600/20 to-rose-500/5 ring-1 ring-rose-500/20">
-          <Clapperboard className="h-7 w-7 text-rose-400" />
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl ring-1 ring-white/15">
+          <img
+            src="/cinemaster-logo.webp"
+            alt="CineMaster"
+            className="h-full w-full object-cover"
+          />
         </div>
         <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">
           הגדרת העדפות צפייה
