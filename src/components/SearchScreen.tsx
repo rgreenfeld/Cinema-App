@@ -400,7 +400,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
             <Clapperboard className="h-5 w-5 text-rose-400" />
           </div>
           <div>
-            <h1 className="text-lg font-black leading-tight text-white">קולנוע פיינדר</h1>
+            <h1 className="text-lg font-black leading-tight text-white">CineMaster</h1>
             <p className="text-xs text-gray-500">{locationLabel}</p>
           </div>
         </div>
