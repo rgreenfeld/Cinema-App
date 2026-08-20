@@ -485,7 +485,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
 
           {/* Start time */}
           <div>
-            <label className="field-label">שעת התחלה מינימלית</label>
+            <label className="field-label">הקרנות החל מ-</label>
             <div className="relative">
               <select
                 value={criteria.allDay ? ALL_DAY_VALUE : criteria.minTime ?? ''}
@@ -539,7 +539,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
           </div>
 
           <div>
-            <label className="field-label">שעת התחלה מינימלית</label>
+            <label className="field-label">הקרנות החל מ-</label>
             <div className="relative">
               <select
                 value={criteria.allDay ? ALL_DAY_VALUE : criteria.minTime ?? ''}

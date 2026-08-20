@@ -159,7 +159,7 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
                   <select
                     value={criteria.date ?? ''}
                     onChange={(event) => onCriteriaChange({ ...criteria, date: event.target.value })}
-                    className="h-11 max-w-[9.5rem] appearance-none rounded-xl border border-white/10 bg-white/[0.03] py-2 pr-9 pl-3 text-sm font-semibold text-gray-100 outline-none transition-colors hover:border-white/20 focus:border-rose-500/60 focus:ring-2 focus:ring-rose-500/20"
+                    className="h-11 max-w-[13rem] appearance-none rounded-xl border border-white/10 bg-white/[0.03] py-2 pr-9 pl-3 text-sm font-semibold text-gray-100 outline-none transition-colors hover:border-white/20 focus:border-rose-500/60 focus:ring-2 focus:ring-rose-500/20"
                   >
                     <option value={ALL_DATES_VALUE} className="bg-[#12121a]">
                       כל הימים
@@ -269,14 +269,14 @@ function ResultCard({ screening, showMovie, movies, cinemas }: { screening: Scre
       >
         <div className="flex flex-col items-center">
           <span className="text-2xl font-black tabular-nums text-white">{screening.time}</span>
-          <span className="text-[10px] text-gray-500">{formatShortDate(screening.date)}</span>
+          <span className="text-xs text-gray-500">{formatShortDate(screening.date)}</span>
         </div>
 
         <div className="h-12 w-px bg-white/10" />
 
         <div className="min-w-0 flex-1">
           {showMovie && movie && (
-            <p className="truncate text-sm font-bold text-white">{movie.title}</p>
+            <p className="truncate text-base font-bold text-white">{movie.title}</p>
           )}
           <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-400">
             <span className="flex items-center gap-1">
@@ -296,7 +296,7 @@ function ResultCard({ screening, showMovie, movies, cinemas }: { screening: Scre
 
           {chainData && (
             <span
-              className={`mt-1.5 inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${chainDataColor(chainData)}`}
+              className={`mt-1.5 inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${chainDataColor(chainData)}`}
             >
               {chainDataShortName(chainData)}
             </span>
@@ -311,18 +311,14 @@ function ResultCard({ screening, showMovie, movies, cinemas }: { screening: Scre
       {/* Expanded */}
       {expanded && (
         <div className="expand-enter border-t border-white/[0.06] bg-black/20 p-4">
-          {/* Screen type & language badges — always visible in the expanded panel too */}
-          <div className="flex flex-wrap gap-2">
-            <DetailBadge icon={<Layers className="h-3.5 w-3.5 text-gray-400" />} label={screening.hallType} />
-            <DetailBadge icon={<Volume2 className="h-3.5 w-3.5 text-gray-400" />} label={screening.audioLang} />
-            {screening.isDubbed && <DetailBadge icon={<Volume2 className="h-3.5 w-3.5 text-gray-400" />} label="מדובב" />}
-            {seatData?.totalRows != null && (
+          {seatData?.totalRows != null && (
+            <div className="flex flex-wrap gap-2">
               <DetailBadge
                 icon={<Layers className="h-3.5 w-3.5 text-gray-400" />}
                 label={`${seatData.totalRows} שורות`}
               />
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Seat availability — stored DB metrics (no client-side fetch) */}
           <div className="mt-4">

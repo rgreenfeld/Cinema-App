@@ -10,7 +10,7 @@ export interface CinemaChain {
   color: string;
 }
 
-export type HallType = 'רגיל' | 'VIP' | 'IMAX' | '4DX' | 'ScreenX' | '3D' | 'Onyx' | 'קומפורט';
+export type HallType = 'רגיל' | 'VIP' | 'IMAX' | '4DX' | 'ScreenX' | '3D' | 'Onyx' | 'Lounge' | 'קומפורט';
 export type Language = 'עברית' | 'אנגלית' | 'רוסית' | 'ערבית' | 'צרפתית' | 'מקור' | 'מקור עם כתוביות' | 'מדובב';
 export type LanguageFilter = 'שפת מקור' | 'רוסית' | 'ערבית' | 'צרפתית' | 'מדובב';
 

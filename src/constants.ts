@@ -53,7 +53,7 @@ export const CHAINS: { id: ChainId; name: string; shortName: string; color: stri
 
 export const LANGUAGES: LanguageFilter[] = ['שפת מקור', 'רוסית', 'ערבית', 'צרפתית', 'מדובב'];
 
-export const HALL_TYPES: HallType[] = ['רגיל', 'VIP', 'IMAX', '4DX', 'ScreenX', '3D', 'Onyx', 'קומפורט'];
+export const HALL_TYPES: HallType[] = ['רגיל', 'VIP', 'IMAX', '4DX', 'ScreenX', '3D', 'Onyx', 'Lounge', 'קומפורט'];
 
 /** Sentinel value for the date select — means "all available dates" instead of one specific date. */
 export const ALL_DATES_VALUE = 'all-dates';
