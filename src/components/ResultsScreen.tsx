@@ -406,7 +406,10 @@ function filterScreenings(criteria: SearchCriteria, preferences: Preferences, sc
       return false;
     }
     // Language filter — empty selection means "All Languages" (no filter).
-    if (!matchesSelectedLanguageFilter(preferences.selectedLanguages, s.audioLang, s.isDubbed)) {
+    const selectedLanguages: Preferences['selectedLanguages'] = criteria.kidsOnly
+      ? ['מדובב']
+      : preferences.selectedLanguages;
+    if (!matchesSelectedLanguageFilter(selectedLanguages, s.audioLang, s.isDubbed)) {
       return false;
     }
     // Today's screenings must not already be in the past.

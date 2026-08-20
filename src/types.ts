@@ -20,6 +20,7 @@ export type SearchMode = 'movie' | 'time';
 export interface SearchCriteria {
   mode: SearchMode;
   movieId: string | null;
+  kidsOnly: boolean;
   date: string | null;
   minTime: string | null;
   hallTypes: string[];
@@ -38,6 +39,7 @@ export const emptyPreferences: Preferences = {
 export const emptySearchCriteria: SearchCriteria = {
   mode: 'movie',
   movieId: null,
+  kidsOnly: false,
   date: null,
   minTime: null,
   hallTypes: [...HALL_TYPES] as HallType[],

@@ -50,6 +50,15 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
   const effectiveDate = criteria.date && criteria.date !== ALL_DATES_VALUE ? criteria.date : null;
   const screeningSource = propScreenings ?? [];
 
+  const kidsMovieIds = useMemo(
+    () => new Set(
+      screeningSource
+        .filter((screening) => screening.isDubbed && screening.audioLang === 'עברית')
+        .map((screening) => screening.movieId)
+    ),
+    [screeningSource]
+  );
+
   useEffect(() => {
     let cancelled = false;
 
@@ -142,11 +151,15 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
             ? submitMovies
             : propMovies) ?? [];
 
+  const visibleMovies = criteria.kidsOnly
+    ? movies.filter((movie) => kidsMovieIds.has(movie.id))
+    : movies;
+
   const matchingMovies = useMemo(() => {
     const query = movieQuery.trim().toLocaleLowerCase('he');
-    if (!query) return movies;
-    return movies.filter((movie) => movie.title.toLocaleLowerCase('he').includes(query));
-  }, [movies, movieQuery]);
+    if (!query) return visibleMovies;
+    return visibleMovies.filter((movie) => movie.title.toLocaleLowerCase('he').includes(query));
+  }, [visibleMovies, movieQuery]);
 
   // For each currently available movie option, compute only the dates that
   // have screenings under the active location/chain preferences.
@@ -173,6 +186,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     for (const s of screeningSource) {
       if (s.date < today) continue;
       if (s.date === today && timeToMinutes(s.time) < nowIsraelMinutes()) continue;
+      if (criteria.kidsOnly && !(s.isDubbed && s.audioLang === 'עברית')) continue;
 
       const cinema = cinemaById.get(s.cinemaId);
       if (!cinema) continue;
@@ -208,7 +222,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     }
 
     return sorted;
-  }, [movies, propMovies, propCinemas, screeningSource, preferences.selectedChains, preferences.locationMode, preferences.selectedBranches]);
+  }, [movies, propMovies, propCinemas, screeningSource, preferences.selectedChains, preferences.locationMode, preferences.selectedBranches, criteria.kidsOnly]);
 
   const movieDateOptions = useMemo(() => {
     if (criteria.mode !== 'movie') return dates;
@@ -262,6 +276,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     onChange({
       mode,
       movieId: null,
+      kidsOnly: false,
       date: null,
       minTime: null,
       hallTypes: [...HALL_TYPES],
@@ -374,7 +389,23 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
         <section className="space-y-5">
           {/* Movie */}
           <div>
-            <label className="field-label">בחירת סרט</label>
+            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3.5 transition-colors hover:border-white/15">
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={criteria.kidsOnly}
+                onChange={(event) => onChange({ ...criteria, kidsOnly: event.target.checked, movieId: null })}
+              />
+              <span
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors ${
+                  criteria.kidsOnly ? 'border-rose-500 bg-rose-500' : 'border-gray-500'
+                }`}
+              >
+                {criteria.kidsOnly && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+              </span>
+              <span className="font-medium text-gray-100">הצג רק סרטי ילדים מדובבים</span>
+            </label>
+            <label className="field-label mt-5">בחירת סרט</label>
             <div className="relative">
               <button
                 type="button"
