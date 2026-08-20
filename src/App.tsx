@@ -92,6 +92,22 @@ function App() {
     );
   }
 
+  // Show a full-screen loading spinner while fetching movies for the
+  // preferences → search transition, before the screen switches away.
+  if (submitLoading) {
+    return (
+      <div className="screen-enter flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-600/20 to-rose-500/5 ring-1 ring-rose-500/20">
+          <Loader2 className="h-8 w-8 animate-spin text-rose-400" />
+        </div>
+        <div>
+          <p className="text-lg font-bold text-white">טוען סרטים מהשרת...</p>
+          <p className="mt-1 text-sm text-gray-400">מחפש הקרנות בבתי הקולנוע שנבחרו</p>
+        </div>
+      </div>
+    );
+  }
+
   /**
    * Triggered by the "המשך למציאת סרטים" button on the preferences screen.
    *
