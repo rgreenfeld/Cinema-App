@@ -1,7 +1,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, Settings2, Search, Clock, Calendar, Film, Clapperboard, Check, Loader2 } from 'lucide-react';
-import { HALL_TYPES, getUpcomingDates, formatDateLabel } from '@/constants';
+import { HALL_TYPES, getUpcomingDates, formatDateLabel, ALL_DATES_VALUE, ALL_DAY_VALUE } from '@/constants';
 import type { Preferences, SearchCriteria } from '@/types';
 import { titlesToMovies, type Movie, type Cinema, type Screening } from '@/data';
 import { buildIntervals, timeToMinutes, nowIsraelMinutes } from '@/timeUtils';
@@ -27,7 +27,6 @@ interface Props {
 
 const EARLIEST_MIN = 10 * 60; // 10:00
 const LATEST_MIN = 23 * 60; // 23:00
-const MAX_SAFE_MIN = 23 * 60 + 59; // 23:59 fallback
 
 export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch, movies: propMovies, cinemas: propCinemas, screenings: propScreenings, submitMovies, submitMoviesLoading, submitMoviesError }: Props) {
   const dates = useMemo(() => getUpcomingDates(7), []);
@@ -46,8 +45,9 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     [preferences.selectedCities, preferences.selectedRegions]
   );
 
-  // Effective date for query/filtering. When null, treat as upcoming (today+).
-  const effectiveDate = criteria.date ?? null;
+  // Effective date for query/filtering. "All dates" and unset both mean
+  // upcoming (today+), so both resolve to null here.
+  const effectiveDate = criteria.date && criteria.date !== ALL_DATES_VALUE ? criteria.date : null;
   const screeningSource = propScreenings ?? [];
 
   useEffect(() => {
@@ -229,57 +229,6 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
 
   const selectedMovie = criteria.movieId ? (movies ? movies.find(m => m.id === criteria.movieId) : undefined) : undefined;
 
-  const getChain = (cinemaId: string) => {
-    if (propCinemas) {
-      const c = propCinemas.find(c => c.id === cinemaId);
-      return c?.chain;
-    }
-    return undefined;
-  };
-
-  const getBranchName = (cinemaId: string) => {
-    if (propCinemas) {
-      const c = propCinemas.find(c => c.id === cinemaId);
-      return c?.name ?? '';
-    }
-    return '';
-  };
-
-  // Dynamically compute the latest screening minute for the selected date,
-  // considering selected movie (in movie mode) and user preferences (chains/cities).
-  const latestScreeningMin = useMemo(() => {
-    if (!criteria.date) return MAX_SAFE_MIN;
-
-    const screeningsForDate = screeningSource.filter((s) => {
-      // Date filter
-      if (s.date !== criteria.date) return false;
-      // Movie filter (only in movie mode)
-      if (criteria.mode === 'movie' && criteria.movieId && s.movieId !== criteria.movieId) return false;
-      // Chain preference
-      if (preferences.selectedChains.length > 0) {
-        const c = getChain(s.cinemaId);
-        if (!c || !preferences.selectedChains.includes(c)) return false;
-      }
-      // City/region/branch preference (only in regions mode)
-      if (preferences.locationMode === 'regions') {
-        const branchName = getBranchName(s.cinemaId);
-        if (
-          preferences.selectedBranches.length > 0 &&
-          (!branchName || !preferences.selectedBranches.includes(branchName))
-        ) {
-          return false;
-        }
-      }
-      return true;
-    });
-
-    if (screeningsForDate.length === 0) return MAX_SAFE_MIN;
-
-    const maxMin = Math.max(...screeningsForDate.map((s) => timeToMinutes(s.time)));
-    // Add a buffer of 30 minutes so the max time includes the latest screening
-    return Math.min(maxMin + 30, MAX_SAFE_MIN);
-  }, [criteria.date, criteria.mode, criteria.movieId, preferences.selectedChains, preferences.locationMode, preferences.selectedCities, screeningSource, propCinemas]);
-
   // When the selected date is today, the minimum start time cannot be earlier
   // than the current local hour (in Israel). Otherwise the standard 10:00 floor
   // applies. The floor is rounded UP to the next half-hour boundary.
@@ -292,13 +241,6 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
   }, [criteria.date]);
 
   const minTimes = useMemo(() => buildIntervals(minTimeFloor, LATEST_MIN), [minTimeFloor]);
-
-  // Max time options: from minTime+30 up to the dynamically computed latest time
-  const maxTimes = useMemo(() => {
-    if (!criteria.minTime) return [];
-    const startMin = timeToMinutes(criteria.minTime) + 30;
-    return buildIntervals(startMin, latestScreeningMin);
-  }, [criteria.minTime, latestScreeningMin]);
 
   // Show a full-screen loading spinner during the submit fetch (preferences →
   // search transition), after all hooks have been called consistently.
@@ -322,7 +264,6 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
       movieId: null,
       date: null,
       minTime: null,
-      maxTime: null,
       hallTypes: [...HALL_TYPES],
       allDay: false,
     });
@@ -341,7 +282,6 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
       movieId,
       date: keepCurrentDate ? criteria.date : null,
       minTime: null,
-      maxTime: null,
       hallTypes: [...HALL_TYPES],
       allDay: false,
     });
@@ -351,24 +291,15 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
   };
 
   const setDate = (date: string) => {
-    onChange({ ...criteria, date, minTime: null, maxTime: null, allDay: false });
+    onChange({ ...criteria, date, minTime: null, allDay: false });
   };
 
-  const setMinTime = (minTime: string) => {
-    const currentMaxIsValid = criteria.maxTime && timeToMinutes(criteria.maxTime) > timeToMinutes(minTime);
-    onChange({ ...criteria, minTime, maxTime: currentMaxIsValid ? criteria.maxTime : null });
-  };
-
-  const setMaxTime = (maxTime: string) => {
-    onChange({ ...criteria, maxTime });
-  };
-
-  const setAllDay = (checked: boolean) => {
-    if (checked) {
-      onChange({ ...criteria, allDay: true, minTime: null, maxTime: null });
-    } else {
-      onChange({ ...criteria, allDay: false });
+  const setMinTime = (value: string) => {
+    if (value === ALL_DAY_VALUE) {
+      onChange({ ...criteria, allDay: true, minTime: null });
+      return;
     }
+    onChange({ ...criteria, allDay: false, minTime: value || null });
   };
 
   const toggleHall = (h: string) => {
@@ -379,12 +310,12 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     });
   };
 
-  const timeSelectsDisabled = !criteria.date || criteria.allDay;
+  const timeSelectsDisabled = !criteria.date;
 
   const canSearch =
     criteria.mode === 'movie'
-      ? Boolean(criteria.movieId && criteria.date && (criteria.allDay || (criteria.minTime && criteria.maxTime)))
-      : Boolean(criteria.date && (criteria.allDay || (criteria.minTime && criteria.maxTime)));
+      ? Boolean(criteria.movieId && criteria.date && (criteria.allDay || criteria.minTime))
+      : Boolean(criteria.date && (criteria.allDay || criteria.minTime));
 
   const locationLabel =
     preferences.locationMode === 'current'
@@ -541,6 +472,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
                 className="select-base appearance-none pl-10"
               >
                 <option value="">בחר יום...</option>
+                <option value={ALL_DATES_VALUE}>כל הימים</option>
                 {movieDateOptions.map((d) => (
                   <option key={d} value={d}>
                     {formatDateLabel(d)}
@@ -551,68 +483,27 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
             </div>
           </div>
 
-          {/* Min / Max time */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="field-label">שעת התחלה מינימלית</label>
-              <div className="relative">
-                <select
-                  value={criteria.minTime ?? ''}
-                  onChange={(e) => setMinTime(e.target.value)}
-                  disabled={timeSelectsDisabled}
-                  className="select-base appearance-none pl-10"
-                >
-                  <option value="">בחר שעה...</option>
-                  {minTimes.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-                <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-              </div>
-            </div>
-            <div>
-              <label className="field-label">שעת סיום מקסימלית</label>
-              <div className="relative">
-                <select
-                  value={criteria.maxTime ?? ''}
-                  onChange={(e) => setMaxTime(e.target.value)}
-                  disabled={timeSelectsDisabled || !criteria.minTime}
-                  className="select-base appearance-none pl-10"
-                >
-                  <option value="">בחר שעה...</option>
-                  {maxTimes.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-                <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-              </div>
+          {/* Start time */}
+          <div>
+            <label className="field-label">שעת התחלה מינימלית</label>
+            <div className="relative">
+              <select
+                value={criteria.allDay ? ALL_DAY_VALUE : criteria.minTime ?? ''}
+                onChange={(e) => setMinTime(e.target.value)}
+                disabled={timeSelectsDisabled}
+                className="select-base appearance-none pl-10"
+              >
+                <option value="">בחר שעה...</option>
+                <option value={ALL_DAY_VALUE}>כל היום</option>
+                {minTimes.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+              <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
             </div>
           </div>
-
-          {/* All Day Checkbox */}
-          {criteria.date && (
-            <div className="expand-enter">
-              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 transition-colors hover:border-white/15">
-                <input
-                  type="checkbox"
-                  checked={criteria.allDay}
-                  onChange={(e) => setAllDay(e.target.checked)}
-                  className="h-5 w-5 shrink-0 appearance-none rounded border-2 border-white/20 bg-transparent checked:border-rose-500 checked:bg-rose-500 transition-colors"
-                  style={{
-                    background: criteria.allDay ? '#f43f5e' : 'transparent',
-                    borderColor: criteria.allDay ? '#f43f5e' : 'rgba(255,255,255,0.2)',
-                  }}
-                />
-                <span className="text-sm font-medium text-gray-300">
-                  בחר אפשרות זו להצגת כל ההקרנות של אותו יום
-                </span>
-              </label>
-            </div>
-          )}
 
           {/* Hall type */}
           <HallTypePicker
@@ -647,67 +538,26 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="field-label">שעת התחלה מינימלית</label>
-              <div className="relative">
-                <select
-                  value={criteria.minTime ?? ''}
-                  onChange={(e) => setMinTime(e.target.value)}
-                  disabled={timeSelectsDisabled}
-                  className="select-base appearance-none pl-10"
-                >
-                  <option value="">בחר שעה...</option>
-                  {minTimes.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-                <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-              </div>
-            </div>
-            <div>
-              <label className="field-label">שעת התחלה מקסימלית</label>
-              <div className="relative">
-                <select
-                  value={criteria.maxTime ?? ''}
-                  onChange={(e) => setMaxTime(e.target.value)}
-                  disabled={timeSelectsDisabled || !criteria.minTime}
-                  className="select-base appearance-none pl-10"
-                >
-                  <option value="">בחר שעה...</option>
-                  {maxTimes.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-                <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-              </div>
+          <div>
+            <label className="field-label">שעת התחלה מינימלית</label>
+            <div className="relative">
+              <select
+                value={criteria.allDay ? ALL_DAY_VALUE : criteria.minTime ?? ''}
+                onChange={(e) => setMinTime(e.target.value)}
+                disabled={timeSelectsDisabled}
+                className="select-base appearance-none pl-10"
+              >
+                <option value="">בחר שעה...</option>
+                <option value={ALL_DAY_VALUE}>כל היום</option>
+                {minTimes.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+              <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
             </div>
           </div>
-
-          {/* All Day Checkbox */}
-          {criteria.date && (
-            <div className="expand-enter">
-              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 transition-colors hover:border-white/15">
-                <input
-                  type="checkbox"
-                  checked={criteria.allDay}
-                  onChange={(e) => setAllDay(e.target.checked)}
-                  className="h-5 w-5 shrink-0 appearance-none rounded border-2 border-white/20 bg-transparent checked:border-rose-500 checked:bg-rose-500 transition-colors"
-                  style={{
-                    background: criteria.allDay ? '#f43f5e' : 'transparent',
-                    borderColor: criteria.allDay ? '#f43f5e' : 'rgba(255,255,255,0.2)',
-                  }}
-                />
-                <span className="text-sm font-medium text-gray-300">
-                  בחר אפשרות זו להצגת כל ההקרנות של אותו יום
-                </span>
-              </label>
-            </div>
-          )}
 
           <HallTypePicker
             selected={criteria.hallTypes}

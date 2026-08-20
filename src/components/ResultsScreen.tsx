@@ -15,6 +15,7 @@ import {
   CHAINS,
   formatDateLabel,
   formatShortDate,
+  ALL_DATES_VALUE,
 } from '@/constants';
 import {
   type Screening,
@@ -96,7 +97,7 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
   const selectedMovie = criteria.movieId
     ? propMovies?.find((m) => m.id === criteria.movieId)
     : undefined;
-  const dateLabel = criteria.date ? formatDateLabel(criteria.date) : '';
+  const dateLabel = criteria.date && criteria.date !== ALL_DATES_VALUE ? formatDateLabel(criteria.date) : 'כל הימים';
   const dateOptions = useMemo(() => {
     if (criteria.mode !== 'movie' || !criteria.movieId) return [];
 
@@ -146,11 +147,8 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
                   {dateLabel}
                 </div>
               )}
-              {(criteria.minTime || criteria.maxTime) && (
-                <p className="mt-0.5 text-xs text-gray-500">
-                  {criteria.minTime && `מ-${criteria.minTime}`}
-                  {criteria.maxTime && ` עד ${criteria.maxTime}`}
-                </p>
+              {criteria.minTime && !criteria.allDay && (
+                <p className="mt-0.5 text-xs text-gray-500">{`מ-${criteria.minTime}`}</p>
               )}
             </div>
             {criteria.mode === 'movie' ? (
@@ -163,6 +161,9 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
                     onChange={(event) => onCriteriaChange({ ...criteria, date: event.target.value })}
                     className="h-11 max-w-[9.5rem] appearance-none rounded-xl border border-white/10 bg-white/[0.03] py-2 pr-9 pl-3 text-sm font-semibold text-gray-100 outline-none transition-colors hover:border-white/20 focus:border-rose-500/60 focus:ring-2 focus:ring-rose-500/20"
                   >
+                    <option value={ALL_DATES_VALUE} className="bg-[#12121a]">
+                      כל הימים
+                    </option>
                     {dateOptions.map((date) => (
                       <option key={date} value={date} className="bg-[#12121a]">
                         {formatDateLabel(date)}
@@ -395,29 +396,29 @@ function DetailBadge({ icon, label }: { icon: React.ReactNode; label: string }) 
 
 function filterScreenings(criteria: SearchCriteria, preferences: Preferences, screenings: Screening[], cinemas?: Cinema[]): Screening[] {
   const minMin = criteria.minTime ? virtualMinutesOf(criteria.minTime) : 0;
-  const maxMin = criteria.maxTime ? virtualMinutesOf(criteria.maxTime) : 24 * 60;
-
-  // When the filter date is today, drop any screening whose start time has
-  // already passed relative to the current Israel local time.
-  const isToday = criteria.date === todayInIsrael();
+  const isAllDates = criteria.date === ALL_DATES_VALUE;
+  const today = todayInIsrael();
   const nowMin = nowIsraelMinutes();
 
   return screenings.filter((s) => {
     // Movie filter
     if (criteria.mode === 'movie' && criteria.movieId && s.movieId !== criteria.movieId) return false;
-    // Date filter
-    if (criteria.date && s.date !== criteria.date) return false;
+    // Date filter — "all dates" only excludes past dates, otherwise match the exact date.
+    if (isAllDates) {
+      if (s.date < today) return false;
+    } else if (criteria.date && s.date !== criteria.date) {
+      return false;
+    }
     // Language filter — empty selection means "All Languages" (no filter).
     if (!matchesSelectedLanguageFilter(preferences.selectedLanguages, s.audioLang, s.isDubbed)) {
       return false;
     }
     // Today's screenings must not already be in the past.
-    if (isToday && timeToMinutes(s.time) < nowMin) return false;
+    if (s.date === today && timeToMinutes(s.time) < nowMin) return false;
     // Time filter — skip when allDay is checked
     if (!criteria.allDay) {
       const sm = virtualMinutesOf(s.time);
       if (criteria.minTime && sm < minMin) return false;
-      if (criteria.maxTime && sm > maxMin) return false;
     }
     // Hall filter
     if (criteria.hallTypes.length > 0 && !criteria.hallTypes.includes(s.hallType)) return false;

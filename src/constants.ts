@@ -55,6 +55,12 @@ export const LANGUAGES: LanguageFilter[] = ['שפת מקור', 'רוסית', 'ע
 
 export const HALL_TYPES: HallType[] = ['רגיל', 'VIP', 'IMAX', '4DX', 'ScreenX', '3D', 'Onyx', 'קומפורט'];
 
+/** Sentinel value for the date select — means "all available dates" instead of one specific date. */
+export const ALL_DATES_VALUE = 'all-dates';
+
+/** Sentinel value for the start-time select — means "all screenings that day" instead of one specific time. */
+export const ALL_DAY_VALUE = 'all-day';
+
 const DAY_NAMES = ['יום ראשון', 'יום שני', 'יום שלישי', 'יום רביעי', 'יום חמישי', 'יום שישי', 'יום שבת'];
 
 function pad(n: number): string {

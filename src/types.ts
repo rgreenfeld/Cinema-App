@@ -22,7 +22,6 @@ export interface SearchCriteria {
   movieId: string | null;
   date: string | null;
   minTime: string | null;
-  maxTime: string | null;
   hallTypes: string[];
   allDay: boolean;
 }
@@ -41,7 +40,6 @@ export const emptySearchCriteria: SearchCriteria = {
   movieId: null,
   date: null,
   minTime: null,
-  maxTime: null,
   hallTypes: [...HALL_TYPES] as HallType[],
   allDay: false,
 };
