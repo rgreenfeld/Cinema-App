@@ -132,53 +132,56 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
     <div className="screen-enter mx-auto max-w-3xl px-4 pb-16 pt-6">
       {/* Header context */}
       <header className="sticky top-0 z-20 -mx-4 mb-6 border-b border-white/[0.06] bg-[#0a0a0f]/95 px-4 pb-3 pt-6 backdrop-blur-md">
-        <div className="cinema-card flex items-center justify-between gap-3 p-4">
-          <div className="min-w-0">
-            {criteria.mode === 'time' && (
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <Calendar className="h-3.5 w-3.5" />
-                {dateLabel}
-              </div>
-            )}
-            {selectedMovie ? (
-              <h1 className="mt-1 truncate text-lg font-black text-white">{selectedMovie.title}</h1>
-            ) : (
-              <h1 className="mt-1 text-lg font-black text-white">כל הסרטים בטווח השעות שנבחר</h1>
-            )}
-            <p className="mt-0.5 text-xs text-gray-500">
-              {criteria.minTime && `מ-${criteria.minTime}`}
-              {criteria.maxTime && ` עד ${criteria.maxTime}`}
-              {criteria.hallTypes.length > 0 && ` · ${criteria.hallTypes.join(', ')}`}
-            </p>
-          </div>
-          {criteria.mode === 'movie' ? (
-            <div className="flex shrink-0 items-center gap-2">
-              <label className="relative">
-                <span className="sr-only">תאריך</span>
-                <Calendar className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <select
-                  value={criteria.date ?? ''}
-                  onChange={(event) => onCriteriaChange({ ...criteria, date: event.target.value })}
-                  className="h-11 max-w-[9.5rem] appearance-none rounded-xl border border-white/10 bg-white/[0.03] py-2 pr-9 pl-3 text-sm font-semibold text-gray-100 outline-none transition-colors hover:border-white/20 focus:border-rose-500/60 focus:ring-2 focus:ring-rose-500/20"
-                >
-                  {dateOptions.map((date) => (
-                    <option key={date} value={date} className="bg-[#12121a]">
-                      {formatDateLabel(date)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <button type="button" onClick={onChange} className="btn-primary h-11 shrink-0 px-4 py-2.5 text-sm">
-                <ChevronLeft className="h-4 w-4" />
-                חזור
-              </button>
-            </div>
+        <div className="cinema-card flex flex-col gap-3 p-4">
+          {selectedMovie ? (
+            <h1 className="text-lg font-black text-white">{selectedMovie.title}</h1>
           ) : (
-            <button type="button" onClick={onChange} className="btn-primary shrink-0 px-4 py-2.5 text-sm">
-              <ChevronLeft className="h-4 w-4" />
-              החלף
-            </button>
+            <h1 className="text-lg font-black text-white">כל הסרטים בטווח השעות שנבחר</h1>
           )}
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              {criteria.mode === 'time' && (
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {dateLabel}
+                </div>
+              )}
+              {(criteria.minTime || criteria.maxTime) && (
+                <p className="mt-0.5 text-xs text-gray-500">
+                  {criteria.minTime && `מ-${criteria.minTime}`}
+                  {criteria.maxTime && ` עד ${criteria.maxTime}`}
+                </p>
+              )}
+            </div>
+            {criteria.mode === 'movie' ? (
+              <div className="flex shrink-0 items-center gap-2">
+                <label className="relative">
+                  <span className="sr-only">תאריך</span>
+                  <Calendar className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <select
+                    value={criteria.date ?? ''}
+                    onChange={(event) => onCriteriaChange({ ...criteria, date: event.target.value })}
+                    className="h-11 max-w-[9.5rem] appearance-none rounded-xl border border-white/10 bg-white/[0.03] py-2 pr-9 pl-3 text-sm font-semibold text-gray-100 outline-none transition-colors hover:border-white/20 focus:border-rose-500/60 focus:ring-2 focus:ring-rose-500/20"
+                  >
+                    {dateOptions.map((date) => (
+                      <option key={date} value={date} className="bg-[#12121a]">
+                        {formatDateLabel(date)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <button type="button" onClick={onChange} className="btn-primary h-11 shrink-0 px-4 py-2.5 text-sm">
+                  <ChevronLeft className="h-4 w-4" />
+                  חזור
+                </button>
+              </div>
+            ) : (
+              <button type="button" onClick={onChange} className="btn-primary shrink-0 px-4 py-2.5 text-sm">
+                <ChevronLeft className="h-4 w-4" />
+                החלף
+              </button>
+            )}
+          </div>
         </div>
       </header>
 

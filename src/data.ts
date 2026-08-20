@@ -69,7 +69,7 @@ function movieIdFromTitle(rawTitle: string | null | undefined): string {
 
 function mapCinemaChainToId(chainValue: string): ChainId {
   const v = (chainValue || '').trim().toLowerCase();
-  if (v === 'planet' || v === 'yes planet' || v === 'yes-planet' || v === 'יס פלאנט') return 'yes-planet';
+  if (v === 'planet' || v === 'yes planet' || v === 'yes-planet' || v === 'יס פלאנט' || v === 'פלאנט') return 'yes-planet';
   if (v === 'cinema city' || v === 'cinema-city' || v === 'סינמה סיטי') return 'cinema-city';
   if (v === 'lev' || v === 'רשת לב' || v === 'לב') return 'lev';
   if (v === 'hot cinema' || v === 'hot-cinema' || v === 'הוט סינמה') return 'hot-cinema';

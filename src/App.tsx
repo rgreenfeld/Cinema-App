@@ -7,6 +7,7 @@ import { fetchScreenings, fetchMoviesByBranchesAndDate } from '@/lib/supabase';
 import { transformSupabaseRows, titlesToMovies, type Screening, type Movie, type Cinema } from '@/data';
 import { getCinemaNamesForSelection } from '@/utils/cinemaMapping';
 import { getUserPreferences } from '@/services/storage';
+import { Loader2 } from 'lucide-react';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('preferences');
@@ -84,7 +85,11 @@ function App() {
   }, []);
 
   if (!preferencesInitialized) {
-    return <div className="min-h-screen" />;
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-rose-400" />
+      </div>
+    );
   }
 
   /**

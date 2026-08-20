@@ -60,9 +60,8 @@
  *   SUPABASE_SCREENINGS_TABLE — optional, defaults to "screenings" (the table
  *                               the app reads; the task's "showtimes" name is
  *                               aliased here via env override if you use it)
-*   (no day-count parameter)   — the scraper automatically discovers and
-*                                pulls the maximum currently available
-*                                upcoming schedule window from the API
+ *   PLANET_DAYS                — optional, how many days to scrape (default 7,
+ *                                min 3)
  *
  * Usage:  node scrapers/planet.js
  */
@@ -90,12 +89,12 @@ const BRANCHES = [
   { apiId: '1075', name: 'פלאנט זכרון יעקב' },    // Zichron Yaakov
 ];
 
+const DAYS_TO_SCRAPE = Math.max(3, parseInt(process.env.PLANET_DAYS || '7', 10) || 7);
 const BATCH_SIZE = 500;
 const REQUEST_TIMEOUT_MS = 25000;
 const RETRIES = 2;
+const FILM_FETCH_CONCURRENCY = 3;
 const BRANCH_FETCH_CONCURRENCY = 3;
-const MAX_DISCOVERY_DAYS = 120;
-const STOP_AFTER_EMPTY_DAYS = 3;
 
 // ─── Screen-type mapping from attributeIds ───────────────────────────────────
 const SCREEN_TYPE_ATTRS = [
@@ -245,12 +244,6 @@ function mapLanguage(languages = {}, isDubbedTag = false) {
   return isDubbedTag ? 'מדובב' : 'מקור';
 }
 
-function hasDubbedAudio(languages = {}, inferredDubbed = false) {
-  const dubbed = (languages.dubbed || []).filter(Boolean);
-  const voiceover = (languages.voiceover || []).filter(Boolean);
-  return dubbed.length > 0 || voiceover.length > 0 || inferredDubbed;
-}
-
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 
 /**
@@ -335,36 +328,53 @@ async function fetchJson(url) {
 // ─── Scraper ─────────────────────────────────────────────────────────────────
 
 /**
- * Fetch the full Planet schedule across all branches using auto-discovery
- * until the upstream API appears exhausted.
+ * Fetch the full Planet schedule for the next N days across all branches.
  * Returns an array of normalized screening records.
  */
 async function scrapePlanetSchedule() {
   console.log('🚀 Starting Planet cinemas scraper...');
-  console.log(`🏢 Branches: ${BRANCHES.length} | 📅 Mode: auto-discovery (max available)\n`);
+  console.log(`🏢 Branches: ${BRANCHES.length} | 📅 Days: ${DAYS_TO_SCRAPE}\n`);
 
-  // Discover dates dynamically and stop after a short empty tail.
+  // Build the list of dates to scrape (Israel local dates).
   const dates = [];
   const now = new Date();
+  for (let i = 0; i < DAYS_TO_SCRAPE; i++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() + i);
+    const iso = formatIsraelDate(d);
+    if (!dates.includes(iso)) dates.push(iso);
+  }
+  const untilDate = dates[dates.length - 1];
+  console.log(`📅 Date range: ${dates[0]} → ${untilDate}\n`);
+
+  // Fetch the film catalog once (for poster URLs + Hebrew titles).
+  const filmsByDate = new Map(); // date -> Map(filmId -> film)
   const screenings = [];
 
-  let emptyDaysInARow = 0;
-  for (let offset = 0; offset < MAX_DISCOVERY_DAYS; offset++) {
-    const d = new Date(now);
-    d.setDate(d.getDate() + offset);
-    const date = formatIsraelDate(d);
-    dates.push(date);
+  const filmFetchResults = await asyncPool(
+    dates,
+    async (date) => {
+      const filmsUrl = `${BASE_URL}${API_BASE}/films/until/${date}`;
+      try {
+        const filmsData = await fetchJson(filmsUrl);
+        const films = (filmsData?.body?.films) || [];
+        return { date, filmMap: new Map(films.map((f) => [f.id, f])) };
+      } catch (err) {
+        return { date, filmMap: new Map(), error: err.message };
+      }
+    },
+    FILM_FETCH_CONCURRENCY
+  );
 
-    let filmMap = new Map();
-    const filmsUrl = `${BASE_URL}${API_BASE}/films/until/${date}`;
-    try {
-      const filmsData = await fetchJson(filmsUrl);
-      const films = (filmsData?.body?.films) || [];
-      filmMap = new Map(films.map((f) => [f.id, f]));
-    } catch (err) {
-      console.warn(`   ⚠ Could not fetch films for ${date}: ${err.message}`);
+  for (const result of filmFetchResults) {
+    if (result.error) {
+      console.warn(`   ⚠ Could not fetch films for ${result.date}: ${result.error}`);
     }
+    filmsByDate.set(result.date, result.filmMap);
+  }
 
+  for (const date of dates) {
+    const filmMap = filmsByDate.get(date) || new Map();
     console.log(`   📅 ${date}...`);
 
     const branchResults = await asyncPool(
@@ -398,16 +408,11 @@ async function scrapePlanetSchedule() {
         if (!showTime) continue;
 
         const normalized = normalizeMovieTitle(rawTitle);
-        const cleanTitle = (normalized.cleanTitle || rawTitle || '').trim();
-        if (!cleanTitle || /^null$/i.test(cleanTitle) || /^undefined$/i.test(cleanTitle)) {
-          console.warn(`⚠ Skipping event ${evt.id || evt.eventId || '<unknown>'} for ${branch.name} — invalid clean title: ${cleanTitle}`);
-          continue;
-        }
 
         // Language: prefer the API's structured languages; fall back to the
         // title-inference language from normalizeMovieTitle.
         let language = mapLanguage(evt.languages);
-        if ((language === 'מקור' || language === 'מדובב') && normalized.language && normalized.language !== 'original') {
+        if (language === 'מקור' && normalized.language && normalized.language !== 'original') {
           const fromTitle =
             { hebrew: 'עברית', english: 'אנגלית', russian: 'רוסית', french: 'צרפתית', arabic: 'ערבית' }[
               normalized.language
@@ -423,34 +428,19 @@ async function scrapePlanetSchedule() {
 
         screenings.push({
           rawTitle,
-          cleanTitle,
+          cleanTitle: normalized.cleanTitle || rawTitle,
           branchName: branch.name,
           showTime, // UTC ISO string
           bookingUrl,
           screenType: mapScreenType(evt.attributeIds),
           posterUrl: film?.posterLink || null,
           language,
-          isDubbed: hasDubbedAudio(evt.languages, normalized.isDubbed),
         });
         dayCount++;
       }
     }
 
     console.log(`   ✓ ${dayCount} screenings`);
-
-    if (dayCount === 0) {
-      emptyDaysInARow += 1;
-      if (emptyDaysInARow >= STOP_AFTER_EMPTY_DAYS) {
-        console.log(`   ⏹ Stopping discovery after ${STOP_AFTER_EMPTY_DAYS} empty day(s) in a row.`);
-        break;
-      }
-    } else {
-      emptyDaysInARow = 0;
-    }
-  }
-
-  if (dates.length > 0) {
-    console.log(`\n📅 Date range scanned: ${dates[0]} → ${dates[dates.length - 1]}`);
   }
 
   console.log(`\n🎬 Total screenings scraped: ${screenings.length}`);
@@ -582,15 +572,15 @@ async function uploadMovies(screenings) {
 
 /**
  * Upload Planet screenings into the `screenings` table (the table the app
- * reads). Since the table has no unique constraint, insert the fresh rows and
- * then remove the preceding Planet schedule. This keeps Planet data in sync
- * without stale duplicates or an empty results window during a refresh.
+ * reads). Since the table has no unique constraint, we mirror the existing
+ * uploadToSupabase.js pipeline: delete this chain's outdated rows, then insert
+ * the fresh ones in batches. This keeps Planet data in sync without stale
+ * duplicates across runs.
  *
  * The delete requires DELETE privileges — use a service_role key or ensure a
  * DELETE policy exists (see the schema / uploadToSupabase.js notes).
  */
 async function uploadShowtimes(screenings) {
-  const syncStartedAt = new Date().toISOString();
   const rows = screenings.map((s) => ({
     movie_title: s.cleanTitle,
     cinema_chain: 'planet',
@@ -598,7 +588,6 @@ async function uploadShowtimes(screenings) {
     date_time: s.showTime,
     booking_url: s.bookingUrl,
     language: s.language || 'מקור',
-    is_dubbed: Boolean(s.isDubbed),
     screen_type: s.screenType || 'רגיל',
   }));
 
@@ -609,23 +598,42 @@ async function uploadShowtimes(screenings) {
 
   console.log(`🎫 Syncing ${rows.length} Planet showtimes into "${SCREENINGS_TABLE}"...`);
 
-  // If the DB has a dedicated clean_title column, populate it from the
-  // canonical movie title while keeping compatibility with leaner schemas.
-  let rowsForInsert = rows;
-  const cleanTitleProbe = await supabase.from(SCREENINGS_TABLE).select('clean_title').limit(1);
-  if (!cleanTitleProbe.error) {
-    rowsForInsert = rows.map((row) => ({ ...row, clean_title: row.movie_title }));
-    console.log('   ✓ Detected clean_title column; it will be populated on insert.');
+  // ─── Step 1: Delete ALL existing Planet screenings ─────────────────────────
+  // The scraper re-fetches the full upcoming schedule every run, so the safest
+  // sync is to remove every existing `cinema_chain='planet'` row and insert the
+  // fresh set. Syncing only "outdated" rows (date_time < now) leaves the
+  // previously-uploaded future rows behind, producing duplicates (stale
+  // blocked router-launch URLs alongside fresh ones). Deleting all Planet rows
+  // keeps the table clean and consistent on every run.
+  console.log(`🧹 Removing all existing Planet screenings...`);
+
+  const { count: existingCount } = await supabase
+    .from(SCREENINGS_TABLE)
+    .select('*', { count: 'exact', head: true })
+    .eq('cinema_chain', 'planet');
+  console.log(`   Found ${existingCount ?? '?'} existing Planet screening(s).`);
+
+  const { error: deleteError, count: deletedCount } = await supabase
+    .from(SCREENINGS_TABLE)
+    .delete({ count: 'exact' })
+    .eq('cinema_chain', 'planet');
+
+  if (deleteError) {
+    console.error('❌ Failed to delete existing Planet screenings:', deleteError.message);
+    console.error('   Delete requires DELETE privileges — use a service_role key or add a DELETE policy.');
+    process.exit(1);
   }
 
-  const dubbedProbe = await supabase.from(SCREENINGS_TABLE).select('is_dubbed').limit(1);
-  if (dubbedProbe.error) {
-    rowsForInsert = rowsForInsert.map(({ is_dubbed, ...row }) => row);
-    console.log('   ℹ is_dubbed column not found; Planet upload will omit dubbed flags.');
+  if ((existingCount ?? 0) > 0 && deletedCount === 0) {
+    console.error('⚠️  DELETE ran but removed 0 rows even though Planet screenings exist.');
+    console.error('   This means your key CANNOT delete rows (RLS has no DELETE policy).');
+    console.error('   Fix: add the policy in Supabase SQL Editor, or set SUPABASE_SERVICE_ROLE_KEY.');
+    process.exit(1);
   }
+  console.log(`   ✓ Existing Planet screenings removed (${deletedCount ?? 0} row(s)).`);
 
   // ─── Step 2: Insert fresh records in batches ────────────────────────────
-  const batches = chunk(rowsForInsert, BATCH_SIZE);
+  const batches = chunk(rows, BATCH_SIZE);
   let inserted = 0;
 
   for (let i = 0; i < batches.length; i++) {
@@ -640,40 +648,6 @@ async function uploadShowtimes(screenings) {
     console.log(`   ✓ Batch ${i + 1}/${batches.length} inserted (${batches[i].length} rows)`);
   }
   console.log(`   ✓ ${inserted} Planet showtimes inserted.`);
-
-  // The fresh schedule is now available to readers. Remove only rows from an
-  // earlier sync so users never encounter an empty Planet result set.
-  console.log(`🧹 Removing older Planet screenings...`);
-  const { count: existingCount, error: countError } = await supabase
-    .from(SCREENINGS_TABLE)
-    .select('*', { count: 'exact', head: true })
-    .eq('cinema_chain', 'planet')
-    .lt('created_at', syncStartedAt);
-
-  if (countError) {
-    console.error('❌ Failed to count older Planet screenings:', countError.message);
-    process.exit(1);
-  }
-
-  const { error: deleteError, count: deletedCount } = await supabase
-    .from(SCREENINGS_TABLE)
-    .delete({ count: 'exact' })
-    .eq('cinema_chain', 'planet')
-    .lt('created_at', syncStartedAt);
-
-  if (deleteError) {
-    console.error('❌ Failed to delete older Planet screenings:', deleteError.message);
-    console.error('   Delete requires DELETE privileges — use a service_role key or add a DELETE policy.');
-    process.exit(1);
-  }
-
-  if ((existingCount ?? 0) > 0 && deletedCount === 0) {
-    console.error('⚠️  DELETE ran but removed 0 rows even though older Planet screenings were found.');
-    console.error('   This means your key CANNOT delete rows (RLS has no DELETE policy).');
-    console.error('   Fix: add the policy in Supabase SQL Editor, or set SUPABASE_SERVICE_ROLE_KEY.');
-    process.exit(1);
-  }
-  console.log(`   ✓ Older Planet screenings removed (${deletedCount ?? 0} row(s)).`);
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────

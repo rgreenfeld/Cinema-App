@@ -5,12 +5,12 @@
  * Writes: public.screenings table.
  *
  * Every run performs:
- *   1. Inserts the fresh records from output.json in batches (500 rows/batch).
- *   2. Deletes older rows for the cinema chain(s) in the input.
+ *   1. Deletes OUTDATED (past) screenings from the screenings table — any row
+ *      whose `date_time` is older than the current moment is removed.
+ *   2. Inserts the fresh records from output.json in batches (500 rows/batch).
  *
- * This keeps each uploaded chain's latest schedule while preventing
- * future-screening duplicates from accumulating across daily runs. Inserting
- * first also means users continue to see results while a sync is running.
+ * This removes stale/past screenings while preserving upcoming ones, then
+ * mirrors the latest scrape exactly.
  *
  * The scraper emits date_time values like "2026-08-05T23:30:00" (Israel
  * local wall time, no timezone suffix). This script normalizes those to
@@ -361,7 +361,7 @@ const cleanRows = rows.map((item) => ({
   screen_type: item.screen_type || 'רגיל',
 }));
 
-// ─── Upload (replace affected chains + chunked insert) ────────────────────────
+// ─── Upload (cleanup outdated + chunked insert) ───────────────────────────────
 
 const supabase = createClient(url, key);
 
@@ -375,16 +375,47 @@ function chunk(array, size) {
 }
 
 async function upload() {
-  // The database sets created_at on insert. This marker lets cleanup remove
-  // only the preceding schedule after the refreshed rows are safely present.
-  const syncStartedAt = new Date().toISOString();
-  const cinemaChains = [...new Set(cleanRows.map((row) => row.cinema_chain))];
-
   console.log(`🚀 Syncing ${cleanRows.length} screenings to Supabase table "${TABLE}"...`);
   console.log(`📅 Sample normalized date_time: ${cleanRows[0].date_time}`);
   console.log(`🔤 Sample language: ${cleanRows[0].language}`);
   console.log(`🖥 Sample screen_type: ${cleanRows[0].screen_type}`);
   console.log(`🔑 Using ${usingServiceRole ? 'service_role key (bypasses RLS)' : 'anon/publishable key (RLS applies)'}`);
+
+  // ─── Step 1: Delete outdated (past) screenings ───────────────────────────
+  const nowISO = new Date().toISOString();
+  console.log(`🧹 Cleaning up screenings older than ${nowISO}...`);
+
+  // Count rows that SHOULD be deleted so we can verify the delete actually
+  // removed them. A silent "0 deleted while N outdated exist" is the classic
+  // RLS missing-DELETE-policy signature.
+  const { count: outdatedCount } = await supabase
+    .from(TABLE)
+    .select('*', { count: 'exact', head: true })
+    .lt('date_time', nowISO);
+  console.log(`   Found ${outdatedCount ?? '?'} outdated screening(s).`);
+
+  const { error: deleteError, count: deletedCount } = await supabase
+    .from(TABLE)
+    .delete({ count: 'exact' })
+    .lt('date_time', nowISO); // timestamp column in the screenings table
+
+  if (deleteError) {
+    console.error('❌ Failed to delete outdated screenings:', deleteError.message);
+    console.error('   Delete requires DELETE privileges — use a service_role key or add a DELETE policy.');
+    process.exit(1);
+  }
+
+  if (deletedCount === 0 && outdatedCount > 0) {
+    console.error('⚠️  DELETE ran but removed 0 rows even though outdated screenings exist.');
+    console.error('   This means your key CANNOT delete rows (RLS has no DELETE policy).');
+    console.error('   Fix: add the policy in Supabase SQL Editor:');
+    console.error('     drop policy if exists "Allow anon delete" on public.screenings;');
+    console.error('     create policy "Allow anon delete" on public.screenings for delete using (true);');
+    console.error('   OR set SUPABASE_SERVICE_ROLE_KEY in your .env and re-run.');
+    process.exit(1);
+  }
+
+  console.log(`   ✓ Outdated screenings cleaned (${deletedCount ?? 0} row(s) removed).`);
 
   // Some DBs include a dedicated `clean_title` column. Populate it when present,
   // while keeping compatibility with schemas that only have `movie_title`.
@@ -418,43 +449,6 @@ async function upload() {
     console.log(`   ✓ Batch ${i + 1}/${batches.length} inserted (${batch.length} rows)`);
   }
 
-  // The source is a complete upcoming schedule for its chain. Now that the
-  // refreshed rows are available to readers, remove rows from older syncs.
-  console.log(`🧹 Removing older screenings for: ${cinemaChains.join(', ')}...`);
-  const { count: existingCount, error: countError } = await supabase
-    .from(TABLE)
-    .select('*', { count: 'exact', head: true })
-    .in('cinema_chain', cinemaChains)
-    .lt('created_at', syncStartedAt);
-
-  if (countError) {
-    console.error('❌ Failed to count older screenings:', countError.message);
-    process.exit(1);
-  }
-
-  const { error: deleteError, count: deletedCount } = await supabase
-    .from(TABLE)
-    .delete({ count: 'exact' })
-    .in('cinema_chain', cinemaChains)
-    .lt('created_at', syncStartedAt);
-
-  if (deleteError) {
-    console.error('❌ Failed to delete older screenings:', deleteError.message);
-    console.error('   Delete requires DELETE privileges — use a service_role key or add a DELETE policy.');
-    process.exit(1);
-  }
-
-  if (deletedCount === 0 && existingCount > 0) {
-    console.error('⚠️  DELETE ran but removed 0 rows even though older screenings were found.');
-    console.error('   This means your key CANNOT delete rows (RLS has no DELETE policy).');
-    console.error('   Fix: add the policy in Supabase SQL Editor:');
-    console.error('     drop policy if exists "Allow anon delete" on public.screenings;');
-    console.error('     create policy "Allow anon delete" on public.screenings for delete using (true);');
-    console.error('   OR set SUPABASE_SERVICE_ROLE_KEY in your .env and re-run.');
-    process.exit(1);
-  }
-
-  console.log(`   ✓ Older screenings removed (${deletedCount ?? 0} row(s) removed).`);
   console.log(`✅ Sync complete — ${inserted} screenings in table "${TABLE}".`);
 
   // ─── Summary breakdown ───────────────────────────────────────────────────

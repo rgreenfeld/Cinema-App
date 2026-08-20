@@ -2,9 +2,8 @@ name: Daily Cinema Scraper
 
 on:
   schedule:
-    # מריץ את הסקרייפר פעמיים ביום, ב-05:00 וב-17:00 לפי שעון ישראל (קיץ, UTC+3 = 02:00 ו-14:00 UTC).
-    # לב"ד: בחורף (שעון סטנדרטי, UTC+2) זה יריץ בפועל ב-04:00/16:00 שעון ישראל.
-    - cron: '0 2,14 * * *'
+    # מריץ את הסקרייפר כל יום ב-06:00 בבוקר לפי שעון ישראל (04:00 UTC)
+    - cron: '0 4 * * *'
   workflow_dispatch: # מאפשר להריץ את הסקרייפר גם ידנית בלחיצת כפתור ב-GitHub
 
 jobs:
@@ -32,8 +31,6 @@ jobs:
           node scrapers/pruneOldScreenings.js
 
       - name: Run scraper + upload pipeline
-        id: cinema-city
-        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -45,8 +42,6 @@ jobs:
           node scrapers/cinemaCity.js
           node scrapers/uploadToSupabase.js
       - name: Run Planet Scraper
-        id: planet
-        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -55,8 +50,6 @@ jobs:
           node scrapers/planet.js
 
       - name: Run Hot Cinema scraper + upload
-        id: hot-cinema
-        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -67,21 +60,16 @@ jobs:
           node scrapers/uploadToSupabase.js
 
       - name: Run Movieland scraper + upload
-        id: movieland
-        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           SUPABASE_INPUT_FILE: output.movieland.json
-          MOVIELAND_PROXY_URL: ${{ secrets.MOVIELAND_PROXY_URL }}
         run: |
           node scrapers/movieland.js
           node scrapers/uploadToSupabase.js
 
       - name: Run Lev Cinema scraper + upload
-        id: lev
-        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -90,19 +78,3 @@ jobs:
         run: |
           node scrapers/lev.js
           node scrapers/uploadToSupabase.js
-
-      - name: Fail job if any chain scraper failed
-        if: |
-          steps.cinema-city.outcome == 'failure' ||
-          steps.planet.outcome == 'failure' ||
-          steps.hot-cinema.outcome == 'failure' ||
-          steps.movieland.outcome == 'failure' ||
-          steps.lev.outcome == 'failure'
-        run: |
-          echo "One or more chain scrapers failed. Note: with continue-on-error: true, GitHub shows those steps as green (conclusion=success) in the UI, but their real outcome is 'failure' — check below and the raw logs of each step for the actual error."
-          echo "cinema-city: ${{ steps.cinema-city.outcome }}"
-          echo "planet:      ${{ steps.planet.outcome }}"
-          echo "hot-cinema:  ${{ steps.hot-cinema.outcome }}"
-          echo "movieland:   ${{ steps.movieland.outcome }}"
-          echo "lev:         ${{ steps.lev.outcome }}"
-          exit 1

@@ -44,7 +44,7 @@ export const REGIONS: Region[] = buildRegions();
  */
 export const CHAINS: { id: ChainId; name: string; shortName: string; color: string }[] = [
   { id: 'cinema-city', name: 'סינמה סיטי', shortName: 'סינמה סיטי', color: 'bg-rose-500/15 text-rose-300 border-rose-500/30' },
-  { id: 'yes-planet', name: 'יס פלאנט', shortName: 'יס פלאנט', color: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
+  { id: 'yes-planet', name: 'פלאנט', shortName: 'פלאנט', color: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
   { id: 'lev', name: 'רשת לב', shortName: 'לב', color: 'bg-sky-500/15 text-sky-300 border-sky-500/30' },
   { id: 'hot-cinema', name: 'הוט סינמה', shortName: 'הוט סינמה', color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
   { id: 'movieland', name: 'מובילנד', shortName: 'מובילנד', color: 'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30' },
