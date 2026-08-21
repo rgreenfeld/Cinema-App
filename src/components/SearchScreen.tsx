@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Settings2, Search, Clock, Calendar, Film, Clapperboard, Check, Loader2 } from 'lucide-react';
 import { HALL_TYPES, getUpcomingDates, formatDateLabel, ALL_DATES_VALUE, ALL_DAY_VALUE } from '@/constants';
 import type { Preferences, SearchCriteria } from '@/types';
@@ -33,6 +33,28 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
   const [hallOpen, setHallOpen] = useState(false);
   const [movieOpen, setMovieOpen] = useState(false);
   const [movieQuery, setMovieQuery] = useState('');
+  const movieFieldRef = useRef<HTMLDivElement>(null);
+
+  // Scroll the movie selector to the top of the viewport once the on-screen
+  // keyboard actually opens (autoFocus on the search input below), so
+  // Android's viewport resize doesn't hide the dropdown behind the keyboard.
+  // The keyboard resize fires asynchronously, so a fixed timeout can run too
+  // early - listen for the real viewport resize instead.
+  useEffect(() => {
+    if (!movieOpen) return;
+
+    const scrollToField = () => movieFieldRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+
+    const viewport = window.visualViewport;
+    if (viewport) {
+      viewport.addEventListener('resize', scrollToField);
+      return () => viewport.removeEventListener('resize', scrollToField);
+    }
+
+    // Fallback for browsers without the Visual Viewport API.
+    const timer = window.setTimeout(scrollToField, 300);
+    return () => window.clearTimeout(timer);
+  }, [movieOpen]);
 
   // ── Dynamic movies from Supabase (location + date aware) ──────────────
   const [dynamicMovies, setDynamicMovies] = useState<Movie[]>([]);
@@ -406,7 +428,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
               <span className="font-medium text-gray-100">הצג רק סרטי ילדים מדובבים</span>
             </label>
             <label className="field-label mt-5">בחירת סרט</label>
-            <div className="relative">
+            <div ref={movieFieldRef} className="relative">
               <button
                 type="button"
                 onClick={() => setMovieOpen((open) => !open)}

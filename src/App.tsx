@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { App as CapacitorApp } from '@capacitor/app';
 import { PreferencesScreen } from '@/components/PreferencesScreen';
 import { SearchScreen } from '@/components/SearchScreen';
 import { ResultsScreen } from '@/components/ResultsScreen';
@@ -82,6 +83,26 @@ function App() {
     };
 
     restorePreferences();
+  }, []);
+
+  // Keep a ref of the current screen so the back-button listener (registered once) never sees a stale value.
+  const screenRef = useRef(screen);
+  screenRef.current = screen;
+
+  useEffect(() => {
+    const listenerPromise = CapacitorApp.addListener('backButton', () => {
+      if (screenRef.current === 'results') {
+        setScreen('search');
+      } else if (screenRef.current === 'search') {
+        setScreen('preferences');
+      } else {
+        CapacitorApp.exitApp();
+      }
+    });
+
+    return () => {
+      listenerPromise.then((listener) => listener.remove());
+    };
   }, []);
 
   if (!preferencesInitialized) {
