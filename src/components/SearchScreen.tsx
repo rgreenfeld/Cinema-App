@@ -600,6 +600,13 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
         </section>
       )}
 
+      {/* Disclaimer */}
+      <p className="mt-6 text-center text-xs leading-relaxed text-gray-500">
+        *סרטים מסוימים עשויים להופיע בשמות שונים ברשתות השונות
+        <br />
+        **חשוב לוודא את התאריך והשעה לפני רכישה
+      </p>
+
       {/* Search button */}
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-white/[0.06] bg-[#0a0a0f]/85 px-4 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
