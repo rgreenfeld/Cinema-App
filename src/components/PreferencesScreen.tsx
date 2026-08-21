@@ -12,6 +12,9 @@ interface Props {
   onContinue: () => void;
 }
 
+// Hidden for now (not removed) — GPS/current-location search is disabled.
+const SHOW_CURRENT_LOCATION_OPTION = false;
+
 export function PreferencesScreen({ preferences, onChange, onContinue }: Props) {
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const preferencesRef = useRef(preferences);
@@ -104,38 +107,40 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
         </div>
 
         <div className="space-y-2">
-          <label
-            className={`flex cursor-not-allowed items-center gap-3 rounded-xl border px-4 py-3.5 opacity-50 transition-all ${
-              preferences.locationMode === 'current'
-                ? 'border-rose-500/40 bg-rose-500/[0.07]'
-                : 'border-white/[0.06] bg-white/[0.02]'
-            }`}
-            title="זמין בקרוב"
-          >
-            <input
-              type="radio"
-              name="locationMode"
-              className="sr-only"
-              disabled
-              checked={preferences.locationMode === 'current'}
-              onChange={() => {}}
-            />
-            <span
-              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                preferences.locationMode === 'current' ? 'border-rose-500' : 'border-gray-500'
+          {SHOW_CURRENT_LOCATION_OPTION && (
+            <label
+              className={`flex cursor-not-allowed items-center gap-3 rounded-xl border px-4 py-3.5 opacity-50 transition-all ${
+                preferences.locationMode === 'current'
+                  ? 'border-rose-500/40 bg-rose-500/[0.07]'
+                  : 'border-white/[0.06] bg-white/[0.02]'
               }`}
+              title="זמין בקרוב"
             >
-              {preferences.locationMode === 'current' && <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />}
-            </span>
-            <Locate className="h-4 w-4 text-gray-400" />
-            <span className="font-medium text-gray-500">לפי מיקום נוכחי</span>
-            <span className="mr-auto flex items-center gap-1.5">
-              <span className="text-xs text-gray-500">רדיוס 15 ק"מ</span>
-              <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
-                בקרוב
+              <input
+                type="radio"
+                name="locationMode"
+                className="sr-only"
+                disabled
+                checked={preferences.locationMode === 'current'}
+                onChange={() => {}}
+              />
+              <span
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                  preferences.locationMode === 'current' ? 'border-rose-500' : 'border-gray-500'
+                }`}
+              >
+                {preferences.locationMode === 'current' && <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />}
               </span>
-            </span>
-          </label>
+              <Locate className="h-4 w-4 text-gray-400" />
+              <span className="font-medium text-gray-500">לפי מיקום נוכחי</span>
+              <span className="mr-auto flex items-center gap-1.5">
+                <span className="text-xs text-gray-500">רדיוס 15 ק"מ</span>
+                <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                  בקרוב
+                </span>
+              </span>
+            </label>
+          )}
 
           <label
             className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3.5 transition-all ${
@@ -191,7 +196,7 @@ export function PreferencesScreen({ preferences, onChange, onContinue }: Props) 
           <h2 className="text-lg font-bold text-white">רשתות קולנוע מועדפות</h2>
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {CHAINS.map((chain) => {
+          {CHAINS.filter((chain) => chain.id !== 'indie').map((chain) => {
             const checked = preferences.selectedChains.includes(chain.id);
             return (
               <button

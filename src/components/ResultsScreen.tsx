@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   ChevronDown,
-  ChevronLeft,
+  ChevronRight,
   MapPin,
   Armchair,
   Layers,
@@ -140,19 +140,12 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
             <h1 className="text-lg font-black text-white">כל הסרטים בטווח השעות שנבחר</h1>
           )}
           <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              {criteria.mode === 'time' && (
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <Calendar className="h-3.5 w-3.5" />
-                  {dateLabel}
-                </div>
-              )}
-              {criteria.minTime && !criteria.allDay && (
-                <p className="mt-0.5 text-xs text-gray-500">{`מ-${criteria.minTime}`}</p>
-              )}
-            </div>
             {criteria.mode === 'movie' ? (
               <div className="flex shrink-0 items-center gap-2">
+                <button type="button" onClick={onChange} className="btn-primary h-11 shrink-0 px-4 py-2.5 text-sm">
+                  <ChevronRight className="h-4 w-4" />
+                  חזור
+                </button>
                 <label className="relative">
                   <span className="sr-only">תאריך</span>
                   <Calendar className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -171,17 +164,24 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
                     ))}
                   </select>
                 </label>
-                <button type="button" onClick={onChange} className="btn-primary h-11 shrink-0 px-4 py-2.5 text-sm">
-                  <ChevronLeft className="h-4 w-4" />
-                  חזור
-                </button>
               </div>
             ) : (
               <button type="button" onClick={onChange} className="btn-primary shrink-0 px-4 py-2.5 text-sm">
-                <ChevronLeft className="h-4 w-4" />
-                החלף
+                <ChevronRight className="h-4 w-4" />
+                חזור
               </button>
             )}
+            <div className="min-w-0">
+              {criteria.mode === 'time' && (
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {dateLabel}
+                </div>
+              )}
+              {criteria.minTime && !criteria.allDay && (
+                <p className="mt-0.5 text-xs text-gray-500">{`מ-${criteria.minTime}`}</p>
+              )}
+            </div>
           </div>
         </div>
       </header>

@@ -1,6 +1,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, Settings2, Search, Clock, Calendar, Film, Clapperboard, Check, Loader2 } from 'lucide-react';
+import { ChevronDown, Settings2, Search, Clock, Calendar, Film, Check, Loader2 } from 'lucide-react';
 import { HALL_TYPES, getUpcomingDates, formatDateLabel, ALL_DATES_VALUE, ALL_DAY_VALUE } from '@/constants';
 import type { Preferences, SearchCriteria } from '@/types';
 import { titlesToMovies, type Movie, type Cinema, type Screening } from '@/data';
@@ -363,19 +363,19 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
     <div className="screen-enter mx-auto max-w-3xl px-4 pb-32 pt-6">
       {/* Top bar */}
       <header className="mb-6 flex items-center justify-between gap-3">
+        <button type="button" onClick={onBack} className="btn-ghost text-sm">
+          <Settings2 className="h-4 w-4" />
+          הגדרות ומיקום
+        </button>
         <div className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600/20 to-rose-500/5 ring-1 ring-rose-500/20">
-            <Clapperboard className="h-5 w-5 text-rose-400" />
+          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl ring-1 ring-white/15">
+            <img src="/cinemaster-logo.webp" alt="CineMaster" className="h-full w-full object-cover" />
           </div>
           <div>
             <h1 className="text-lg font-black leading-tight text-white">CineMaster</h1>
             <p className="text-xs text-gray-500">{locationLabel}</p>
           </div>
         </div>
-        <button type="button" onClick={onBack} className="btn-ghost text-sm">
-          <Settings2 className="h-4 w-4" />
-          הגדרות ומיקום
-        </button>
       </header>
 
       {/* Mode tabs */}
