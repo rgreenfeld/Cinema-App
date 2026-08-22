@@ -7,10 +7,13 @@
  * Every run performs:
  *   1. Deletes OUTDATED (past) screenings from the screenings table — any row
  *      whose `date_time` is older than the current moment is removed.
- *   2. Inserts the fresh records from output.json in batches (500 rows/batch).
+ *   2. Deletes existing UPCOMING screenings for the same cinema_chain(s)
+ *      present in this run's input file, so re-running a chain's scraper
+ *      refreshes its data instead of duplicating it.
+ *   3. Inserts the fresh records from output.json in batches (500 rows/batch).
  *
- * This removes stale/past screenings while preserving upcoming ones, then
- * mirrors the latest scrape exactly.
+ * This removes stale/past screenings while preserving upcoming ones from
+ * *other* chains, then mirrors the latest scrape exactly for this chain.
  *
  * The scraper emits date_time values like "2026-08-05T23:30:00" (Israel
  * local wall time, no timezone suffix). This script normalizes those to
@@ -416,6 +419,27 @@ async function upload() {
   }
 
   console.log(`   ✓ Outdated screenings cleaned (${deletedCount ?? 0} row(s) removed).`);
+
+  // ─── Step 1.5: Delete existing FUTURE rows for the chain(s) in this run ──
+  // Each run's input file is a full fresh snapshot for one (or a few) cinema
+  // chains. Without this, re-running the same chain's scraper just piles on
+  // duplicate rows for screenings that were already uploaded and are still
+  // upcoming — this is the actual cause of unbounded row growth. Deleting the
+  // chain's existing future rows first turns every run into a true refresh.
+  const chainsInThisRun = [...new Set(cleanRows.map((r) => r.cinema_chain))];
+  console.log(`🔁 Refreshing upcoming screenings for chain(s): ${chainsInThisRun.join(', ')}`);
+
+  const { error: refreshDeleteError, count: refreshDeletedCount } = await supabase
+    .from(TABLE)
+    .delete({ count: 'exact' })
+    .in('cinema_chain', chainsInThisRun)
+    .gte('date_time', nowISO);
+
+  if (refreshDeleteError) {
+    console.error('❌ Failed to clear existing upcoming screenings before re-insert:', refreshDeleteError.message);
+    process.exit(1);
+  }
+  console.log(`   ✓ Cleared ${refreshDeletedCount ?? 0} existing upcoming row(s) for this chain before re-insert.`);
 
   // Some DBs include a dedicated `clean_title` column. Populate it when present,
   // while keeping compatibility with schemas that only have `movie_title`.
