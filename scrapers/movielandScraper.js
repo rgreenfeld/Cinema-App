@@ -1,65 +1,15 @@
 /**
  * MovieLand (Israel) scraper.
- *
- * Data source: MovieLand's public JSON API used by its own site (Vue app,
- * see /js/events.js):
- *
- *   GET https://movieland.co.il/api/Events
- *     ?TheatreId={id}&MovieId=&Date=&HebrewSubs=&Dubbed=false&ThreeD=false
- *     &isVenueUpgrated=false&isHFR3D=false&isHideVODRent=true
- *
- * A single call per branch returns every movie currently scheduled there,
- * each with a `Dates` array covering the branch's entire published schedule
- * (weeks into the future) — no per-day iteration needed.
- *
- * Each entry in `Dates` is one screening:
- *   {
- *     Date: "2026-08-17T19:50:00",   // Israel local wall time, no tz suffix
- *     Hour: "19:50",
- *     EventId: "22046",
- *     TheaterId: 1293,
- *     SiteGroup: " כתוביות בעברית" | "מדובב לעברית, כתוביות בעברית" | "מדובב לרוסית" | ...,
- *     Dubbed: boolean,
- *     ThreeD: boolean,
- *     IsVip: boolean,
- *     BookingNativeUrl: "https://ecom.biggerpicture.ai/site/{TheaterId}?code={TheaterId}-{EventId}&saleChannelCode=web&languageid=he_IL"
- *   }
- *
- * Movie titles sometimes carry their own tag (e.g. "(מדובב)"), same as
- * Cinema City — normalizeMovieTitle.js (used by the shared uploader) strips
- * those and infers language/dubbed metadata from them. Here we additionally
- * derive a precise per-showtime language from `SiteGroup`/`Dubbed` since a
- * single movie can have both subtitled and dubbed-to-a-specific-language
- * showtimes without that being reflected in the title.
- *
- * Integration example (uploadToSupabase.js):
- *   import { scrapeMovieland } from './movielandScraper.js';
- *   const screenings = await scrapeMovieland();
  */
 
-const BASE_URL = 'https://movieland.co.il';
-
-// Optional: route requests through a proxy (e.g. residential proxy) to avoid
-// IP-reputation blocks against datacenter IPs (such as GitHub Actions
-// runners). Set MOVIELAND_PROXY_URL to a proxy URL, e.g.
-// "http://user:pass@host:port".
-const PROXY_URL = (process.env.MOVIELAND_PROXY_URL || '').trim();
-let proxyDispatcher;
-async function getProxyDispatcher() {
-  if (!PROXY_URL) return undefined;
-  if (!proxyDispatcher) {
-    const { ProxyAgent } = await import('undici');
-    proxyDispatcher = new ProxyAgent(PROXY_URL);
-  }
-  return proxyDispatcher;
-}
+// ברירת המחדל היא הפנייה הישירה. אם יוגדר משתנה סביבה - הפנייה תנותב דרך Cloudflare Worker Proxy.
+const BASE_URL = (process.env.MOVIELAND_PROXY_URL || process.env.MOVIELAND_BASE_URL || 'https://movieland.co.il').replace(/\/$/, '');
+const PROXY_SECRET = process.env.MOVIELAND_PROXY_SECRET || '';
 
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
   '(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-// Verified live branch IDs (from the site's embedded `quickOrder.theaters`).
-// "מובילנד בת ים" is listed as "coming soon" (not yet open) and is skipped.
 const BRANCHES = [
   { theaterId: 1293, name: 'הצוק ת"א' },
   { theaterId: 1291, name: 'חיפה' },
@@ -92,8 +42,7 @@ async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    const dispatcher = await getProxyDispatcher();
-    return await fetch(url, { ...options, signal: controller.signal, ...(dispatcher ? { dispatcher } : {}) });
+    return await fetch(url, { ...options, signal: controller.signal });
   } finally {
     clearTimeout(timer);
   }
@@ -117,12 +66,16 @@ async function fetchTheaterEvents(theaterId) {
     'User-Agent': USER_AGENT,
     Accept: 'application/json, text/plain, */*',
     'Accept-Language': 'he-IL,he;q=0.9,en;q=0.8',
-    Referer: `${BASE_URL}/`,
-    Origin: BASE_URL,
+    Referer: 'https://movieland.co.il/',
+    Origin: 'https://movieland.co.il',
     'Sec-Fetch-Site': 'same-origin',
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Dest': 'empty',
   };
+
+  if (PROXY_SECRET) {
+    headers['X-Custom-Auth'] = PROXY_SECRET;
+  }
 
   let lastErr;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
@@ -134,24 +87,12 @@ async function fetchTheaterEvents(theaterId) {
       return await res.json();
     } catch (err) {
       lastErr = err;
-      // 403s are often a transient anti-bot block (e.g. datacenter IP
-      // rate-limiting) rather than a permanent one — retry a couple of
-      // times with a delay before giving up on this branch.
       if (attempt < MAX_ATTEMPTS) await sleep(RETRY_DELAY_MS * attempt);
     }
   }
   throw lastErr;
 }
 
-/**
- * Derive the project's Hebrew language tag + dubbed flag from a MovieLand
- * showtime's SiteGroup label and Dubbed flag.
- *
- *   "מדובב ל<שפה>"                       -> that language, dubbed
- *   Dubbed / plain "מדובב"                -> 'עברית', dubbed (default dub target)
- *   contains "כתוביות"                    -> 'מקור עם כתוביות', not dubbed
- *   otherwise                             -> 'מקור', not dubbed
- */
 function normalizeLanguage(dateEntry) {
   const group = hasValue(dateEntry?.SiteGroup) ? String(dateEntry.SiteGroup).trim() : '';
 
