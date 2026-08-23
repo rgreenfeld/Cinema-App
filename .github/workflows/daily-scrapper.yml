@@ -76,6 +76,6 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           SUPABASE_INPUT_FILE: output.movieland.json
         run: |
-          node scrapers/movieland.js
+          node scrapers/movielandBrowser.js
           node scrapers/uploadToSupabase.js
 

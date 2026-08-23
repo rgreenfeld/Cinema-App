@@ -60,7 +60,8 @@ const USER_AGENT =
 
 // Verified live branch IDs (from the site's embedded `quickOrder.theaters`).
 // "מובילנד בת ים" is listed as "coming soon" (not yet open) and is skipped.
-const BRANCHES = [
+// Exported so movielandScraperBrowser.js can reuse the same branch list.
+export const BRANCHES = [
   { theaterId: 1293, name: 'הצוק ת"א' },
   { theaterId: 1291, name: 'חיפה' },
   { theaterId: 1290, name: 'כרמיאל' },
@@ -173,7 +174,9 @@ function normalizeScreenType(dateEntry) {
   return 'רגיל';
 }
 
-function parseTheaterEvents(movies, branchName) {
+// Exported so movielandScraperBrowser.js can reuse the same parsing logic
+// against JSON fetched from within a real browser context.
+export function parseTheaterEvents(movies, branchName) {
   const results = [];
   if (!Array.isArray(movies)) return results;
 
