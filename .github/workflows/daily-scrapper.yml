@@ -6,6 +6,14 @@ on:
     - cron: '0 4 * * *'
   workflow_dispatch: # מאפשר להריץ את הסקרייפר גם ידנית בלחיצת כפתור ב-GitHub
 
+# Prevent overlapping runs (e.g. a manual dispatch firing while the scheduled
+# run is still in progress). Concurrent runs race on the delete-then-insert
+# steps in uploadToSupabase.js/planet.js, which is a direct cause of
+# duplicated rows in the DB.
+concurrency:
+  group: daily-cinema-scraper
+  cancel-in-progress: false
+
 jobs:
   scrape-and-upload:
     runs-on: ubuntu-latest

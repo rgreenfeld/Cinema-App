@@ -632,14 +632,17 @@ async function uploadShowtimes(screenings) {
   }
   console.log(`   ✓ Existing Planet screenings removed (${deletedCount ?? 0} row(s)).`);
 
-  // ─── Step 2: Insert fresh records in batches ────────────────────────────
+  // ─── Step 2: Upsert fresh records in batches ────────────────────────────
+  // Upsert against the natural-key unique constraint (screenings_unique_showing_idx
+  // in supabase/schema.sql) as a guard against duplicates from overlapping runs.
+  const ON_CONFLICT_COLUMNS = 'cinema_chain,branch,movie_title,date_time,screen_type,language,booking_url';
   const batches = chunk(rows, BATCH_SIZE);
   let inserted = 0;
 
   for (let i = 0; i < batches.length; i++) {
     const { error: insertError } = await supabase
       .from(SCREENINGS_TABLE)
-      .insert(batches[i]);
+      .upsert(batches[i], { onConflict: ON_CONFLICT_COLUMNS });
     if (insertError) {
       console.error(`❌ Insert failed (batch ${i + 1}/${batches.length}):`, insertError.message);
       process.exit(1);

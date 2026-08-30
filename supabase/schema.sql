@@ -23,6 +23,18 @@ create table if not exists public.screenings (
 alter table public.screenings
   add column if not exists is_dubbed boolean not null default false;
 
+-- Unique constraint on the natural key of a screening. This is the
+-- DB-level guarantee against duplicate rows (belt-and-suspenders on top of
+-- the uploader's delete-before-insert logic): the same chain/branch/movie/
+-- time/screen_type/language/booking_url combo can only exist once. The
+-- uploader uses upsert(..., { onConflict: ... }) against this constraint, so
+-- even a race between overlapping workflow runs can no longer create
+-- duplicate rows. booking_url is included because some chains (e.g. Planet)
+-- legitimately run the same movie in two auditoriums at the same time with
+-- otherwise-identical descriptive fields — only booking_url distinguishes them.
+create unique index if not exists screenings_unique_showing_idx
+  on public.screenings (cinema_chain, branch, movie_title, date_time, screen_type, language, booking_url);
+
 -- Useful index for querying by screening time
 create index if not exists screenings_date_time_idx
   on public.screenings (date_time);

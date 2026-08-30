@@ -456,16 +456,27 @@ async function upload() {
     console.log('   ℹ is_dubbed column not found; uploads will omit dubbed flags.');
   }
 
-  // ─── Step 2: Insert fresh records in batches of 500 ──────────────────────
+  // ─── Step 2: Upsert fresh records in batches of 500 ──────────────────────
+  // Upsert (instead of plain insert) against the natural-key unique
+  // constraint (see supabase/schema.sql: screenings_unique_showing_idx) so
+  // that a race between overlapping workflow runs, or any gap in the
+  // delete-before-insert logic above, can no longer create duplicate rows —
+  // a re-uploaded identical showing updates the existing row instead of
+  // adding a second copy.
+  const ON_CONFLICT_COLUMNS = 'cinema_chain,branch,movie_title,date_time,screen_type,language,booking_url';
   const batches = chunk(rowsForInsert, BATCH_SIZE);
   let inserted = 0;
 
   for (let i = 0; i < batches.length; i++) {
     const batch = batches[i];
-    const { error: insertError } = await supabase.from(TABLE).insert(batch);
+    const { error: insertError } = await supabase
+      .from(TABLE)
+      .upsert(batch, { onConflict: ON_CONFLICT_COLUMNS });
 
     if (insertError) {
       console.error(`❌ Insert failed (batch ${i + 1}/${batches.length}):`, insertError.message);
+      console.error('   If this mentions "no unique or exclusion constraint", run the');
+      console.error('   screenings_unique_showing_idx migration in supabase/schema.sql first.');
       process.exit(1);
     }
 
