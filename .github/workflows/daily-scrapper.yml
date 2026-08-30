@@ -31,6 +31,8 @@ jobs:
         run: npm ci
 
       - name: Prune outdated screenings
+        id: prune
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -39,6 +41,8 @@ jobs:
           node scrapers/pruneOldScreenings.js
 
       - name: Run scraper + upload pipeline
+        id: cinema-city
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -50,6 +54,8 @@ jobs:
           node scrapers/cinemaCity.js
           node scrapers/uploadToSupabase.js
       - name: Run Planet Scraper
+        id: planet
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -58,6 +64,8 @@ jobs:
           node scrapers/planet.js
 
       - name: Run Hot Cinema scraper + upload
+        id: hot-cinema
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -68,6 +76,8 @@ jobs:
           node scrapers/uploadToSupabase.js
 
       - name: Run Lev Cinema scraper + upload
+        id: lev
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -78,6 +88,8 @@ jobs:
           node scrapers/uploadToSupabase.js
 
       - name: Run Movieland scraper + upload
+        id: movieland
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -86,4 +98,28 @@ jobs:
         run: |
           node scrapers/movieland.js
           node scrapers/uploadToSupabase.js
+
+      - name: Fail the job if any stage failed
+        if: always()
+        run: |
+          failed=0
+          for outcome in \
+            "prune:${{ steps.prune.outcome }}" \
+            "cinema-city:${{ steps.cinema-city.outcome }}" \
+            "planet:${{ steps.planet.outcome }}" \
+            "hot-cinema:${{ steps.hot-cinema.outcome }}" \
+            "lev:${{ steps.lev.outcome }}" \
+            "movieland:${{ steps.movieland.outcome }}"; do
+            name="${outcome%%:*}"
+            status="${outcome##*:}"
+            echo "$name: $status"
+            if [ "$status" = "failure" ]; then
+              failed=1
+            fi
+          done
+          if [ "$failed" = "1" ]; then
+            echo "❌ One or more scraper stages failed — see logs above for details."
+            exit 1
+          fi
+
 
