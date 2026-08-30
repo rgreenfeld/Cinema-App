@@ -474,6 +474,28 @@ function chunk(array, size) {
   return out;
 }
 
+/**
+ * Log rows that share the same natural key used for the upsert's onConflict
+ * target — these silently collapse into one DB row with no error, which is
+ * why the DB row count can end up lower than the scraped count.
+ */
+function logNaturalKeyDuplicates(rows) {
+  const seen = new Map();
+  for (const r of rows) {
+    const key = [r.cinema_chain, r.branch, r.movie_title, r.date_time, r.screen_type, r.language, r.booking_url].join('|');
+    (seen.get(key) || seen.set(key, []).get(key)).push(r);
+  }
+  const dupGroups = [...seen.values()].filter((group) => group.length > 1);
+  if (dupGroups.length === 0) return;
+
+  const extraRows = dupGroups.reduce((sum, group) => sum + group.length - 1, 0);
+  console.warn(`⚠ ${dupGroups.length} natural-key collision(s) found (${extraRows} row(s) will collapse into existing rows on upsert):`);
+  dupGroups.slice(0, 10).forEach((group) => {
+    const r = group[0];
+    console.warn(`   x${group.length} — ${r.movie_title} | ${r.branch} | ${r.date_time} | ${r.screen_type} | ${r.language} | booking_url=${r.booking_url}`);
+  });
+}
+
 function isValidPosterUrl(value) {
   return (
     typeof value === 'string' &&
@@ -636,6 +658,11 @@ async function uploadShowtimes(screenings) {
   // Upsert against the natural-key unique constraint (screenings_unique_showing_idx
   // in supabase/schema.sql) as a guard against duplicates from overlapping runs.
   const ON_CONFLICT_COLUMNS = 'cinema_chain,branch,movie_title,date_time,screen_type,language,booking_url';
+
+  // Rows sharing this natural key silently collapse into one DB row on
+  // upsert with no error — surface that here instead of a silent shortfall.
+  logNaturalKeyDuplicates(rows);
+
   const batches = chunk(rows, BATCH_SIZE);
   let inserted = 0;
 

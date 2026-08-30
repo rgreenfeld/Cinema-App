@@ -377,6 +377,29 @@ function chunk(array, size) {
   return out;
 }
 
+/**
+ * Log rows that share the same (cinema_chain, branch, movie_title, date_time,
+ * screen_type, language, booking_url) natural key — the upsert below silently
+ * merges these into a single DB row, so this surfaces that shortfall instead
+ * of leaving it a silent mystery between scraped count and DB row count.
+ */
+function logNaturalKeyDuplicates(rows) {
+  const seen = new Map();
+  for (const r of rows) {
+    const key = [r.cinema_chain, r.branch, r.movie_title, r.date_time, r.screen_type, r.language, r.booking_url].join('|');
+    (seen.get(key) || seen.set(key, []).get(key)).push(r);
+  }
+  const dupGroups = [...seen.values()].filter((group) => group.length > 1);
+  if (dupGroups.length === 0) return;
+
+  const extraRows = dupGroups.reduce((sum, group) => sum + group.length - 1, 0);
+  console.warn(`⚠ ${dupGroups.length} natural-key collision(s) found (${extraRows} row(s) will collapse into existing rows on upsert):`);
+  dupGroups.slice(0, 10).forEach((group) => {
+    const r = group[0];
+    console.warn(`   x${group.length} — ${r.movie_title} | ${r.branch} | ${r.date_time} | ${r.screen_type} | ${r.language} | booking_url=${r.booking_url}`);
+  });
+}
+
 async function upload() {
   console.log(`🚀 Syncing ${cleanRows.length} screenings to Supabase table "${TABLE}"...`);
   console.log(`📅 Sample normalized date_time: ${cleanRows[0].date_time}`);
@@ -464,6 +487,13 @@ async function upload() {
   // a re-uploaded identical showing updates the existing row instead of
   // adding a second copy.
   const ON_CONFLICT_COLUMNS = 'cinema_chain,branch,movie_title,date_time,screen_type,language,booking_url';
+
+  // Detect rows sharing the same natural key up-front: an upsert silently
+  // collapses these into one DB row with no error, which is why the DB row
+  // count can end up lower than the scraped count. Logging this here makes
+  // that shortfall visible instead of a silent mystery.
+  logNaturalKeyDuplicates(rowsForInsert);
+
   const batches = chunk(rowsForInsert, BATCH_SIZE);
   let inserted = 0;
 
