@@ -84,6 +84,23 @@ async function fetchHtml(url) {
   return await res.text();
 }
 
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+/** Retry a homepage fetch a few times — the site occasionally serves a bot-check/empty page transiently. */
+async function fetchHomepageWithRetry(url, attempts = 3) {
+  let lastUrls = [];
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    const html = await fetchHtml(url);
+    lastUrls = extractMovieUrls(html);
+    if (lastUrls.length > 0) return lastUrls;
+    console.warn(`[lev] Homepage returned 0 movie links (attempt ${attempt}/${attempts}).`);
+    if (attempt < attempts) await sleep(2000 * attempt);
+  }
+  return lastUrls;
+}
+
 /**
  * Discover every /movies/{slug}/ URL linked from the homepage (covers both
  * "מציג עכשיו" now-showing and "בקרוב" coming-soon sections).
@@ -206,15 +223,14 @@ export async function scrapeLev() {
   const referenceDate = new Date();
   const dedup = new Map();
 
-  let homepageHtml;
+  let movieUrls;
   try {
-    homepageHtml = await fetchHtml(`${BASE_URL}/`);
+    movieUrls = await fetchHomepageWithRetry(`${BASE_URL}/`);
   } catch (err) {
     console.warn(`[lev] Warning: failed to fetch homepage (${err.message}).`);
     return [];
   }
 
-  const movieUrls = extractMovieUrls(homepageHtml);
   console.log(`[lev] Discovered ${movieUrls.length} movie pages.`);
 
   const perMovieResults = await mapWithConcurrency(movieUrls, MOVIE_FETCH_CONCURRENCY, async (url) => {
