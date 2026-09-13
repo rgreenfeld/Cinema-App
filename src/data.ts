@@ -146,7 +146,7 @@ export function transformSupabaseRows(
 
   for (const row of supabaseRows) {
     const { date, time } = utcIsoToIsraelLocal(row.date_time);
-    const normalizedTitle = canonicalMovieTitle(row.clean_title || row.movie_title);
+    const normalizedTitle = canonicalMovieTitle(row.movie_title || row.clean_title);
 
     // Derive a stable movie ID from the title
     const movieId = movieIdFromTitle(normalizedTitle);
