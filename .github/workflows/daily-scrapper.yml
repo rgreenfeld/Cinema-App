@@ -87,29 +87,30 @@ jobs:
           node scrapers/lev.js
           node scrapers/uploadToSupabase.js
 
-      - name: Run Movieland scraper + upload
-        id: movieland
-        continue-on-error: true
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          SUPABASE_INPUT_FILE: output.movieland.json
-        run: |
-          node scrapers/movieland.js
-          node scrapers/uploadToSupabase.js
+      # Temporarily disabled until the Movieland scraper is fixed.
+      # - name: Run Movieland scraper + upload
+      #   id: movieland
+      #   continue-on-error: true
+      #   env:
+      #     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      #     SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      #     SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      #     SUPABASE_INPUT_FILE: output.movieland.json
+      #   run: |
+      #     node scrapers/movieland.js
+      #     node scrapers/uploadToSupabase.js
 
       - name: Fail the job if any stage failed
         if: always()
         run: |
           failed=0
+          # Movieland is temporarily disabled until its scraper is fixed.
           for outcome in \
             "prune:${{ steps.prune.outcome }}" \
             "cinema-city:${{ steps.cinema-city.outcome }}" \
             "planet:${{ steps.planet.outcome }}" \
             "hot-cinema:${{ steps.hot-cinema.outcome }}" \
-            "lev:${{ steps.lev.outcome }}" \
-            "movieland:${{ steps.movieland.outcome }}"; do
+            "lev:${{ steps.lev.outcome }}"; do
             name="${outcome%%:*}"
             status="${outcome##*:}"
             echo "$name: $status"

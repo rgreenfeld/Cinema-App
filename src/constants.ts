@@ -47,9 +47,12 @@ export const CHAINS: { id: ChainId; name: string; shortName: string; color: stri
   { id: 'yes-planet', name: 'פלאנט', shortName: 'פלאנט', color: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
   { id: 'lev', name: 'רשת לב', shortName: 'לב', color: 'bg-sky-500/15 text-sky-300 border-sky-500/30' },
   { id: 'hot-cinema', name: 'הוט סינמה', shortName: 'הוט סינמה', color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
-  { id: 'movieland', name: 'מובילנד', shortName: 'מובילנד', color: 'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30' },
   { id: 'indie', name: 'קולנוע עצמאי', shortName: 'עצמאי', color: 'bg-violet-500/15 text-violet-300 border-violet-500/30' },
 ];
+
+export const DEFAULT_SELECTED_CHAINS: ChainId[] = CHAINS
+  .filter((chain) => chain.id !== 'indie')
+  .map((chain) => chain.id);
 
 export const LANGUAGES: LanguageFilter[] = ['שפת מקור', 'רוסית', 'ערבית', 'צרפתית', 'מדובב'];
 

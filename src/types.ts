@@ -1,5 +1,5 @@
 import type { ChainId, HallType, LanguageFilter } from '@/data';
-import { HALL_TYPES } from '@/constants';
+import { DEFAULT_SELECTED_CHAINS, HALL_TYPES } from '@/constants';
 
 export type Screen = 'preferences' | 'search' | 'results';
 
@@ -32,7 +32,7 @@ export const emptyPreferences: Preferences = {
   selectedCities: [],
   selectedRegions: [],
   selectedBranches: [],
-  selectedChains: [],
+  selectedChains: [...DEFAULT_SELECTED_CHAINS],
   selectedLanguages: ['שפת מקור'],
 };
 

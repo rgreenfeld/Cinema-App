@@ -1,7 +1,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Settings2, Search, Clock, Calendar, Film, Check, Loader2 } from 'lucide-react';
-import { HALL_TYPES, getUpcomingDates, formatDateLabel, ALL_DATES_VALUE, ALL_DAY_VALUE } from '@/constants';
+import { DEFAULT_SELECTED_CHAINS, HALL_TYPES, getUpcomingDates, formatDateLabel, ALL_DATES_VALUE, ALL_DAY_VALUE } from '@/constants';
 import type { Preferences, SearchCriteria } from '@/types';
 import { titlesToMovies, type Movie, type Cinema, type Screening } from '@/data';
 import { buildIntervals, timeToMinutes, nowIsraelMinutes } from '@/timeUtils';
@@ -136,6 +136,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
 
       const cinema = cinemaById.get(s.cinemaId);
       if (!cinema) continue;
+      if (!DEFAULT_SELECTED_CHAINS.includes(cinema.chain)) continue;
 
       if (preferences.selectedChains.length > 0 && !preferences.selectedChains.includes(cinema.chain)) {
         continue;
@@ -212,6 +213,7 @@ export function SearchScreen({ preferences, criteria, onChange, onBack, onSearch
 
       const cinema = cinemaById.get(s.cinemaId);
       if (!cinema) continue;
+      if (!DEFAULT_SELECTED_CHAINS.includes(cinema.chain)) continue;
 
       if (preferences.selectedChains.length > 0 && !preferences.selectedChains.includes(cinema.chain)) {
         continue;

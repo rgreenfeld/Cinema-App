@@ -55,7 +55,10 @@ function App() {
           locationMode: stored.useLocation ? 'current' : 'regions',
           selectedCities: stored.selectedCities,
           selectedBranches: getCinemaNamesForSelection(stored.selectedCities, []),
-          selectedChains: stored.favoriteCinemas as Preferences['selectedChains'] ?? [],
+          selectedChains:
+            stored.favoriteCinemas && stored.favoriteCinemas.length > 0
+              ? (stored.favoriteCinemas as Preferences['selectedChains'])
+              : emptyPreferences.selectedChains,
           selectedLanguages: stored.selectedLanguages as Preferences['selectedLanguages'],
         };
 

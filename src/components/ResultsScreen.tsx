@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import {
   CHAINS,
+  DEFAULT_SELECTED_CHAINS,
   formatDateLabel,
   formatShortDate,
   ALL_DATES_VALUE,
@@ -110,6 +111,7 @@ export function ResultsScreen({ criteria, preferences, onChange, onCriteriaChang
 
       const cinema = cinemaById.get(screening.cinemaId);
       if (!cinema) continue;
+      if (!DEFAULT_SELECTED_CHAINS.includes(cinema.chain)) continue;
       if (preferences.selectedChains.length > 0 && !preferences.selectedChains.includes(cinema.chain)) continue;
       if (
         preferences.locationMode === 'regions' &&
@@ -422,8 +424,9 @@ function filterScreenings(criteria: SearchCriteria, preferences: Preferences, sc
     // Hall filter
     if (criteria.hallTypes.length > 0 && !criteria.hallTypes.includes(s.hallType)) return false;
     // Preferences: chains
+    const c = cinemas?.find((x) => x.id === s.cinemaId)?.chain;
+    if (!c || !DEFAULT_SELECTED_CHAINS.includes(c)) return false;
     if (preferences.selectedChains.length > 0) {
-      const c = cinemas?.find((x) => x.id === s.cinemaId)?.chain;
       if (!c || !preferences.selectedChains.includes(c)) return false;
     }
     // Preferences: locations (only in regions mode).
